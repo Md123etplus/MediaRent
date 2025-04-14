@@ -2,7 +2,6 @@
 MediaRent est une plateforme Laravel de location de matériel audiovisuel professionnel avec gestion des réservations et évaluations.
 # MediaRent (Laravel)
 
-![MediaRent Logo](https://via.placeholder.com/150x50?text=MediaRent)
 
 Plateforme de location de matériel audiovisuel professionnel avec Laravel et Tailwind CSS.
 
