@@ -1,7 +1,9 @@
 @extends('layouts.app')
+
+@section('title', 'Catégories')
 @section('content')
-<div>
-    <!-- We must ship. - Taylor Otwell -->
-    <h1>Hey, implementation of categories should be in here</h1>
-</div>
-@endsection
+    @include('categories.hero')
+    @include('categories.how-it-works')
+    @include('categories.features')
+    @include('categories.pricing')
+@endsections

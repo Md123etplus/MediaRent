@@ -1,4 +1,4 @@
-<div class="container px-4 md:px-6 mx-auto">
+<div class="container px-4 md:px-6 mx-auto dark:text-white">
     <div class="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
         <div class="flex flex-col justify-center space-y-4">
             <div class="space-y-2">
@@ -11,7 +11,7 @@
                 </p>
             </div>
             <div class="flex flex-col gap-2 min-[400px]:flex-row">
-                <a href="/search" class="inline-flex items-center justify-center h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors">
+                <a href="{{ route('search.main') }}" class="inline-flex items-center justify-center h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors">
                     Trouver du matériel
                     <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
