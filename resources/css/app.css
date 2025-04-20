@@ -1,22 +1,65 @@
-@import 'tailwindcss';
-/* @tailwind base;
-@tailwind components; */
+@tailwind base;
+@tailwind components;
 @tailwind utilities;
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/InstrumentSans-VariableFont_wdth,wght.ttf') format('truetype');
+}
+html {
+    scroll-behavior: smooth;
+  }
+body {
+  font-family: 'Arial', sans-serif;
 }
 
+/* Buttons */
 .btn-primary {
-    @apply bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600;
+  @apply bg-primary text-primary-foreground rounded-lg font-medium transition-colors hover:bg-primary/90;
+}
+
+.btn-outline {
+  @apply border border-primary text-primary bg-transparent rounded-lg font-medium transition-colors hover:bg-primary/10;
+}
+
+
+/* Custom utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
-  
-  .card {
-    @apply rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm transition-all hover:shadow-md;
-  }
+}
+
+.image-slider-container {
+    @apply flex items-center justify-center lg:justify-end relative h-64 md:h-96;
+}
+
+.slider-wrapper {
+    @apply relative w-full h-full rounded-xl overflow-hidden;
+}
+
+.slider-image {
+    @apply absolute inset-0 w-full h-full object-cover opacity-0;
+    animation: imageFade 36s infinite;
+    transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+}
+
+@keyframes imageFade {
+    0% { opacity: 0; } /* Début invisible */
+    2% { opacity: 0; } /* Délai avant apparition */
+    8% { opacity: 1; } /* Montée progressive en 6% du temps */
+    15% { opacity: 1; } /* Visible pleinement */
+    17% { opacity: 1; } /* Délai avant disparition */
+    23% { opacity: 0; } /* Descente progressive en 6% du temps */
+    100% { opacity: 0; } /* Reste invisible */
+}
+
+/* Délais personnalisés pour chaque image */
+.slider-image:nth-child(1) { animation-delay: 0s; }
+.slider-image:nth-child(2) { animation-delay: 6s; }
+.slider-image:nth-child(3) { animation-delay: 12s; }
+.slider-image:nth-child(4) { animation-delay: 18s; }
+.slider-image:nth-child(5) { animation-delay: 24s; }
+.slider-image:nth-child(6) { animation-delay: 30s; }

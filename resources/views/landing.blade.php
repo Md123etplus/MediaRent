@@ -1,25 +1,34 @@
-<x-layouts.app>
-    @include('landing.hero')
-    @include('landing.features')
-    @include('landing.categories')
-    @include('landing.pricing')
-    
-    <!-- CTA Section -->
-    <section class="bg-blue-600 py-12 md:py-24">
-        <div class="container px-4 md:px-6">
-            <div class="text-center">
-                <h2 class="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
-                    Prêt à louer ou proposer du matériel ?
-                </h2>
-                <div class="mt-6 flex justify-center gap-4">
-                    <a href="/register" class="px-6 py-3 bg-white text-blue-600 rounded-md font-medium hover:bg-gray-100">
-                        S'inscrire gratuitement
-                    </a>
-                    <a href="#how-it-works" class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white/10">
-                        En savoir plus
-                    </a>
-                </div>
-            </div>
+@extends('layouts.app')
+
+@section('content')
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 py-12 md:py-24 lg:py-32">
+        @include('landing.hero')
+    </section>
+
+    <!-- Comment ça marche Section -->
+    <section id="how-it-works" class="bg-white dark:bg-gray-900 py-12 md:py-24 lg:py-32">
+        @include('landing.how-it-works')
+    </section>
+    <!-- categories Section -->
+    <!-- Categories Section -->
+<section id="categories" class="bg-white dark:bg-gray-900 py-12 md:py-24 lg:py-32">
+    <div class="container px-4 md:px-6 mx-auto">  <!-- Added mx-auto here -->
+       @include('landing.categories')
+    </div>
+</section>
+    <!-- Pricing Section -->
+
+    <section id="pricing" class="bg-white dark:bg-gray-900 py-12 md:py-24 lg:py-32">
+        <div class="container px-4 md:px-6 mx-auto">
+            @include('landing.pricing')
         </div>
     </section>
-</x-layouts.app>
+    <!-- Features Section -->
+    <section id="features" class="bg-gray-50 dark:bg-gray-800 py-12 md:py-24 lg:py-32">
+        <div class="container px-4 md:px-6 mx-auto">
+            <!-- Contenu features -->
+            @include('landing.features')
+        </div>
+    </section>
+@endsection
