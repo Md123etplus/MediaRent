@@ -7,10 +7,10 @@
     </section>
 
     <!-- Comment ça marche Section -->
-    <section id="how-it-works" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
+    <section id="how-it-works" class="py-16 bg-white dark:bg-gray-900">
+        
             @include('landing.comment-ca-marche')
-        </div>
+       
     </section>
 
    <!-- how it works-->
