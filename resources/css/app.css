@@ -63,3 +63,24 @@ body {
 .slider-image:nth-child(4) { animation-delay: 18s; }
 .slider-image:nth-child(5) { animation-delay: 24s; }
 .slider-image:nth-child(6) { animation-delay: 30s; }
+
+/* sidebar mobile toggling */
+#sidebar {
+    will-change: transform;
+    height: 100vh;
+    box-shadow: 4px 0 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar-overlay {
+    transition: opacity 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    #sidebar {
+        position: relative;
+        transform: none !important;
+    }
+    #sidebar-overlay {
+        display: none !important;
+    }
+}
