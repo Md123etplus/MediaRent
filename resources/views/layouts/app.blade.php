@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="MediaRent" />
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">

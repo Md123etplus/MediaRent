@@ -24,11 +24,12 @@
 
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex items-center gap-4">
-            <a href="#how-it-works" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Comment ça marche</a>
-            <a href="#categories"  class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Catégories</a>
-            <a href="#pricing" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Tarifs</a>
-            <a href="#about" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">À propos</a>
-            
+            @if(request()->is('/'))
+                <a href="#how-it-works" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Comment ça marche</a>
+                <a href="#categories"  class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Catégories</a>
+                <a href="#pricing" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Tarifs</a>
+                <a href="#about" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">À propos</a>
+            @endif
             <!-- Dark Mode Toggle -->
             @include('components.theme-toggle')
             
@@ -63,6 +64,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
+            {{-- problem in here  --}}
         </div>
     </div>
 
