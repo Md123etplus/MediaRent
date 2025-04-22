@@ -17,7 +17,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
-                <a href="/register" class="inline-flex items-center justify-center h-12 px-6 border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <a href="/register" class="inline-flex items-center justify-center h-12 px-6 border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 dark:text-white rounded-lg transition-colors">
                     Proposer mon matériel
                 </a>
             </div>

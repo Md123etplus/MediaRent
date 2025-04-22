@@ -14,6 +14,15 @@ module.exports = {
             dark: '#1d4ed8'
           },
         },
+        transitionProperty: {
+            'transform': 'transform'
+        },
+        transitionDuration: {
+            '300': '300ms'
+        },
+        transitionTimingFunction: {
+            'ease-in-out': 'ease-in-out'
+        }
       },
     },
     plugins: [],

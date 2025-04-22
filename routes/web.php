@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,3 +24,5 @@ Route::get( '/premium',function(){//vous pouvez changer apres
 Route::get( '/blog',function(){//vous pouvez changer apres
     return view('blog.main');
 });
+
+Route::get('/admin', [DashboardController::class, 'index']) ->name('admin.dashboard');

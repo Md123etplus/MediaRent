@@ -26,6 +26,7 @@ Alpine.data('header', () => ({
     toggleDarkMode() {
         this.darkMode = !this.darkMode;
         document.documentElement.classList.toggle('dark', this.darkMode);
+        // console.log("Dark mode toggled:", this.darkMode);
     },
 
     smoothScroll(e) {
