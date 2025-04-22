@@ -8,7 +8,7 @@ Route::get('/', function () {
 });
 Route::get('/register',function(){
     return view('register.sign-up');
-});
+})->name('register');
 Route::get('/login',function(){
     return view('login.login');
 });
