@@ -12,6 +12,10 @@
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+   <!-- FullCalendar CSS -->
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
     @include('components.navbar')

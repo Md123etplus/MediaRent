@@ -21,7 +21,7 @@ class UserFactory extends Factory
             'prenom' => $this->faker->firstName,
             'email' => $this->faker->unique()->safeEmail,
             'mot_de_passe' => bcrypt('password'), // ou Hash::make()
-            'role' => $this->faker->randomElement([ 'proprietaire', 'client']), // à ajuster selon tes rôles réels
+            'role' => $this->faker->randomElement(['partenaire', 'client']), // à ajuster selon tes rôles réels
             'CIN' => strtoupper($this->faker->bothify('??######')), // Exemple : AB123456
             'img_profil' => $this->faker->imageUrl(640, 480, 'people'),
             'img_cin_front' => $this->faker->imageUrl(640, 480, 'documents'),
