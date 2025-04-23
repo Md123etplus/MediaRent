@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnnonceController;
+use App\Http\Controllers\ObjetController;
 
-Route::get('/', function () {
+Route::get( '/', function () {
     return view(view: 'landing');
 });
 Route::get('/register',function(){
@@ -26,3 +28,19 @@ Route::get( '/blog',function(){//vous pouvez changer apres
 });
 
 Route::get('/admin', [DashboardController::class, 'index']) ->name('admin.dashboard');
+Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
+// Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
+
+Route::post('/annonces/create', [AnnonceController::class, 'store'])->name('annonces.store');
+
+Route::get('/annonces/index', [AnnonceController::class, 'index'])->name('annonces.index');
+
+Route::get('/objet/create', [ObjetController::class, 'create'])->name('objet.create');
+Route::post('/objet/store', [ObjetController::class, 'store'])->name('objet.store');
+
+Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
+    ->name('annonces.show');
+
+    Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces']);
+    Route::post('/annonce/{id}/archiver', [AnnonceController::class, 'archiver'])->name('annonce.archiver');
+

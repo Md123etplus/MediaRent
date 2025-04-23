@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nom');
             $table->text('description');
             $table->string('ville');
-            $table->foreignId('proprietaire_id')->constrained('utilisateur');
+            $table->foreignId('proprietaire_id')->constrained('users');
             $table->foreignId('categorie_id')->constrained('categorie');
             $table->float('prix_journalier');
-            $table->enum('etat', ['']); // Define valid etat values
+            $table->enum('etat', ['neuf', 'bon', 'usé']);
             $table->timestamps();
         });
     }

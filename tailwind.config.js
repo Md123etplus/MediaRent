@@ -1,11 +1,11 @@
-module.exports = {
-    darkMode: 'class',
-    content: [
+export default {
+  darkMode: 'class',
+  content: [
       "./resources/**/*.blade.php",
       "./resources/**/*.js",
       "./resources/**/*.vue",
-    ],
-    theme: {
+  ],
+  theme: {
       extend: {
         colors: {
           primary: {
