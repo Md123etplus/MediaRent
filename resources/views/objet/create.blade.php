@@ -130,8 +130,12 @@
         <div class="form-group">
             <label for="etat" class="form-label">État de disponibilité</label>
             <select name="etat" class="form-input form-select" required>
-                <option value="dispo">dispo</option>
-                <option value="indispo">indispo</option>
+                {{-- <option value="dispo">dispo</option>
+                <option value="indispo">indispo</option> --}}
+                <option value="neuf">neuf</option>
+                <option value="bon">bon</option>
+                <option value="usé">usé</option>
+
             </select>
         </div>
 
