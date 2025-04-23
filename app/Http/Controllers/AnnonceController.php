@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 use App\Models\Annonce;
 use App\Models\Objet;
-use App\Models\Image;
+// use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 class AnnonceController extends Controller{
     public function create()
     {

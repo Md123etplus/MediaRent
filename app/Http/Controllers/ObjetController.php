@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Image;
 use App\Models\Objet;
 use App\Models\Categorie;
-use App\Models\Image;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ObjetController extends Controller
 {
@@ -54,5 +55,10 @@ class ObjetController extends Controller
         }
 
         return redirect()->route('objet.create')->with('success', 'Objet créé avec succès !');
+    }
+    public function index()
+    {
+        $objets = Objet::where('proprietaire_id', Auth::id())->get();
+        return view('partenaire.objets.index', compact('objets'));
     }
 }
