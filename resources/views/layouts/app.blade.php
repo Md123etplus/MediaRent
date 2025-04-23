@@ -11,6 +11,10 @@
     <meta name="apple-mobile-web-app-title" content="MediaRent" />
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+   <!-- FullCalendar CSS -->
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
     @include('components.navbar')
@@ -28,5 +32,9 @@
     
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer></script>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+
 </body>
 </html>

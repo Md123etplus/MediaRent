@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('proprietaire_id')->constrained('utilisateur');
             $table->foreignId('categorie_id')->constrained('categorie');
             $table->float('prix_journalier');
-            $table->enum('etat', ['']); // Define valid etat values
+            $table->enum('etat', ['neuf', 'bon_etat', 'usé']); // Define valid etat values
             $table->timestamps();
         });
     }
