@@ -1,5 +1,7 @@
 import Alpine from 'alpinejs';
 import persist from '@alpinejs/persist';
+import Chart from 'chart.js/auto';
+window.Chart = Chart; // Rend disponible globalement
 
 // Initialize Alpine early
 window.Alpine = Alpine;

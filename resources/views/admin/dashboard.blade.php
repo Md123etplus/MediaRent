@@ -38,38 +38,38 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 @include('admin.components.stats-card', [
                     'title' => 'Utilisateurs',
-                    'value' => '1,248',
+                    'value' => number_format($stats['total_users'], 0, ',', ' '),
                     'icon' => 'users',
-                    'trend' => '+12.5%',
-                    'trendColor' => 'green',
+                    'trend' => ($stats['users_growth'] > 0 ? '+' : '').$stats['users_growth'].'%',
+                    'trendColor' => $stats['users_growth'] >= 0 ? 'green' : 'red',
                     'description' => 'depuis le mois dernier'
                 ])
 
                 @include('admin.components.stats-card', [
                     'title' => 'Annonces',
-                    'value' => '356',
+                    'value' => $stats['annonces'],
                     'icon' => 'list-alt',
-                    'trend' => '+8.3%',
-                    'trendColor' => 'green',
-                    'description' => 'depuis le mois dernier'
+                    'trend' => ($stats['premium_growth'] > 0 ? '+' : '').$stats['premium_growth'].'%',
+                    'trendColor' => $stats['premium_growth'] >= 0 ? 'green' : 'red',
+                    'description' => 'dont '.$stats['premium_annonces'].' premium'
                 ])
 
                 @include('admin.components.stats-card', [
                     'title' => 'Réservations',
-                    'value' => '1,024',
+                    'value' => number_format($stats['total_reservations'], 0, ',', ' '),
                     'icon' => 'calendar-check',
-                    'trend' => '-2.4%',
-                    'trendColor' => 'red',
-                    'description' => 'depuis le mois dernier'
+                    'trend' => $stats['current_month_reservations'],
+                    'trendColor' => 'blue',
+                    'description' => 'ce mois-ci'
                 ])
 
                 @include('admin.components.stats-card', [
                     'title' => 'Revenus',
-                    'value' => '€24,780',
+                    'value' => '€'.number_format($stats['revenue_month'], 0, ',', ' '),
                     'icon' => 'euro-sign',
-                    'trend' => '+5.7%',
+                    'trend' => '€'.number_format($stats['revenue_week'], 0, ',', ' '),
                     'trendColor' => 'green',
-                    'description' => 'depuis le mois dernier'
+                    'description' => 'cette semaine'
                 ])
             </div>
 
@@ -81,37 +81,16 @@
                         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Réservations récentes</h2>
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @include('admin.components.reservation-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'item' => 'Caméra Sony A7 III',
-                            'user' => 'Jean Dupont',
-                            'price' => '€45/jour',
-                            'dates' => '12-15 mai 2025'
-                        ])
-
-                        @include('admin.components.reservation-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'item' => 'Micro Rode NTG',
-                            'user' => 'Marie Martin',
-                            'price' => '€20/jour',
-                            'dates' => '10-12 mai 2025'
-                        ])
-
-                        @include('admin.components.reservation-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'item' => 'Trépied Manfrotto',
-                            'user' => 'Pierre Lambert',
-                            'price' => '€15/jour',
-                            'dates' => '8-10 mai 2025'
-                        ])
-
-                        @include('admin.components.reservation-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'item' => 'Éclairage LED',
-                            'user' => 'Sophie Leroy',
-                            'price' => '€30/jour',
-                            'dates' => '5-8 mai 2025'
-                        ])
+                        @foreach($latestReservations as $reservation)
+                            @include('admin.components.reservation-item', [
+                                'image' => $reservation->annonce->objet->images->first()->url ?? 'https://via.placeholder.com/40',
+                                'item' => $reservation->annonce->objet->nom,
+                                'user' => $reservation->client->prenom.' '.$reservation->client->nom,
+                                'price' => '€'.$reservation->annonce->objet->prix_journalier.'/jour',
+                                'dates' => Carbon\Carbon::parse($reservation->date_debut)->format('d-m-Y').' - '.Carbon\Carbon::parse($reservation->date_fin)->format('d-m-Y'),
+                                'status' => $reservation->statut
+                            ])
+                        @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
                         <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les réservations</a>
@@ -124,32 +103,16 @@
                         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Avis récents</h2>
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @include('admin.components.review-item', [
-                            'image' => 'https://via.placeholder.com/32',
-                            'user' => 'Jean Dupont',
-                            'rating' => 4,
-                            'comment' => 'Très bon matériel, exactement comme décrit. Le propriétaire était très sympathique et arrangeant.',
-                            'item' => 'Caméra Sony A7 III',
-                            'date' => '14 mai 2025'
-                        ])
-
-                        @include('admin.components.review-item', [
-                            'image' => 'https://via.placeholder.com/32',
-                            'user' => 'Marie Martin',
-                            'rating' => 5,
-                            'comment' => 'Parfait pour mon tournage. Je recommande ce matériel et ce propriétaire!',
-                            'item' => 'Micro Rode NTG',
-                            'date' => '13 mai 2025'
-                        ])
-
-                        @include('admin.components.review-item', [
-                            'image' => 'https://via.placeholder.com/32',
-                            'user' => 'Pierre Lambert',
-                            'rating' => 3,
-                            'comment' => 'Matériel correct mais un peu usé. Le trépied avait quelques problèmes de stabilité.',
-                            'item' => 'Trépied Manfrotto',
-                            'date' => '11 mai 2025'
-                        ])
+                        @foreach($recentReviews as $review)
+                            @include('admin.components.review-item', [
+                                'image' => $review->evaluateur->img_profil ?? 'https://via.placeholder.com/32',
+                                'user' => $review->evaluateur->prenom.' '.$review->evaluateur->nom,
+                                'rating' => $review->note,
+                                'comment' => $review->commentaire,
+                                'item' => $review->objet->nom,
+                                'date' => Carbon\Carbon::parse($review->date)->format('d F Y')
+                            ])
+                        @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
                         <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir tous les avis</a>
@@ -165,40 +128,23 @@
                         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Nouveaux utilisateurs</h2>
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @include('admin.components.user-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'name' => 'Thomas Moreau',
-                            'date' => 'Inscrit le 14 mai 2025',
-                            'role' => 'Client',
-                            'roleColor' => 'green'
-                        ])
-
-                        @include('admin.components.user-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'name' => 'Sarah Petit',
-                            'date' => 'Inscrit le 13 mai 2025',
-                            'role' => 'Partenaire',
-                            'roleColor' => 'blue'
-                        ])
-
-                        @include('admin.components.user-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'name' => 'Lucie Bernard',
-                            'date' => 'Inscrit le 12 mai 2025',
-                            'role' => 'Client',
-                            'roleColor' => 'green'
-                        ])
-
-                        @include('admin.components.user-item', [
-                            'image' => 'https://via.placeholder.com/40',
-                            'name' => 'Antoine Rousseau',
-                            'date' => 'Inscrit le 11 mai 2025',
-                            'role' => 'Partenaire',
-                            'roleColor' => 'blue'
-                        ])
+                        @foreach($newUsers as $user)
+                            @include('admin.components.user-item', [
+                                'image' => $user->img_profil ?? 'https://via.placeholder.com/40',
+                                'name' => $user->prenom.' '.$user->nom,
+                                'email' => $user->email,
+                                'date' => $user->created_at->format('d/m/Y'),
+                                'role' => $user->role == 'partenaire' ? 'Partenaire' : 'Client',
+                                'roleColor' => $user->role == 'partenaire' ? 'blue' : 'green',
+                                'reservations' => $user->total_reservations,
+                                'status' => $user->status ?? 'active',
+                                'isSuspended' => $user->is_suspended,
+                                'id' => $user->id
+                            ])
+                        @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir tous les utilisateurs</a>
+                        <a href="{{ route('admin.users.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir tous les utilisateurs</a>
                     </div>
                 </div>
 
@@ -208,45 +154,24 @@
                         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Annonces premium</h2>
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @include('admin.components.listing-item', [
-                            'title' => 'Caméra Canon EOS R5',
-                            'status' => 'Active',
-                            'location' => 'Paris',
-                            'price' => '€60/jour',
-                            'date' => 'Jusqu\'au 25 mai 2025',
-                            'reservations' => '2 réservations',
-                            'status' => 'Pending'
-                        ])
+                        @foreach($premiumAnnonces as $annonce)
+                            @php
+                                $reservationCount = $annonce->reservations->count();
+                                $status = $annonce->statut;
+                                $statusColor = $status === 'active' ? 'green' : ($status === 'pending' ? 'orange' : 'red');
+                            @endphp
 
-                        @include('admin.components.listing-item', [
-                            'title' => 'Drone DJI Mavic 3',
-                            'status' => 'Active',
-                            'location' => 'Lyon',
-                            'price' => '€80/jour',
-                            'date' => 'Jusqu\'au 30 mai 2025',
-                            'reservations' => '5 réservations',
-                            'status' => 'Rejected'
-                        ])
-
-                        @include('admin.components.listing-item', [
-                            'title' => 'Éclairage professionnel',
-                            'status' => 'Active',
-                            'location' => 'Marseille',
-                            'price' => '€45/jour',
-                            'date' => 'Jusqu\'au 22 mai 2025',
-                            'reservations' => '3 réservations',
-                            'status' => 'Pending'
-                        ])
-
-                        @include('admin.components.listing-item', [
-                            'title' => 'Microphone shotgun',
-                            'status' => 'Expiré',
-                            'location' => 'Toulouse',
-                            'price' => '€25/jour',
-                            'date' => 'Expiré le 10 mai 2025',
-                            'reservations' => '1 réservation',
-                            'status' => 'Expired'
-                        ])
+                            @include('admin.components.listing-item', [
+                                'title' => $annonce->objet->nom,
+                                'status' => ucfirst($annonce->statut),
+                                'statusColor' => $statusColor,
+                                'location' => $annonce->objet->ville,
+                                'price' => '€'.$annonce->objet->prix_journalier.'/jour',
+                                'date' => 'Jusqu\'au '.Carbon\Carbon::parse($annonce->date_fin)->format('d F Y'),
+                                'reservations' => $reservationCount.' réservation'.($reservationCount > 1 ? 's' : ''),
+                                'image' => $annonce->objet->images->first()->url ?? 'https://via.placeholder.com/40'
+                            ])
+                        @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
                         <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les annonces premium</a>

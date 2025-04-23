@@ -12,7 +12,7 @@
                 </a>
 
                 <!-- Utilisateurs -->
-                <a href="#" class="flex items-center px-2 py-3 text-sm font-medium text-indigo-200 hover:text-white hover:bg-indigo-700 rounded-lg">
+                <a href="{{  route('admin.users.index') }}" class="flex items-center px-2 py-3 text-sm font-medium text-indigo-200 hover:text-white hover:bg-indigo-700 rounded-lg">
                     <i class="fas fa-users mr-3"></i>
                     Utilisateurs
                 </a>

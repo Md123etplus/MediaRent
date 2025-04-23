@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('email')->unique();
             $table->string('mot_de_passe');
-            $table->enum('role', ['client','propriétaire']); // Define valid roles here
+            $table->enum('role', ['client','partenaire']); // Define valid roles here
+            $table->boolean('is_suspended')->default(false);
             $table->string('CIN');
             $table->text('img_profil');
             $table->text('img_cin_front');

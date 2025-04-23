@@ -19,9 +19,16 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'nom',
+        'prenom',
         'email',
         'password',
+        'role',
+        'CIN',
+        'img_profil',
+        'img_cin_front',
+        'img_cin_back',
+        'is_suspended'
     ];
 
     /**
@@ -42,6 +49,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'is_suspended' => 'boolean',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -65,5 +73,47 @@ class User extends Authenticatable
     public function images()
     {
         return $this->hasMany(Image::class);
+    }
+
+    // Nouvelles méthodes pour le UserController
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'client_id');
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'evaluateur_id');
+    }
+
+    public function scopeWithReservationsCount($query)
+    {
+        return $query->withCount(['reservations as total_reservations']);
+    }
+
+    public function getRegistrationDateAttribute()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getRoleLabelAttribute()
+    {
+        return $this->role === 'propriétaire' ? 'Propriétaire' : 'Client';
+    }
+
+    public function getRoleColorAttribute()
+    {
+        return $this->role === 'propriétaire' ? 'blue' : 'green';
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
+    }
+
+    public function toggleSuspension()
+    {
+        $this->update(['is_suspended' => !$this->is_suspended]);
+        return $this->is_suspended;
     }
 }
