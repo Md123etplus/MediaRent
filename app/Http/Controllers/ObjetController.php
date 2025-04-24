@@ -62,7 +62,7 @@ class ObjetController extends Controller
     public function index()
     {
         $objets = Objet::where('proprietaire_id', Auth::id())->get();
-        return view('partenaire.objets.index', compact('objets'));
+        return view('objets.index', compact('objets'));
     }
 
 

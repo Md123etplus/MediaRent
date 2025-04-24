@@ -12,7 +12,7 @@
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    @yield('styles')
    <!-- FullCalendar CSS -->
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
 
@@ -22,6 +22,7 @@
    
     <main class="flex-1">
         @yield('content')
+        @yield('scripts')
     </main>
     @include('components.footer')
     

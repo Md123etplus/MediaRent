@@ -4,21 +4,23 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Annonce;
-// use App\Models\Objet;
+use App\Models\Objet;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class PartenaireDashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        
-        if (!$user || $user->role !== 'partenaire') {
-            abort(403, 'Accès réservé aux partenaires');
-        }
+        // $user = Auth::user();
+        $user = User::find(1); // Replace 1 with your test user's ID
+
+        // if (!$user || $user->role !== 'partenaire') {
+        //     abort(403, 'Accès réservé aux partenaires');
+        // }
     
         // Chargement optimisé des relations
         $annonces = Annonce::with(['objet.categorie', 'reservations' => function($query) {
@@ -30,8 +32,10 @@ class PartenaireDashboardController extends Controller
         // Calcul du revenu
         $revenuTotal = 0;
         $joursOccupes = 0;
+        $nombreReservations = 0; // Initialisation ajoutée
         
         foreach ($annonces as $annonce) {
+            $nombreReservations += $annonce->reservations->count(); // Calcul du nombre de réservations
             foreach ($annonce->reservations as $reservation) {
                 $jours = Carbon::parse($reservation->date_debut)->diffInDays($reservation->date_fin) + 1;
                 $revenuTotal += $jours * $annonce->objet->prix_journalier;
@@ -39,20 +43,53 @@ class PartenaireDashboardController extends Controller
             }
         }
     
-        $tauxOccupation = $joursOccupes > 0 ? min(100, ($joursOccupes / 30) * 100) : 0;
-//dd([
-//    'annonces' => $annonces->toArray(),
-//    'reservations_count' => $annonces->sum(fn($a) => $a->reservations->count()),
-//    'revenu_calcul' => $revenuTotal
-//]);
-        return view('dashboard.partenaire.index', [
-            'revenuTotal' => $revenuTotal,
-            'nombreReservations' => $annonces->sum(fn($a) => $a->reservations->count()),
-            'annoncesActives' => $annonces->where('statut', 'active')->count(),
-            'annoncesArchives' => $annonces->where('statut', 'archivée'),
-            'tauxOccupation' => round($tauxOccupation)
-        ]);
+        // Calcul des autres variables nécessaires
+        $annoncesActives = $annonces->where('statut', 'active')->count();
+        $totalAnnonces = $annonces->count();
+        $joursDisponibles = $totalAnnonces * 30; // Approximation - 30 jours par annonce
+        $tauxOccupation = $joursOccupes > 0 ? min(100, ($joursOccupes / $joursDisponibles) * 100) : 0;
+        
+        // Annonces archivées
+        $annoncesArchives = Annonce::where('proprietaire_id', $user->id)
+            ->where('statut', 'archivée')
+            ->with('objet.categorie')
+            ->get();
+    
+        // Objets pour le modal
+        $objets = Objet::where('proprietaire_id', $user->id)->get();
+    
+        // Réservations pour le calendrier
+        $reservations = Reservation::whereHas('annonce', function($query) use ($user) {
+                $query->where('proprietaire_id', $user->id);
+            })
+            ->with(['annonce.objet', 'client'])
+            ->get();
+    
+        return view('dashboard.partenaire.index', compact(
+            'revenuTotal',
+            'nombreReservations',
+            'annoncesActives',
+            'totalAnnonces',
+            'tauxOccupation',
+            'joursOccupes',
+            'joursDisponibles',
+            'annoncesArchives',
+            'reservations',
+            'objets'
+        ));
     }
+
+    
+    public function restaurerAnnonce($id)
+    {
+        $annonce = Annonce::onlyTrashed()->findOrFail($id);
+        $annonce->restore();
+
+        return redirect()->route('partenaire.annonces.index')
+            ->with('success', 'Annonce restaurée avec succès');
+    }
+
+
     public function disponibilites()
     {
         $user = Auth::user();

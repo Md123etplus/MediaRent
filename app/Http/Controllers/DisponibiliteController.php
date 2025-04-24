@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 // use Illuminate\Support\Facades\Auth;
 use App\Models\Disponibilite; // Ensure this class exists in the specified namespace
 use Illuminate\Support\Facades\Auth; // Ensure this class exists in the specified namespace
+use App\Models\Objet; // Ensure this class exists in the specified namespace
 class DisponibiliteController extends Controller
 {
     public function index()
@@ -18,16 +19,25 @@ class DisponibiliteController extends Controller
         return response()->json($dispos);
     }
 
-    public function store(Request $request)
-    {
-        $dispo = new Disponibilite();
-        $dispo->utilisateur_id = Auth::id();
-        $dispo->title = $request->title;
-        $dispo->start = $request->start;
-        $dispo->end = $request->end;
-        $dispo->save();
-        return response()->json(['message' => 'Créé']);
-    }
+    // Dans DisponibiliteController.php
+public function store(Request $request)
+{
+    $request->validate([
+        'objet_id' => 'required|exists:objets,id',
+        'date_debut' => 'required|date',
+        'date_fin' => 'required|date|after_or_equal:date_debut'
+    ]);
+
+    $disponibilite = Disponibilite::create($request->all());
+    $objet = Objet::find($request->objet_id);
+
+    return response()->json([
+        'success' => true,
+        'date_debut' => $disponibilite->date_debut,
+        'date_fin' => $disponibilite->date_fin,
+        'objet_nom' => $objet->nom
+    ]);
+}
 
     public function destroy($id)
     {

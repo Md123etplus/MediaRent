@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 // Duplicate import removed
 // use App\Http\Controllers\ObjetController;
-use App\Http\Controllers\PartenaireDashboardController;
+// use App\Http\Controllers\PartenaireDashboardController;
 // use App\Http\Controllers\AnnonceController;
 // use App\Models\Utilisateur;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +20,7 @@ use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ReclamationController;
 use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\PartenaireDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -142,7 +143,8 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Gestion des annonces
     Route::put('/annonce/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
         ->name('annonce.restore');
-    
+        Route::put('/partenaire/annonces/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
+        ->name('partenaire.annonce.restore');
     // Réservations
     Route::get('/reservations', [PartenaireDashboardController::class, 'reservations'])
         ->name('reservations');
@@ -153,6 +155,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
         
+    Route::get('/partenaire', [PartenaireDashboardController::class, 'index'])->name('partenaire.index');
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
      Route::get('/objets', [ObjetController::class, 'index'])->name('objets.index');
