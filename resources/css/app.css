@@ -185,7 +185,47 @@ body {
     23% { opacity: 0; } /* Descente progressive en 6% du temps */
     100% { opacity: 0; } /* Reste invisible */
 }
+/* Base Styles */
+header {
+  font-family: 'Instrument Sans', sans-serif;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
+/* Search Bar */
+.relative input {
+  transition: all 0.2s ease;
+}
+
+/* Filter Buttons */
+.group:hover .group-hover\:block {
+  display: block;
+}
+
+/* Dropdown Menu */
+.absolute {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Navigation Links */
+nav a {
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .hidden {
+    display: none;
+  }
+  
+  .flex-wrap {
+    justify-content: center;
+  }
+}
 /* Délais personnalisés pour chaque image */
 .slider-image:nth-child(1) { animation-delay: 0s; }
 .slider-image:nth-child(2) { animation-delay: 6s; }

@@ -1,6 +1,6 @@
 <!-- Features Section -->
 
-        <div class="max-w-3xl mx-auto text-center dark:text-white">
+<div class="max-w-3xl mx-auto text-center dark:text-white">
             <h2 class="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Prêt à louer ou proposer du matériel ?</h2>
             <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
                 Rejoignez notre communauté et commencez à louer ou à proposer votre matériel audiovisuel dès aujourd'hui.

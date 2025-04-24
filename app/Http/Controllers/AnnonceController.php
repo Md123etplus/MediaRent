@@ -92,5 +92,30 @@ $annonces = Annonce::where('proprietaire_id', 1)->get();
 
         return redirect()->back()->with('success', 'Annonce archivée avec succès.');
     }
+    public function search(Request $request)
+    {
+        $annonces = Annonce::query();
+
+        if ($request->filled('ville')) {
+            $annonces->where('ville', 'LIKE', '%' . $request->ville . '%');
+        }
+
+        if ($request->filled('type')) {
+            $annonces->where('type', $request->type);
+        }
+
+        if ($request->filled('prix_max')) {
+            $annonces->where('prix', '<=', $request->prix_max);
+        }
+
+        if ($request->filled('note_min')) {
+            $annonces->where('note', '>=', $request->note_min);
+        }
+
+        $resultats = $annonces->get();
+
+        return view('annonces.resultats', compact('resultats'));
+    }
+    
 
 }

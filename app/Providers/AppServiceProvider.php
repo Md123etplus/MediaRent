@@ -18,9 +18,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+  
+
     public function boot(): void
     {
         Schema::defaultStringLength(191); // Définit la longueur par défaut des chaînes
 
     }
+    
 }
