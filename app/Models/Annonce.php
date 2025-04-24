@@ -69,4 +69,14 @@ class Annonce extends Model
     {
         return $query->where('premium', true);
     }
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'annonce_id');
+    }
+
+    // !!!N'existait pas
+    public function partenaire()
+{
+    return $this->belongsTo(User::class, 'partenaire_id');
+}
 }

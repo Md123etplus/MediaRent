@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Reservation extends Model
 {
     use HasFactory;
-
     protected $table = 'Reservation';
-
+  
     protected $fillable = [
         'client_id',
         'annonce_id',
@@ -83,4 +83,8 @@ class Reservation extends Model
     {
         return $query->whereBetween('created_at', [$start, $end]);
     }
+//     public function client()
+// {
+//     return $this->belongsTo(User::class, 'client_id');
+// }
 }
