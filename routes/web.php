@@ -57,7 +57,8 @@ Route::middleware(['auth'])->prefix('partenaire')->name('partenaire.')->group(fu
     // Gestion des annonces
     Route::put('/annonce/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
         ->name('annonce.restore');
-    
+        Route::put('/partenaire/annonces/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
+        ->name('partenaire.annonce.restore');
     // Réservations
     Route::get('/reservations', [PartenaireDashboardController::class, 'reservations'])
         ->name('reservations');
@@ -68,6 +69,7 @@ Route::middleware(['auth'])->prefix('partenaire')->name('partenaire.')->group(fu
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
         
+    Route::get('/partenaire', [PartenaireController::class, 'index'])->name('partenaire.index');
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
      Route::get('/objets', [ObjetController::class, 'index'])->name('objets.index');
