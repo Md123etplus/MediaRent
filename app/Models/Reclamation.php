@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Utilisateur;
+use App\Models\User;
 use App\Models\Reservation; // Ensure the Reservation class exists in this namespace
 
 class Reclamation extends Model
@@ -16,7 +16,7 @@ class Reclamation extends Model
 
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        return $this->belongsTo(User::class, 'utilisateur_id');
     }
 
     public function reservation()

@@ -12,7 +12,7 @@ class DisponibiliteController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-            $dispos = Disponibilite::where('utilisateur_id', $user->id)->get();
+            // $dispos = Disponibilite::where('utilisateur_id', $user->id)->get();
         } else {
             $dispos = [];
         }
@@ -28,20 +28,20 @@ public function store(Request $request)
         'date_fin' => 'required|date|after_or_equal:date_debut'
     ]);
 
-    $disponibilite = Disponibilite::create($request->all());
+    // $disponibilite = Disponibilite::create($request->all());
     $objet = Objet::find($request->objet_id);
 
-    return response()->json([
-        'success' => true,
-        'date_debut' => $disponibilite->date_debut,
-        'date_fin' => $disponibilite->date_fin,
-        'objet_nom' => $objet->nom
-    ]);
+    // return response()->json([
+    //     'success' => true,
+    //     'date_debut' => $disponibilite->date_debut,
+    //     'date_fin' => $disponibilite->date_fin,
+    //     'objet_nom' => $objet->nom
+    // ]);
 }
 
     public function destroy($id)
     {
-        Disponibilite::where('id', $id)->where('utilisateur_id', auth()->id())->delete();
+        // Disponibilite::where('id', $id)->where('utilisateur_id', auth()->id())->delete();
         return response()->json(['message' => 'Supprimé']);
     }
 }

@@ -2,21 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
     protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var list<string>
      */
     protected $fillable = [
         'nom',
@@ -30,90 +27,178 @@ class User extends Authenticatable
         'img_cin_back',
         'is_suspended'
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'is_suspended' => 'boolean',
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    public function getFullNameAttribute(): string
-{
-    return "{$this->prenom} {$this->nom}";
-}
-
-    public function annonces()
-    {
-        return $this->hasMany(Annonce::class, 'proprietaire_id');
-    }
-
-    public function objets()
-    {
-        return $this->hasMany(Objet::class, 'proprietaire_id');
-    }
-
-    public function images()
-    {
-        return $this->hasMany(Image::class);
-    }
-
-    // Nouvelles méthodes pour le UserController
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'client_id');
     }
 
-    public function evaluations()
+   
+
+    /**
+     * Override getAuthPassword pour utiliser mot_de_passe
+     */
+    public function getAuthPassword()
     {
-        return $this->hasMany(Evaluation::class, 'evaluateur_id');
+        return $this->mot_de_passe;
     }
 
-    public function scopeWithReservationsCount($query)
+    /**
+     * Get the email address that should be used for verification.
+     */
+    public function getEmailForVerification()
     {
-        return $query->withCount(['reservations as total_reservations']);
+        return $this->email;
+    }
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->prenom} {$this->nom}";
+    }
+    
+        public function annonces()
+        {
+            return $this->hasMany(Annonce::class, 'proprietaire_id');
+        }
+    
+        public function objets()
+        {
+            return $this->hasMany(Objet::class, 'proprietaire_id');
+        }
+    
+        public function images()
+        {
+            return $this->hasMany(Image::class);
+        }
+    
+        // Nouvelles méthodes pour le UserController
+        
+        public function evaluations()
+        {
+            return $this->hasMany(Evaluation::class, 'evaluateur_id');
+        }
+    
+        public function scopeWithReservationsCount($query)
+        {
+            return $query->withCount(['reservations as total_reservations']);
+        }
+    
+        public function getRegistrationDateAttribute()
+        {
+            return $this->created_at->format('d/m/Y');
+        }
+    
+        public function getRoleLabelAttribute()
+        {
+            return $this->role === 'propriétaire' ? 'Propriétaire' : 'Client';
+        }
+    
+        public function getRoleColorAttribute()
+        {
+            return $this->role === 'propriétaire' ? 'blue' : 'green';
+        }
+    
+        public function getProfileImageUrlAttribute()
+        {
+            return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
+        }
+    
+        public function toggleSuspension()
+        {
+            $this->update(['is_suspended' => !$this->is_suspended]);
+            return $this->is_suspended;
+        }
+    
+        // Évaluations reçues (quand l'utilisateur est évalué)
+        public function evaluationsRecues()
+        {
+            return $this->hasMany(Evaluation::class, 'evalue_id');
+        }
+    
+        // Notifications non lues
+        public function unreadNotifications()
+        {
+            return $this->notifications()->where('lue', false);
+        }
+    
+        /**
+         * Méthodes utilitaires
+         */
+        
+        // Vérifie si l'utilisateur est un client
+        public function isClient()
+        {
+            return $this->role === 'client';
+        }
+    
+        // Vérifie si l'utilisateur est un partenaire
+        public function isPartenaire()
+        {
+            return $this->role === 'partenaire';
+        }
+    
+        // Vérifie si l'utilisateur est un admin
+        public function isAdmin()
+        {
+            return $this->role === 'admin';
+        }
+    
+        // Note moyenne reçue (pour les partenaires)
+        public function noteMoyenne()
+        {
+            return $this->evaluationsRecues()->avg('note_proprietaire');
+        }
+        public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'utilisateur_id');
     }
 
-    public function getRegistrationDateAttribute()
-    {
-        return $this->created_at->format('d/m/Y');
-    }
+    /**
+     * Relations
+     */
+    
+    // Réservations où l'utilisateur est client
+    // public function reservations()
+    // {
+    //     return $this->hasMany(Reservation::class, 'client_id');
+    // }
 
-    public function getRoleLabelAttribute()
-    {
-        return $this->role === 'propriétaire' ? 'Propriétaire' : 'Client';
-    }
+    // Évaluations faites par l'utilisateur
+    // public function evaluations()
+    // {
+    //     return $this->hasMany(Evaluation::class, 'evaluateur_id');
+    // }
 
-    public function getRoleColorAttribute()
-    {
-        return $this->role === 'propriétaire' ? 'blue' : 'green';
-    }
+    // Notifications reçues par l'utilisateur
+    
 
-    public function getProfileImageUrlAttribute()
-    {
-        return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
-    }
+    // Annonces où l'utilisateur est propriétaire
+    // public function annonces()
+    // {
+    //     return $this->hasMany(Annonce::class, 'proprietaire_id');
+    // }
 
-    public function toggleSuspension()
-    {
-        $this->update(['is_suspended' => !$this->is_suspended]);
-        return $this->is_suspended;
-    }
+    // Objets possédés par l'utilisateur
+    // public function objets()
+    // {
+    //     return $this->hasMany(Objet::class, 'proprietaire_id');
+    // }
+
+ /**
+     * The attributes that should be hidden for serialization.
+     */
+    // protected $hidden = [
+    //     'mot_de_passe',
+    //     'remember_token',
+    // ];
+
+    /**
+     * Get the attributes that should be cast.
+     */
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'is_suspended' => 'boolean',
+    //         'email_verified_at' => 'datetime',
+    //         'mot_de_passe' => 'hashed',
+    //     ];
+    // }
 }

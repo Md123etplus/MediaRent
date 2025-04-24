@@ -10,7 +10,7 @@ class Evaluation extends Model
 {
     use HasFactory;
 
-    protected $table = 'Evaluation';
+    protected $table = 'evaluation';
 
     protected $fillable = [
         'objet_id',

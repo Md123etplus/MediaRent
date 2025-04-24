@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Reservation extends Model
 {
     use HasFactory;
-    protected $table = 'Reservation';
+    protected $table = 'reservation';
 
     protected $fillable = [
         'client_id',
@@ -81,6 +81,20 @@ class Reservation extends Model
     public function scopeBetweenDates($query, $start, $end)
     {
         return $query->whereBetween('created_at', [$start, $end]);
+    }
+    // public function annonce()
+    // {
+    //     return $this->belongsTo(Annonce::class, 'annonce_id');
+    // }
+
+    public function evaluation()
+    {
+        return $this->hasOne(Evaluation::class, 'reservation_id');
+    }
+
+    public function reclamations()
+    {
+        return $this->hasMany(Reclamation::class, 'reservation_id');
     }
 //     public function client()
 // {
