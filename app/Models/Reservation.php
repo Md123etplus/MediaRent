@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +11,7 @@ class Reservation extends Model
 {
     use HasFactory;
     protected $table = 'Reservation';
-  
+
     protected $fillable = [
         'client_id',
         'annonce_id',
