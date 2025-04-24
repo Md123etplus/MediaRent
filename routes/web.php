@@ -38,6 +38,33 @@ Route::post('/objet/store', [ObjetController::class, 'store'])->name('objet.stor
 Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
     ->name('annonces.show');
 
-    Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces']);
-    Route::post('/annonce/{id}/archiver', [AnnonceController::class, 'archiver'])->name('annonce.archiver');
+
+    Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
+    ->name('annonces.mes_annonces');
+  
+
+// Route pour archiver (POST)
+Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
+    ->name('annonces.archive');
+   
+
+// Route pour restaurer (POST)
+Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
+    ->name('annonces.restore');
+
+
+     
+
+Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
+Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+
+
+Route::get('/annonces', [AnnonceController::class, 'Annonces'])->name('annonces.annonces');
+
+
+Route::get('/mes-objets', [ObjetController::class, 'mesObjets'])->name('objet.mes_objets');
+
+
+
+
 

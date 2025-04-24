@@ -45,13 +45,15 @@ public function store(Request $request)
 }
 
 public function index()
-    {
-        // Récupérer les annonces depuis la base de données
-        $annonces = Annonce::with(['objet.images', 'proprietaire'])->get();
+{
+    // Récupérer les annonces premium en premier, puis les autres
+    $annonces = Annonce::with(['objet.images', 'proprietaire'])
+        ->orderBy('premium', 'desc') // Les annonces premium (premium=1) seront en premier
+        ->orderBy('date_publication', 'desc') // Ensuite tri par date de publication
+        ->get();
 
-        // Retourner la vue avec les annonces
-        return view('annonces.index', compact('annonces'));
-    }
+    return view('annonces.index', compact('annonces'));
+}
 
     
 
@@ -70,26 +72,50 @@ public function index()
 
 
 public function mesAnnonces()
-    {
-       // TEMPORAIRE pour tests : afficher les annonces d’un user spécifique
-$annonces = Annonce::where('proprietaire_id', 1)->get();
+{
+    $annonces = Annonce::where('proprietaire_id', 1)
+    ->whereIn('statut', ['active', 'archivée']) // Affiche les deux statuts
+    ->orderBy('created_at', 'desc')
+    ->get();
+    return view('annonces.mes_annonces', compact('annonces'));
+}
 
-        return view('annonces.mes_annonces', compact('annonces'));
-    }
 
-    public function archiver($id)
+public function archiver($id)
     {
         $annonce = Annonce::findOrFail($id);
 
         // Vérifie que l'utilisateur est bien le propriétaire
-        if ($annonce->proprietaire_id != Auth::id()) {
-            abort(403);
-        }
+        $annonces = Annonce::where('proprietaire_id', 1)->get();
 
         $annonce->statut = 'archivée';
         $annonce->save();
 
         return redirect()->back()->with('success', 'Annonce archivée avec succès.');
     }
+
+    public function restore($id)
+    {
+        $annonce = Annonce::findOrFail($id);
+
+        // Vérifie que l'utilisateur est bien le propriétaire
+        $annonces = Annonce::where('proprietaire_id', 1)->get();
+
+        $annonce->statut = 'active';
+        $annonce->save();
+
+        return redirect()->back()->with('success', 'Annonce restaurer avec succès.');
+    }
+
+
+
+public function Annonces()
+{
+    $annonces = Annonce::where('proprietaire_id', 1)->get();
+    return view('annonces.annonces', compact('annonces'));
+}
+
+
+
 
 }
