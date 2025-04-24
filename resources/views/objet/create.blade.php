@@ -89,6 +89,80 @@
         margin-top: 0.3rem;
         display: block;
     }
+
+     /* Styles pour la zone d'upload */
+     .file-upload-area {
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background-color: #f8fafc;
+        margin-bottom: 10px;
+    }
+    
+    .file-upload-area:hover {
+        border-color: #4299e1;
+        background-color: #ebf4ff;
+    }
+    
+    .upload-instructions {
+        color: #4a5568;
+    }
+    
+    .browse-link {
+        color: #4299e1;
+        text-decoration: underline;
+        font-weight: 500;
+    }
+    
+    /* Prévisualisation des images */
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .preview-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #e53e3e;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    /* Message d'erreur */
+    .upload-error {
+        color: #e53e3e;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
 </style>
 
 <div class="form-container">
@@ -171,83 +245,6 @@
     <!-- Message d'erreur -->
     <div class="upload-error" id="upload-error" style="display: none;"></div>
 </div>
-
-<style>
-    /* Styles pour la zone d'upload */
-    .file-upload-area {
-        border: 2px dashed #e2e8f0;
-        border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        background-color: #f8fafc;
-        margin-bottom: 10px;
-    }
-    
-    .file-upload-area:hover {
-        border-color: #4299e1;
-        background-color: #ebf4ff;
-    }
-    
-    .upload-instructions {
-        color: #4a5568;
-    }
-    
-    .browse-link {
-        color: #4299e1;
-        text-decoration: underline;
-        font-weight: 500;
-    }
-    
-    /* Prévisualisation des images */
-    .image-preview-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    
-    .preview-item {
-        position: relative;
-        width: 100px;
-        height: 100px;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .preview-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .remove-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: #e53e3e;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    
-    /* Message d'erreur */
-    .upload-error {
-        color: #e53e3e;
-        font-size: 0.85rem;
-        margin-top: 5px;
-    }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('image-upload');

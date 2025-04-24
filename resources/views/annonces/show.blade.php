@@ -31,6 +31,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .gallery-image {
@@ -38,10 +39,12 @@
     max-height: 100%;
     object-fit: contain;
     display: none;
+    transition: opacity 0.3s ease;
 }
 
 .gallery-image.active {
     display: block;
+    opacity: 1;
 }
 
 .gallery-thumbnails {
@@ -59,43 +62,97 @@
     border-radius: 6px;
     cursor: pointer;
     border: 2px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .thumbnail.active img {
     border-color: #3498db;
+    transform: scale(1.05);
+}
+
+.thumbnail:hover img {
+    transform: scale(1.1);
 }
 
 .annonce-right {
     flex: 1 1 55%;
+    position: relative;
 }
 
 .annonce-title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #2c3e50;
 }
 
 .annonce-price {
     font-size: 20px;
     color: #27ae60;
     margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .annonce-meta p {
-    margin: 4px 0;
+    margin: 8px 0;
     color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.annonce-meta strong {
+    color: #2c3e50;
+    min-width: 100px;
+    display: inline-block;
 }
 
 .annonce-description h3 {
     margin-top: 20px;
     font-size: 18px;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
 }
 
 .partner-card {
-    background: #f1f1f1;
-    padding: 12px 16px;
+    background: #f8f9fa;
+    padding: 16px;
     border-radius: 10px;
+    margin-top: 25px;
+    border: 1px solid #eee;
+}
+
+.partner-card h4 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+}
+
+.reservation-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+}
+
+.reservation-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1);
+}
+
+.reservation-btn i {
+    font-size: 18px;
 }
 
 @media screen and (max-width: 768px) {
@@ -105,6 +162,10 @@
 
     .annonce-left, .annonce-right {
         flex: 1 1 100%;
+    }
+    
+    .gallery-main {
+        height: 250px;
     }
 }
 </style>
@@ -116,6 +177,12 @@
             @foreach($annonce->objet->images as $key => $image)
                 <img src="{{ asset($image->url ?? '') }}" class="gallery-image {{ $loop->first ? 'active' : '' }}" alt="Photo de {{ $annonce->objet->nom ?? '' }}">
             @endforeach
+            
+            @if($annonce->premium)
+            <div class="premium-badge" style="position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; padding: 5px 10px; border-radius: 20px; font-weight: bold; z-index: 10;">
+                Premium
+            </div>
+            @endif
         </div>
 
         @if($annonce->objet->images->count() > 1)
@@ -132,13 +199,20 @@
     <div class="annonce-right">
         <!-- Titre & prix -->
         <h1 class="annonce-title">{{ $annonce->objet->nom ?? 'Nom non disponible' }}</h1>
-        <div class="annonce-price">{{ $annonce->objet->prix_journalier ?? '0' }} € / jour</div>
+        <div class="annonce-price">{{ number_format($annonce->objet->prix_journalier ?? 0, 2) }} € / jour</div>
 
         <!-- Métadonnées -->
         <div class="annonce-meta">
-            <p><strong>Ville :</strong> {{ $annonce->objet->ville ?? 'Ville non spécifiée' }}</p>
-            <p><strong>Catégorie :</strong> {{ $annonce->objet->categorie->nom ?? 'Catégorie non définie' }}</p>
-            <p><strong>Publié :</strong> {{ $annonce->created_at->diffForHumans() }}</p>
+            <p><strong>📍 Ville :</strong> {{ $annonce->objet->ville ?? 'Ville non spécifiée' }}</p>
+            <p><strong>🏷 Catégorie :</strong> {{ $annonce->objet->categorie->nom ?? 'Catégorie non définie' }}</p>
+            <p><strong>📅 Publié :</strong> {{ $annonce->created_at->diffForHumans() }}</p>
+            <p><strong>⭐ Note :</strong> 
+                @if($annonce->objet->moyenne_notes)
+                    {{ number_format($annonce->objet->moyenne_notes, 1) }}/5 ({{ $annonce->objet->nombre_avis }} avis)
+                @else
+                    Pas encore noté
+                @endif
+            </p>
         </div>
 
         <!-- Description -->
@@ -147,10 +221,22 @@
             <p>{{ $annonce->objet->description ?? 'Aucune description disponible' }}</p>
         </div>
 
+        <!-- Bouton de réservation -->
+        <form action="{{ route('reservations.create', $annonce->id) }}" method="GET">
+            @csrf
+            <button type="submit" class="reservation-btn">
+                <i class="fas fa-calendar-check"></i>
+                Réserver maintenant
+            </button>
+        </form>
+
         <!-- Propriétaire -->
         <div class="partner-card">
-            <h4>{{ $annonce->proprietaire->full_name ?? 'Propriétaire inconnu' }}</h4>
+            <h4>👤 {{ $annonce->proprietaire->full_name ?? 'Propriétaire inconnu' }}</h4>
             <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p>
+            @if($annonce->proprietaire->moyenne_notes)
+                <p>⭐ Note moyenne : {{ number_format($annonce->proprietaire->moyenne_notes, 1) }}/5</p>
+            @endif
         </div>
     </div>
 </div>
@@ -171,14 +257,22 @@ function showImage(index) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const thumbnails = document.querySelectorAll('.thumbnail');
-    const imageCount = {{ !empty($annonce->objet->images) && $annonce->objet->images->isNotEmpty() ? $annonce->objet->images->count() : 0 }};
+    const imageCount = {{ $annonce->objet->images->count() ?? 0 }};
 
+    // Auto-slide seulement s'il y a plusieurs images
     if (imageCount > 1) {
         let index = 0;
-        setInterval(() => {
+        const interval = setInterval(() => {
             index = (index + 1) % imageCount;
             showImage(index);
-        }, 1000);
+        }, 3000);
+
+        // Arrêter l'auto-slide quand on clique sur une miniature
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                clearInterval(interval);
+            });
+        });
     }
 });
 </script>

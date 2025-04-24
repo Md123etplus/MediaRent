@@ -175,6 +175,42 @@
     .premium-false {
         color: #a0aec0;
     }
+
+    /* Style pour le bouton Restaurer */
+.btn-success {
+    background-color: #38a169;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #2f855a;
+}
+
+/* Amélioration des boutons d'action */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 576px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+    
 </style>
 <div class="container">
     <h2>Mes Annonces</h2>
@@ -207,13 +243,36 @@
                 <td>{{ $annonce->date_fin }}</td>
                 <td>{{ $annonce->adress }}</td>
                 <td>
-                    <a href="{{ url('/annonce/' . $annonce->id . '/edit') }}" class="btn btn-sm btn-primary">Modifier</a>
-
-                    <form action="{{ route('annonce.archiver', $annonce->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Archiver cette annonce ?')">Archiver</button>
-                    </form>
-                </td>
+    <div class="action-buttons">
+        <!-- Bouton Modifier (toujours visible) -->
+        <a 
+           class="btn btn-sm btn-primary">
+            <i class="fas fa-edit"></i> Modifier
+        </a>
+        
+        @if($annonce->statut === 'active')
+            <!-- Bouton Archiver (seulement si active) -->
+            <form action="{{ route('annonces.archive', $annonce->id) }}" method="POST">
+                @csrf
+                <button type="submit" 
+                        class="btn btn-sm btn-warning"
+                        onclick="return confirm('Archiver cette annonce ?')">
+                    <i class="fas fa-archive"></i> Archiver
+                </button>
+            </form>
+        @else
+            <!-- Bouton Restaurer (seulement si archivée) -->
+            <form action="{{ route('annonces.restore', $annonce->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-success"
+                 onclick="return confirm('Restaurer cette annonce ?')">
+                <i class="fas fa-undo"></i> Restaurer
+            </button>
+            </form>
+        @endif
+        
+    </div>
+</td>
             </tr>
         @empty
             <tr><td colspan="8">Aucune annonce trouvée.</td></tr>

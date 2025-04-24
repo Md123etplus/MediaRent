@@ -15,6 +15,7 @@ class Annonce extends Model
     use HasFactory;
 
     protected $table = 'annonce';
+    
 
     protected $fillable = [
         'date_publication',
@@ -27,12 +28,46 @@ class Annonce extends Model
         'adress' // Note: 'address' serait une orthographe plus standard
     ];
 
+    // protected $casts = [
+    //     'date_publication' => 'datetime',
+    //     'date_debut' => 'datetime',
+    //     'date_fin' => 'datetime',
+    //     'premium' => 'boolean'
+    // ];
+
+    // Solution 1: Déclarer les dates pour conversion automatique en Carbon
+    protected $dates = [
+        'date_debut',
+        'date_fin',
+        'date_publication',
+        'created_at',
+        'updated_at'
+    ];
+
+    // OU Solution 2 (Laravel 8+): Utiliser $casts pour un meilleur contrôle
     protected $casts = [
-        'date_publication' => 'datetime',
         'date_debut' => 'datetime',
         'date_fin' => 'datetime',
-        'premium' => 'boolean'
+        'date_publication' => 'datetime',
+        'premium' => 'boolean',
     ];
+
+    // Solution 1: Déclarer les dates pour conversion automatique en Carbon
+    // protected $dates = [
+    //     'date_debut',
+    //     'date_fin',
+    //     'date_publication',
+    //     'created_at',
+    //     'updated_at'
+    // ];
+
+    // OU Solution 2 (Laravel 8+): Utiliser $casts pour un meilleur contrôle
+    // protected $casts = [
+    //     'date_debut' => 'datetime',
+    //     'date_fin' => 'datetime',
+    //     'date_publication' => 'datetime',
+    //     'premium' => 'boolean',
+    // ];
 
     public function objet()
     {
@@ -79,4 +114,8 @@ class Annonce extends Model
 {
     return $this->belongsTo(User::class, 'partenaire_id');
 }
+    // public function proprietaire()
+    // {
+    //     return $this->belongsTo(User::class, 'proprietaire_id');
+    // }
 }
