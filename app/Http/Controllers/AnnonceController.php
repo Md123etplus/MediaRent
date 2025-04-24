@@ -29,7 +29,7 @@ public function store(Request $request)
         'statut' => 'required|in:active,inactive',
         'proprietaire_id' => 'required|exists:users,id',
         'premium' => 'nullable|boolean',
-        
+
     ]);
 
 
@@ -54,7 +54,7 @@ public function index()
         return view('annonces.index', compact('annonces'));
     }
 
-    
+
 
     public function show(Annonce $annonce)
 {
@@ -66,7 +66,7 @@ public function index()
     $annonce->load(['objet.images', 'proprietaire']);
     return view('annonces.show', compact('annonce'));
 
-    
+
 }
 
 
@@ -83,9 +83,9 @@ $annonces = Annonce::where('proprietaire_id', 1)->get();
         $annonce = Annonce::findOrFail($id);
 
         // Vérifie que l'utilisateur est bien le propriétaire
-        if ($annonce->proprietaire_id != Auth::id()) {
-            abort(403);
-        }
+        // if ($annonce->proprietaire_id != Auth::id()) {
+        //     abort(403);
+        // }
 
         $annonce->statut = 'archivée';
         $annonce->save();

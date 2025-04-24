@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 // Duplicate import removed
 // use App\Http\Controllers\ObjetController;
@@ -73,7 +74,13 @@ Route::get('/blog', function () {
 })->name('blog');
 
 
-Route::get('/admin', [DashboardController::class, 'index']) ->name('admin.dashboard');
+Route::prefix('admin')->group(function () { //->middleware(['auth', 'admin'])
+    Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::patch('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
+         ->name('admin.users.toggle-suspension');
+    // ... autres routes admin
+});
 Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 // Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 
