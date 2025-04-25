@@ -25,6 +25,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // Page d'accueil
 Route::get('/', function () {
@@ -53,14 +55,17 @@ Route::post('/reservations/store/{annonce}', [ReservationController::class, 'sto
 Route::get('/login', function () {
     return view('login.login');
 });
+/*
 Route::post('/logout', function () {
     Auth::logout();
     return redirect('/');
 })->name('logout');
-
+*/
 Route::get('/categories',function(){
     return view('categories.main');
 })->name('categories');
+
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/search', function () {
     return view('search.main');
@@ -101,14 +106,14 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [PartenaireDashboardController::class, 'index'])
         ->name('dashboard');
-    
+
     // Gestion des disponibilités
     Route::get('/partenaire/disponibilites', [PartenaireDashboardController::class, 'disponibilites'])
     ->name('partenaire.disponibilites');
     // Gestion des annonces
     Route::put('/annonce/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
         ->name('annonce.restore');
-    
+
     // Réservations
     Route::get('/reservations', [PartenaireDashboardController::class, 'reservations'])
         ->name('reservations');
@@ -118,7 +123,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Routes pour les annonces
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
-        
+
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
      Route::get('/objets', [ObjetController::class, 'index'])->name('objets.index');
@@ -207,7 +212,7 @@ Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showF
     ->name('annonces.reserver');
  // web.php
 
-   
+
 
 // OU version alternative (sans paramètre de route)
 Route::post('/reservations', [ReservationController::class, 'store'])
@@ -241,5 +246,20 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 
 
 
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [RegisterController::class, 'register']);
 
+Route::get('email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
