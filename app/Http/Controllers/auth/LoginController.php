@@ -31,8 +31,10 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             // Régénère la session pour éviter fixation
             $request->session()->regenerate();
-            return redirect()->intended('/'); // ou ta route de dashboard
+            return redirect()->route('client.index'); // ou ta route de dashboard
         }
+
+
 
         // En cas d’échec
         return back()

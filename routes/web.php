@@ -27,8 +27,10 @@ use App\Http\Controllers\Client\CReservationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
-use Illuminate\Mail\Mailable;
+// use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // Page d'accueiluse Illuminate\Support\Facades\Auth;
 // use App\Http\Controllers\Client\DashboardController;
@@ -40,11 +42,11 @@ use App\Http\Controllers\Client\NotificationController;
 // Routes publiques
 Route::get('/dashboard/client', function () {
     return view('client.index');
-});
+})->name('client.index');
 
-Route::get('/register', function() {
-    return view('register.sign-up');
-})->name('register');
+// Route::get('/register', function() {
+//     return view('register.sign-up');
+// })->name('register');
 
 Route::get('/', function() {
     return view('landing');
@@ -53,9 +55,24 @@ Route::get('/premium', function () {
     return view('premium.main');
 })->name('premium');
 
-Route::get('/register', function () {
-    return view(view: 'register.sign-up');
-})->name('register');;
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [RegisterController::class, 'register']);
+Route::get('email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+// Route::get('/register', function () {
+//     return view(view: 'register.register');
+// })->name('register');;
 // Route::get('/login',function(){
 //     return view('landing');
 // })->name('landing');
@@ -72,14 +89,17 @@ Route::post('/reservations/store/{annonce}', [ReservationController::class, 'sto
 Route::get('/login', function () {
     return view('login.login');
 });
+/*
 Route::post('/logout', function () {
     Auth::logout();
     return redirect('/');
 })->name('logout');
-
+*/
 Route::get('/categories',function(){
     return view('categories.main');
 })->name('categories');
+
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 Route::get('/search', function () {
     return view('search.main');
@@ -153,7 +173,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [PartenaireDashboardController::class, 'index'])
         ->name('dashboard');
-    
+
     // Gestion des disponibilités
     Route::get('/partenaire/disponibilites', [PartenaireDashboardController::class, 'disponibilites'])
     ->name('partenaire.disponibilites');
@@ -261,7 +281,7 @@ Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showF
     ->name('annonces.reserver');
  // web.php
 
-   
+
 
 // OU version alternative (sans paramètre de route)
 Route::post('/reservations', [ReservationController::class, 'store'])
