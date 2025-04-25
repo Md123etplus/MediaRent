@@ -9,16 +9,44 @@ use App\Models\Reservation;
 
 class ReservationController extends Controller
 {
-    public function index()
-    {
-        $reservations = optional(Auth::user())->reservations()
-    ? Auth::user()->reservations()
-        ->with(['annonce.objet.images', 'annonce.proprietaire'])
-        ->orderBy('created_at', 'desc')
-        ->paginate(10)
-    : collect();
+    
+    
+        
+        public function index(Request $request)
+{
+    $clientId = 2;
+    $query = \App\Models\User::find($clientId)
+        ->reservations()
+        ->with([
+            'annonce.objet.images', 
+            'annonce.proprietaire',
+            'evaluation' // Charger l'évaluation liée
+        ])
+        ->orderBy('created_at', 'desc');
+       
             
-        return view('client.reservations.index', compact('reservations'));
+        // Ajout des filtres
+        if ($request->has('search')) {
+            $query->whereHas('annonce.objet', function($q) use ($request) {
+                $q->where('nom', 'like', '%'.$request->search.'%');
+            });
+        }
+        
+        if ($request->has('status')) {
+            $query->where('statut', $request->status);
+        }
+        
+        if ($request->has('date_from')) {
+            $query->where('date_debut', '>=', $request->date_from);
+        }
+        
+        if ($request->has('date_to')) {
+            $query->where('date_fin', '<=', $request->date_to);
+        }
+        
+        $recentReservations = $query->paginate(10);
+        
+        return view('client.reservations.index', compact('recentReservations'));
     }
 
     public function show(Reservation $reservation)
@@ -62,3 +90,4 @@ class ReservationController extends Controller
             ->with('success', 'La réservation a été annulée avec succès.');
     }
 }
+   

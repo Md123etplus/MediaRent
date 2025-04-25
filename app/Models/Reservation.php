@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Reservation extends Model
 {
     use HasFactory;
+    protected $table="reservation";
 
     protected $fillable = [
         'client_id',
@@ -29,8 +30,9 @@ class Reservation extends Model
 
     public function evaluation()
     {
-        return $this->hasOne(Evaluation::class, 'reservation_id');
+        return $this->hasOne(Evaluation::class, 'objet_id', 'annonce_id');
     }
+
 
     public function reclamations()
     {
