@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Objet;
+use App\Models\Objet; // Ensure the Objet class exists in this namespace. If not, update the namespace accordingly.
 // use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Model;

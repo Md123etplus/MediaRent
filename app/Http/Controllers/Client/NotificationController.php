@@ -15,7 +15,7 @@ class NotificationController extends Controller
         // $notifications = Auth::user()->notifications()
         //     ->orderBy('date_creation', 'desc')
         //     ->paginate(10);
-        $testUser = User::find(1); // Remplace 123 par l'ID de test
+        $testUser = User::find(Auth::id()); // Remplace 123 par l'ID de test
 $notifications = $testUser->notifications()
     ->orderBy('date_creation', 'desc')
     ->paginate(10);

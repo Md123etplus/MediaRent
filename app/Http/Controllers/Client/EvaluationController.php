@@ -22,7 +22,7 @@ class EvaluationController extends Controller
     //     ->orderBy('date', 'desc')
     //     ->paginate(10)
     // : new LengthAwarePaginator([], 0, 10);
-    $testUser = User::find(1); // Replace 123 with test user ID
+    $testUser = User::find(Auth::id()); // Replace 123 with test user ID
 $evaluations = $testUser
     ? $testUser->evaluations()
         ->with([

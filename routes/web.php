@@ -19,7 +19,7 @@ use App\Http\Controllers\ObjetController;
 use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ReclamationController;
-use App\Http\Controllers\EvaluationController;
+use App\Http\Controllers\Client\EvaluationController;
 use App\Http\Controllers\PartenaireDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Client\CReservationController;

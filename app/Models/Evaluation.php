@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,10 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Evaluation extends Model
 {
+    // Spécifiez le nom exact de la table
     use HasFactory;
-
     protected $table = 'evaluation';
 
+    // Désactivez les timestamps si vous n'avez pas created_at et updated_at
+    public $timestamps = false;
+
+    // Définissez les champs remplissables
     protected $fillable = [
         'objet_id',
         'evaluateur_id',
