@@ -312,7 +312,7 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
     //return 'Email de test envoyé (ou en échec silencieux) !';
 //});
 
-
+Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
 
 
@@ -346,6 +346,9 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
     });
+
+    // Ajoutez cette route dans votre fichier routes/web.php
+Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
     // Route de test (uniquement en développement)
     if (app()->environment('local')) {

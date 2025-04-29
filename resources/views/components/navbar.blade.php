@@ -11,19 +11,88 @@
           </a>
           
           <!-- Barre de recherche (Desktop) -->
-          <div class="hidden md:block relative w-64 ml-20">
-              <input type="text" placeholder="Rechercher du matériel..." 
-                     class="w-full pl-4 pr-10 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white">
-              <button class="absolute right-3 top-2 text-gray-500 dark:text-gray-400">
-                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                  </svg>
-              </button>
-          </div>
-      </div>
-
+        
+          <form action="{{ route('client.annonces.search') }}" method="GET" class="flex items-center gap-2">
+    <div class="relative flex-1">
+        <input type="text" 
+               name="q" 
+               placeholder="Rechercher du matériel..." 
+               class="w-full pl-4 pr-10 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+               value="{{ request('q') }}"
+               x-ref="searchInput">
+        
+        <div class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 hidden"
+             x-data="{ open: false }"
+             @click.away="open = false"
+             x-show="open">
+            <div class="space-y-3">
+                <!-- Filtre par ville -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ville</label>
+                    <input type="text" name="ville" placeholder="Filtrer par ville" 
+                           value="{{ request('ville') }}"
+                           class="w-full p-2 border rounded dark:bg-gray-700">
+                </div>
+                
+                <!-- Filtre par catégorie -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
+                    <select name="categorie" class="w-full p-2 border rounded dark:bg-gray-700">
+                        <option value="">Toutes catégories</option>
+                        @foreach(App\Models\Categorie::all() as $categorie)
+                            <option value="{{ $categorie->id }}" {{ request('categorie') == $categorie->id ? 'selected' : '' }}>
+                                {{ $categorie->nom }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Filtre par date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date disponible</label>
+                    <input type="date" name="date" 
+                           value="{{ request('date') }}"
+                           class="w-full p-2 border rounded dark:bg-gray-700">
+                </div>
+                
+                <!-- Filtre par note -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note minimale</label>
+                    <select name="min_rating" class="w-full p-2 border rounded dark:bg-gray-700">
+                        <option value="">Toutes notes</option>
+                        <option value="5" {{ request('min_rating') == 5 ? 'selected' : '' }}>★★★★★ (5+)</option>
+                        <option value="4" {{ request('min_rating') == 4 ? 'selected' : '' }}>★★★★☆ (4+)</option>
+                        <option value="3" {{ request('min_rating') == 3 ? 'selected' : '' }}>★★★☆☆ (3+)</option>
+                    </select>
+                </div>
+                
+                <!-- Filtre par prix -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prix min</label>
+                        <input type="number" name="prix_min" placeholder="Min" 
+                               value="{{ request('prix_min') }}"
+                               class="w-full p-2 border rounded dark:bg-gray-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prix max</label>
+                        <input type="number" name="prix_max" placeholder="Max" 
+                               value="{{ request('prix_max') }}"
+                               class="w-full p-2 border rounded dark:bg-gray-700">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button type="submit" class="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-500">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+    </button>
+</form>
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex items-center gap-4">
+      <nav class="block md:flex items-center gap-4">
           @if(request()->is('/'))
               <a href="#how-it-works" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Comment ça marche</a>
               <a href="#categories"  class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Catégories</a>
@@ -184,4 +253,35 @@
           }
       }));
   });
+
+
+  //navbar mobile
+document.addEventListener('DOMContentLoaded', function() {
+    // Focus sur la recherche quand on clique sur l'icône mobile
+    Alpine.data('header', () => ({
+        ...Alpine.data('header')(),
+        focusSearch() {
+            this.mobileSearchOpen = true;
+            this.$nextTick(() => {
+                const input = this.$refs.searchInput;
+                if (input) input.focus();
+            });
+        }
+    }));
+});
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('searchForm', () => ({
+        showFilters: false,
+        
+        init() {
+            // Active les filtres quand on clique sur la loupe
+            this.$refs.searchInput.addEventListener('focus', () => {
+                this.showFilters = true;
+            });
+        }
+    }));
+});
+
+
 </script>

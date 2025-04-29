@@ -37,12 +37,7 @@
             <input type="text" name="CIN" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
         </div>
 
-        <div>
-            <label for="mot_de_passe" class="block text-sm font-medium">Mot de passe</label>
-            <input type="password" name="mot_de_passe" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
-        </div>
-
-        <div>
+        <!--<div>
             <label for="img_profil" class="block text-sm font-medium">Image de profil</label>
             <input type="file" name="img_profil" accept="image/*" class="mt-1 w-full" required>
         </div>
@@ -55,7 +50,7 @@
         <div>
             <label for="img_cin_back" class="block text-sm font-medium">CIN Verso</label>
             <input type="file" name="img_cin_back" accept="image/*" class="mt-1 w-full" required>
-        </div>
+        </div>-->
 
         <div class="text-center">
             <button type="submit" class="btn-primary px-6 py-2">Valider</button>

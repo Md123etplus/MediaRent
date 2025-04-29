@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormClient extends Model
 {
-    protected $table = 'users'; // On insère dans la table users
+    protected $table = 'reservation'; // On insère dans la table users
 
     protected $fillable = [ 
         'nom',
