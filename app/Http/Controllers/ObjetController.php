@@ -30,7 +30,7 @@ class ObjetController extends Controller
         'ville' => 'required|string',
         'prix_journalier' => 'required|numeric',
         'categorie_id' => 'required|integer|exists:categorie,id',
-        'etat' => 'required|string|in:dispo,indispo',
+        'etat' => 'required|string|in:neuf,bon,usé',
         'images' => 'required|array|min:1|max:3',
         'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
     ]);
@@ -43,7 +43,7 @@ class ObjetController extends Controller
     $objet->prix_journalier = $request->prix_journalier;
     $objet->categorie_id = $request->categorie_id;
     $objet->etat = $request->etat;
-    $objet->proprietaire_id = 1; // ou Auth::id()
+    $objet->proprietaire_id = Auth::id(); // ou Auth::id()
     $objet->save();
 
     // Enregistrement des images modifié

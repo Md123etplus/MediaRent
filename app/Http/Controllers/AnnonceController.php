@@ -24,12 +24,15 @@ class AnnonceController extends Controller{
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'objet_id' => 'required|exists:Objet,id',
-            'date_debut' => 'required|date|after_or_equal:today',
-            'date_fin' => 'required|date|after:date_debut',
-            'adresse' => 'required|string|max:255',
-            'premium' => 'sometimes|boolean',
-            'description' => 'required|string'
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'adress' => 'required|string',
+            'objet_id' => 'nullable|exists:objet,id',
+            'date_publication' => 'required|date',
+            'statut' => 'required|in:active,inactive',
+            'proprietaire_id' => 'required|exists:users,id',
+            'premium' => 'nullable|boolean',
+            
         ]);
 
         // Vérifier que l'objet appartient bien à l'utilisateur
@@ -37,21 +40,16 @@ class AnnonceController extends Controller{
         if ($objet->proprietaire_id !== Auth::id()) {
             abort(403, "Vous n'êtes pas propriétaire de cet objet");
         }
+        
+        $validated['date_publication'] = now();
+        $validated['premium'] = $request->has('premium');
+        $validated['proprietaire_id'] = Auth::id(); // utilisateur connecté
+        Annonce::create($validated);
 
-        $annonce = Annonce::create([
-            'proprietaire_id' => Auth::id(),
-            'objet_id' => $validated['objet_id'],
-            'date_debut' => $validated['date_debut'],
-            'date_fin' => $validated['date_fin'],
-            'adress' => $validated['adresse'],
-            'premium' => $request->has('premium'),
-            'statut' => 'active',
-            'date_publication' => now(),
-            'description' => $validated['description']
-        ]);
+        return redirect()->route('annonces.create')->with('success', 'Annonce ajoutée !');
 
-        return redirect()->route('partenaire.dashboard')
-               ->with('success', 'Annonce créée avec succès');
+        // return redirect()->route('partenaire.dashboard')
+        //        ->with('success', 'Annonce créée avec succès');
     }
 
     public function index()
@@ -83,7 +81,7 @@ class AnnonceController extends Controller{
 
 public function mesAnnonces()
 {
-    $annonces = Annonce::where('proprietaire_id', 1)
+    $annonces = Annonce::where('proprietaire_id', Auth::id())
     ->whereIn('statut', ['active', 'archivée']) // Affiche les deux statuts
     ->orderBy('created_at', 'desc')
     ->get();
