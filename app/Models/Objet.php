@@ -53,4 +53,13 @@ public function images()
 {
     return $this->belongsTo(Categorie::class, 'categorie_id');
 }
+// Dans app/Models/Objet.php
+public function evaluations()
+{
+    return $this->hasMany(\App\Models\Evaluation::class, 'objet_id');
 }
+
+
+
+}
+

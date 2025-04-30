@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Categorie;
 class AnnonceController extends Controller{
+   
+    
     public function create()
     {
         $categories = Categorie::all();
@@ -103,5 +105,72 @@ public function archiver($id)
 
         return redirect()->back()->with('success', 'Annonce archivée avec succès.');
     }
-
+    public function search(Request $request)
+    {
+        $request->validate([
+            'q' => 'nullable|string',
+            'ville' => 'nullable|string',
+            'categorie' => 'nullable|string', // Changé pour utiliser le nom de la catégorie comme dans la vue
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            'min_rating' => 'nullable|integer|min:1|max:5',
+            'prix_min' => 'nullable|numeric|min:0',
+            'prix_max' => 'nullable|numeric|min:0',
+        ]);
+        
+        $annonces = Annonce::with(['objet.images', 'proprietaire', 'objet.evaluations', 'objet.categorie'])
+            ->when($request->filled('q'), function($query) use ($request) {
+                $query->where(function($q) use ($request) {
+                    $q->whereHas('objet', function($q) use ($request) {
+                        $q->where('nom', 'like', "%{$request->q}%")
+                          ->orWhere('description', 'like', "%{$request->q}%");
+                    })
+                    ->orWhere('adress', 'like', "%{$request->q}%");
+                });
+            })
+            ->when($request->filled('ville'), function($query) use ($request) {
+                $query->where('adress', 'like', "%{$request->ville}%");
+            })
+            ->when($request->filled('categorie'), function($query) use ($request) {
+                $query->whereHas('objet.categorie', function($q) use ($request) {
+                    $q->where('nom', $request->categorie); // Modification pour correspondre exactement
+                });
+            })
+            ->when($request->filled('date_debut') && $request->filled('date_fin'), function($query) use ($request) {
+                $query->where(function($q) use ($request) {
+                    $q->where('date_debut', '<=', $request->date_fin)
+                      ->where('date_fin', '>=', $request->date_debut);
+                });
+            })
+            ->when($request->filled('min_rating'), function($query) use ($request) {
+                $query->whereHas('objet.evaluations', function($q) use ($request) {
+                    $q->select('objet_id')
+                      ->groupBy('objet_id')
+                      ->havingRaw('AVG(note) >= ?', [$request->min_rating]);
+                });
+            })
+            ->when($request->filled('prix_min'), function($query) use ($request) {
+                $query->whereHas('objet', function($q) use ($request) {
+                    $q->where('prix_journalier', '>=', $request->prix_min);
+                });
+            })
+            ->when($request->filled('prix_max'), function($query) use ($request) {
+                $query->whereHas('objet', function($q) use ($request) {
+                    $q->where('prix_journalier', '<=', $request->prix_max);
+                });
+            })
+            ->where('statut', 'active')
+            ->orderBy('premium', 'desc')
+            ->orderBy('date_publication', 'desc')
+            ->paginate(10);
+            
+        $categories = Categorie::all();
+        
+        return view('annonces.search-results', [
+            'annonces' => $annonces,
+            'categories' => $categories,
+            'searchTerm' => $request->q ?? '',
+            'searchParams' => $request->all()
+        ]);
+    }
 }
