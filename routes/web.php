@@ -27,6 +27,7 @@ use App\Http\Controllers\Client\CReservationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
+use App\Http\Controllers\Admin\AdminAnnonceController;
 // use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -115,9 +116,15 @@ Route::get('/blog', function () {
 Route::prefix('admin')->group(function () { //->middleware(['auth', 'admin'])
     Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/annonces/{type}', [AdminAnnonceController::class, 'index'])->name('admin.annonces.index');
     Route::patch('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
          ->name('admin.users.toggle-suspension');
-    // ... autres routes admin
+    Route::get('/annonces/{annonce}/details', [AdminAnnonceController::class, 'getDetails'])
+            ->name('admin.annonces.details');
+    Route::post('/annonces/{annonce}/toggle-archive', [AdminAnnonceController::class, 'toggleArchive'])
+    ->name('admin.annonces.toggle-archive');
+    // ->middleware('auth');
+
 });
 Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 // Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
@@ -135,19 +142,19 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
 
     Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
     ->name('annonces.mes_annonces');
-  
+
 
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
     ->name('annonces.archive');
-   
+
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
     ->name('annonces.restore');
 
 
-     
+
 
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
@@ -191,7 +198,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Routes pour les annonces
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
-        
+
     Route::get('/partenaire', [PartenaireDashboardController::class, 'index'])->name('partenaire.index');
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
@@ -322,14 +329,14 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 Route::prefix('client')->name('client.')->group(function() {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Réservations
     Route::prefix('reservations')->name('reservations.')->group(function() {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
         Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
     });
-    
+
     // Évaluations
     Route::prefix('evaluations')->name('evaluations.')->group(function() {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
@@ -339,7 +346,7 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
         Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
     });
-    
+
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function() {
         Route::get('/', [NotificationController::class, 'index'])->name('index');

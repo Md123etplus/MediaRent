@@ -20,6 +20,8 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
         <!-- Main content -->
         @yield('content')
+
+        @include('admin.components.annonce-details')
     </div>
 
     @stack('scripts')

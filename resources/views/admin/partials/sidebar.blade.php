@@ -19,17 +19,17 @@
 
                 <!-- Annonces -->
                 <div class="relative">
-                    <button class="flex items-center justify-between w-full px-2 py-3 text-sm font-medium text-indigo-200 hover:text-white hover:bg-indigo-700 rounded-lg">
+                    <button id="annonces-menu-button" class="flex items-center justify-between w-full px-2 py-3 text-sm font-medium text-indigo-200 hover:text-white hover:bg-indigo-700 rounded-lg">
                         <span class="flex items-center">
                             <i class="fas fa-list-alt mr-3"></i>
                             Annonces
                         </span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i id="annonces-chevron" class="fas fa-chevron-down transition-transform duration-200"></i>
                     </button>
-                    <div class="hidden absolute left-0 right-0 mt-1 py-1 bg-indigo-700 rounded-md shadow-lg z-10">
-                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Toutes les annonces</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Annonces premium</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Annonces archivées</a>
+                    <div id="annonces-menu" class="hidden absolute left-0 right-0 mt-1 py-1 bg-indigo-700 rounded-md shadow-lg z-10">
+                        <a href="{{ route('admin.annonces.index', 'all') }}" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Toutes les annonces</a>
+                        <a href="{{ route('admin.annonces.index', 'premium') }}" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Annonces premium</a>
+                        <a href="{{ route('admin.annonces.index', 'Archivée') }}" class="block px-4 py-2 text-sm text-white hover:bg-indigo-600">Annonces archivées</a>
                     </div>
                 </div>
 

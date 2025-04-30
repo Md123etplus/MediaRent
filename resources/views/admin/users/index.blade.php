@@ -3,6 +3,32 @@
 @section('content')
 <div class="flex flex-col flex-1 overflow-hidden">
 
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+        <!-- Top navigation -->
+        <div class="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
+            <div class="flex items-center">
+                <!-- Bouton du menu -->
+                <button id="mobile-menu-button" class="text-gray-500 focus:outline-none md:hidden">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="relative mx-4">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" class="w-full py-2 pl-10 pr-4 text-sm text-gray-700 bg-gray-100 border border-transparent rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none" placeholder="Rechercher...">
+                </div>
+            </div>
+            <div class="flex items-center">
+                <button class="p-1 text-gray-400 rounded-full hover:text-gray-500 focus:outline-none">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="ml-4">
+                    <img class="w-8 h-8 rounded-full" src="https://via.placeholder.com/32" alt="User">
+                </div>
+            </div>
+        </div>
+
     <!-- Page content -->
     <div class="flex-1 overflow-auto p-6">
         <div class="mb-6">

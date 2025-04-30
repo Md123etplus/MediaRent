@@ -162,6 +162,7 @@
                             @endphp
 
                             @include('admin.components.listing-item', [
+                                'id' => $annonce->id,
                                 'title' => $annonce->objet->nom,
                                 'status' => ucfirst($annonce->statut),
                                 'statusColor' => $statusColor,
@@ -174,7 +175,7 @@
                         @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les annonces premium</a>
+                        <a href="{{ route('admin.annonces.index', 'premium') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les annonces premium</a>
                     </div>
                 </div>
             </div>
