@@ -235,7 +235,7 @@ input:focus, select:focus {
         <i class="fas fa-cube"></i>
         <span>Ajouter un objet</span>
       </a>
-      <a href="{{ route('partenaire.annonces.index') }}" class="nav-item">
+      <a href="{{ route('annonces.mes_annonces') }}" class="nav-item">
         <i class="fas fa-list"></i>
         <span>Mes annonces</span>
       </a>

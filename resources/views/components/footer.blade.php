@@ -75,29 +75,7 @@
             <!-- Formulaire de contact -->
             <div>
                 <h3 class="text-lg font-semibold text-white mb-6">Envoyez-nous un message</h3>
-                <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="name" class="block text-sm font-medium mb-1">Nom</label>
-                        <input type="text" id="name" placeholder="Votre nom" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium mb-1">Email</label>
-                        <input type="email" id="email" placeholder="Votre email" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="subject" class="block text-sm font-medium mb-1">Sujet</label>
-                        <input type="text" id="subject" placeholder="Sujet de votre message" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="message" class="block text-sm font-medium mb-1">Message</label>
-                        <textarea id="message" rows="4" placeholder="Votre message" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition">
-                            Envoyer le message
-                        </button>
-                    </div>
-                </form>
+                @livewire('contact-form')
             </div>
         </div>
 

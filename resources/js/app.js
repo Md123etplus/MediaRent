@@ -1,12 +1,15 @@
 import Alpine from 'alpinejs';
 import persist from '@alpinejs/persist';
 import Chart from 'chart.js/auto';
+
 window.Chart = Chart; // Rend disponible globalement
-
+// window.Livewire = Livewire; // Make Livewire available globally
 // Initialize Alpine early
-window.Alpine = Alpine;
-Alpine.plugin(persist);
-
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+    Alpine.plugin(persist);
+    Alpine.start();
+}
 // Register the header component
 Alpine.data('header', () => ({
     darkMode: Alpine.$persist(false).as('darkMode'),
@@ -44,4 +47,4 @@ Alpine.data('header', () => ({
 }));
 
 // Start Alpine
-Alpine.start();
+// Alpine.start();

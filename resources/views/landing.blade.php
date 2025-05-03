@@ -38,4 +38,16 @@
             @include('landing.features')
         </div>
     </section>
+    <!-- Newsletter Section -->
+    <section id="newsletter" class="bg-white dark:bg-gray-900 py-12 md:py-24 lg:py-32">
+        <div class="container px-4 md:px-6 mx-auto">
+            @livewire('newsletter-subscription')
+        </div>
+    </section>
+    {{-- <!-- Test Section -->
+    <section id="test" class="bg-white dark:bg-gray-900 py-12 md:py-24 lg:py-32">
+        <div class="container px-4 md:px-6 mx-auto">
+            @livewire('test-component')
+        </div>
+    </section> --}}
 @endsection

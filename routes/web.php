@@ -23,7 +23,7 @@ use App\Http\Controllers\Client\EvaluationController;
 use App\Http\Controllers\PartenaireDashboardController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Client\CReservationController;
-
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
@@ -372,3 +372,5 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
         })->name('switch.default');
     }
 });
+//newsletter
+Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');

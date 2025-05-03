@@ -9,6 +9,8 @@ use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewAnnonceNotification; // Ensure this is the correct namespace for the Mailable class
 
 class Annonce extends Model
 {
@@ -166,4 +168,17 @@ class Annonce extends Model
 
 
     }
+    protected static function booted()
+{
+    static::created(function ($annonce) {
+        if ($annonce->statut === 'active') { // Only send emails when status is active
+            $subscribers = Subscriber::where('is_confirmed', 1)->get();
+
+            foreach ($subscribers as $subscriber) {
+                Mail::to($subscriber->email)->send(new NewAnnonceNotification($annonce)); // Send email directly
+            }
+        }
+    });
+}
+
 }
