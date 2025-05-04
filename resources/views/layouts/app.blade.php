@@ -17,6 +17,22 @@
     <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
     @livewireStyles
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
     @include('components.navbar')

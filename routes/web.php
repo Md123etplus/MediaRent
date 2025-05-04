@@ -374,3 +374,6 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
 });
 //newsletter
 Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
+Route::get('/offline', function () {
+    return view('offline');
+    });
