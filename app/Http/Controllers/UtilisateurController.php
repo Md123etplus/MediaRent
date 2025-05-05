@@ -6,7 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UtilisateurController extends Controller
 {
@@ -138,5 +141,127 @@ class UtilisateurController extends Controller
         $utilisateur->delete();
         return redirect()->route('utilisateurs.index')
                        ->with('success', 'Utilisateur supprimé');
+    }
+
+    //edit profil functionnality
+    public function showProfile()
+    {
+        $user = User::find(Auth::id());
+        return view('profile.show', compact('user'));
+    }
+
+    // Show profile edit form
+    public function editProfile()
+    {
+        $user = Auth::user();
+        if (!$user instanceof User) {
+            return back()->withErrors(['error' => 'Utilisateur non trouvé']);
+        }
+        return view('profile.edit', compact('user'));
+    }
+
+    // Update profile information
+    public function updateProfile(Request $request)
+{
+    $user = Auth::user();
+
+    $validated = $request->validate([
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,'.$user->id, // Changed to 'users'
+        'CIN' => 'required|string|max:255|unique:users,CIN,'.$user->id, // Changed to 'users'
+    ]);
+
+    // Alternative update syntax if update() still fails
+    $user->nom = $validated['nom'];
+    $user->prenom = $validated['prenom'];
+    $user->email = $validated['email'];
+    $user->CIN = $validated['CIN'];
+    if ($user && $user instanceof User) {
+        
+            $user->save();
+          
+       
+    } else {
+        return back()->withErrors(['error' => 'Utilisateur non trouvé']);
+    }
+
+    return redirect()->route('profile.show')
+        ->with('success', 'Profil mis à jour avec succès');
+}
+
+    // Update user password
+    public function updatePasswordProfile(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $user = Auth::user();
+        $user->mot_de_passe = Hash::make($request->password);
+        if ($user && $user instanceof User) {
+            $user->save();
+        } else {
+            return back()->withErrors(['error' => 'Utilisateur non trouvé']);
+        }
+        // $user->save();
+
+        return back()->with('success', 'Mot de passe mis à jour avec succès');
+    }
+
+    // Update profile and CIN images
+    public function updateImagesProfile(Request $request)
+    {
+        $user = Auth::user();
+        $updates = [];
+
+        $request->validate([
+            'img_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img_cin_front' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'img_cin_back' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Handle profile image upload
+        if ($request->hasFile('img_profil')) {
+            if ($user->img_profil) {
+                Storage::delete($user->img_profil,'public');
+            }
+            $path = $request->file('img_profil')->store('profile_images', 'public');
+            $updates['img_profil'] = $path;
+        }
+
+        // Handle CIN front image upload
+        if ($request->hasFile('img_cin_front')) {
+            if ($user->img_cin_front) {
+                Storage::delete($user->img_cin_front,'public');
+            }
+            $path = $request->file('img_cin_front')->store('cin_images', 'public');
+            $updates['img_cin_front'] = $path;
+        }
+
+        // Handle CIN back image upload
+        if ($request->hasFile('img_cin_back')) {
+            if ($user->img_cin_back) {
+                Storage::delete($user->img_cin_back,'public');
+            }
+            $path = $request->file('img_cin_back')->store('cin_images','public');
+            $updates['img_cin_back'] = $path;
+        }
+
+        if (!empty($updates)) {
+            foreach ($updates as $key => $value) {
+                $user->$key = $value;
+            }
+            if ($user && $user instanceof User) {
+                $user->save();
+            } else {
+                return back()->withErrors(['error' => 'Utilisateur non trouvé']);
+            }
+            // $user->save();
+            return back()->with('success', 'Images mises à jour avec succès');
+        }
+
+        return back()->with('info', 'Aucune image mise à jour');
     }
 }

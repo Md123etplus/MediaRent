@@ -374,3 +374,28 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
 });
 //newsletter
 Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
+//edit profile
+
+
+// Route::get('/edit-profile',[UtilisateurController::class, 'editProfile'])->name('profile.show');)
+Route::middleware(['auth'])->group(function () {
+    // Display user profile
+    Route::get('/profile', [UtilisateurController::class, 'showProfile'])
+        ->name('profile.show');
+    
+    // Show profile edit form
+    Route::get('/profile/edit', [UtilisateurController::class, 'editProfile'])
+        ->name('profile.edit');
+    
+    // Update basic profile information (name, email, CIN)
+    Route::put('/profile/update', [UtilisateurController::class, 'updateProfile'])
+        ->name('profile.update');
+    
+    // Update user password (separate from basic info for security)
+    Route::post('/profile/update-password', [UtilisateurController::class, 'updatePasswordProfile'])
+        ->name('profile.update-password');
+    
+    // Update profile and CIN images (profile photo, CIN front/back)
+    Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
+        ->name('profile.update-images');
+});
