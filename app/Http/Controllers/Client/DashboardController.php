@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function index()
     {
         // $user = Auth::user();
-        $user = User::find(1); 
+        $user = User::find(Auth::id()); 
         // Si l'utilisateur n'est pas connecté, retourne des valeurs par défaut
     if (!$user) {
         $ongoingReservations = 0;

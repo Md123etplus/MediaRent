@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Objet;
+use App\Models\Objet; // Ensure the Objet class exists in this namespace. If not, update the namespace accordingly.
 // use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Model;
@@ -84,11 +84,6 @@ class Annonce extends Model
     //     return $this->hasMany(Reservation::class);
     // }
 
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class, 'annonce_id');
-    }
-
     // Scopes utiles
     public function scopeActive($query)
     {
@@ -118,16 +113,58 @@ class Annonce extends Model
     // {
     //     return $this->belongsTo(User::class, 'proprietaire_id');
     // }
+  
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 
     public function evaluations()
     {
         return $this->hasManyThrough(
             Evaluation::class,
             Objet::class,
-            'id', // Clé étrangère sur la table Objet
-            'objet_id', // Clé étrangère sur la table Evaluation
-            'objet_id', // Clé locale sur la table Annonce
-            'id' // Clé locale sur la table Objet
+            'id', // Clé étrangère sur la table objets
+            'objet_id', // Clé étrangère sur la table evaluations
+            'objet_id', // Clé locale sur la table annonces
+            'id' // Clé locale sur la table objets
         );
+    }
+
+    public function scopeWithFilters($query, $filters)
+    {
+        return $query->when(isset($filters['ville']), function($q) use ($filters) {
+                $q->where('adress', 'like', "%{$filters['ville']}%");
+            })
+            ->when(isset($filters['categorie']), function($q) use ($filters) {
+                $q->whereHas('objet.categorie', function($query) use ($filters) {
+                    $query->where('nom', $filters['categorie']);
+                });
+            })
+            ->when(isset($filters['prix_min']), function($q) use ($filters) {
+                $q->whereHas('objet', function($query) use ($filters) {
+                    $query->where('prix_journalier', '>=', $filters['prix_min']);
+                });
+            })
+            ->when(isset($filters['prix_max']), function($q) use ($filters) {
+                $q->whereHas('objet', function($query) use ($filters) {
+                    $query->where('prix_journalier', '<=', $filters['prix_max']);
+                });
+            })
+            ->when(isset($filters['date_debut']) && isset($filters['date_fin']), function($q) use ($filters) {
+                $q->where('date_debut', '<=', $filters['date_fin'])
+                  ->where('date_fin', '>=', $filters['date_debut']);
+            });
+    }
+
+    public function scopeWithRating($query, $minRating)
+    {
+        return $query->whereHas('objet.evaluations', function($q) use ($minRating) {
+            $q->selectRaw('objet_id, avg(note) as average_rating')
+              ->groupBy('objet_id')
+              ->having('average_rating', '>=', $minRating);
+        });
+
+
     }
 }

@@ -35,11 +35,14 @@ class Objet extends Model
         return $this->hasMany(Annonce::class);
     }
 
-    public function images()
+//     public function images()
+// {
+//     return $this->hasMany(Image::class);
+// }
+public function images()
 {
-    return $this->hasMany(Image::class);
+    return $this->hasMany(Image::class, 'objet_id', 'id');
 }
-
     // 🔁 Relation avec le propriétaire
     public function proprietaire()
     {
@@ -50,4 +53,13 @@ class Objet extends Model
 {
     return $this->belongsTo(Categorie::class, 'categorie_id');
 }
+// Dans app/Models/Objet.php
+public function evaluations()
+{
+    return $this->hasMany(\App\Models\Evaluation::class, 'objet_id');
 }
+
+
+
+}
+

@@ -16,7 +16,7 @@ class PartenaireDashboardController extends Controller
     public function index()
     {
         // $user = Auth::user();
-        $user = User::find(1); // Replace 1 with your test user's ID
+        $user = User::find(Auth::id()); // Replace 1 with your test user's ID
 
         // if (!$user || $user->role !== 'partenaire') {
         //     abort(403, 'Accès réservé aux partenaires');

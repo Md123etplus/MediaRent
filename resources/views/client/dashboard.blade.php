@@ -10,7 +10,7 @@
             </div>
             <div class="flex-grow flex flex-col">
                 <nav class="flex-1 space-y-2 px-4">
-                    <a href="{{ route('client.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 {{ request()->routeIs('client.dashboard') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-500 hover:text-white' }}">
+                    <a href="{{ route('client.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 {{ request()->routeIs('client.dashboard') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-500 hover:text-white' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>

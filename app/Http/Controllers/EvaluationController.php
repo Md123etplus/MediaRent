@@ -10,7 +10,7 @@ class EvaluationController extends Controller
     public function index()
     {
         $evaluations = Evaluation::all();
-        return view('evaluations.index', compact('evaluations'));
+        return view('client.evaluations.index', compact('evaluations'));
     }
 
     public function create()

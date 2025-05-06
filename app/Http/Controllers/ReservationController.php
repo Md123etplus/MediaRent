@@ -32,7 +32,7 @@ class ReservationController extends Controller
     
         $reservation = new Reservation();
         $reservation->annonce_id = $annonce->id;
-        $reservation->client_id = 2; // utilisateur connecté//Auth::id()
+        $reservation->client_id = Auth::id(); // utilisateur connecté//Auth::id()
         $reservation->date_debut = $request->input('date_debut');
         $reservation->date_fin = $request->input('date_fin');
         $reservation->statut = 'en_attente';
