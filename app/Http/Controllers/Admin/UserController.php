@@ -59,13 +59,27 @@ class UserController extends Controller
 
     public function toggleSuspension(User $user)
     {
-        $isSuspended = $user->toggleSuspension();
-        
-        return back()->with('success', 
-            $isSuspended 
-                ? 'Utilisateur suspendu avec succès' 
-                : 'Utilisateur réactivé avec succès'
-        );
+        try {
+            $isSuspended = $user->toggleSuspension();
+
+            return response()->json([
+                'success' => true,
+                'is_suspended' => $isSuspended,
+                'message' => $isSuspended
+                    ? 'Utilisateur suspendu avec succès'
+                    : 'Utilisateur réactivé avec succès',
+                'user' => [
+                    'id' => $user->id,
+                    'status' => $isSuspended ? 'suspended' : 'active'
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la modification du statut'
+            ], 500);
+        }
     }
 
     /**

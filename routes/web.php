@@ -28,6 +28,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\Admin\AdminAnnonceController;
+use App\Http\Controllers\Admin\AdminEvaluationController;
+use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminReservationController;
+use App\Http\Middleware\AdminAuth;
 // use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -113,18 +118,34 @@ Route::get('/blog', function () {
 })->name('blog');
 
 
-Route::prefix('admin')->group(function () { //->middleware(['auth', 'admin'])
-    Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/annonces/{type}', [AdminAnnonceController::class, 'index'])->name('admin.annonces.index');
-    Route::patch('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
-         ->name('admin.users.toggle-suspension');
-    Route::get('/annonces/{annonce}/details', [AdminAnnonceController::class, 'getDetails'])
-            ->name('admin.annonces.details');
-    Route::post('/annonces/{annonce}/toggle-archive', [AdminAnnonceController::class, 'toggleArchive'])
-    ->name('admin.annonces.toggle-archive');
-    // ->middleware('auth');
+Route::prefix('admin')->group(function() {
+    // Connexion
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login']);
 
+    // Déconnexion
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+    // Zone sécurisée
+    Route::middleware(AdminAuth::class)->group(function() {
+        Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/annonces/{type}', [AdminAnnonceController::class, 'index'])->name('admin.annonces.index');
+        Route::post('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
+            ->name('admin.users.toggle-suspension');
+        Route::get('/annonces/{annonce}/details', [AdminAnnonceController::class, 'getDetails'])
+                ->name('admin.annonces.details');
+        Route::post('/annonces/{annonce}/toggle-archive', [AdminAnnonceController::class, 'toggleArchive'])
+        ->name('admin.annonces.toggle-archive');
+        // ->middleware('auth');
+
+        Route::get('/evaluations', [AdminEvaluationController::class, 'index'])->name('admin.evaluations.index');
+        Route::post('/evaluations/{evaluation}/toggle-visibility', [AdminEvaluationController::class, 'toggleVisibility'])->name('admin.evaluations.toggle-visibility');
+
+        Route::get('/export', [ExportController::class, 'exportData'])->name('admin.export');
+
+        Route::get('/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations.index');
+    });
 });
 Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 // Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');

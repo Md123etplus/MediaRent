@@ -118,4 +118,16 @@ class Annonce extends Model
     // {
     //     return $this->belongsTo(User::class, 'proprietaire_id');
     // }
+
+    public function evaluations()
+    {
+        return $this->hasManyThrough(
+            Evaluation::class,
+            Objet::class,
+            'id', // Clé étrangère sur la table Objet
+            'objet_id', // Clé étrangère sur la table Evaluation
+            'objet_id', // Clé locale sur la table Annonce
+            'id' // Clé locale sur la table Objet
+        );
+    }
 }

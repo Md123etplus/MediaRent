@@ -5,6 +5,24 @@
 
     RewriteEngine On
 
+    # ==================================================
+    # Protection .htpasswd (adaptative pour l'hébergement)
+    # ==================================================
+
+    RewriteCond %{REQUEST_URI} ^/admin [NC]
+    RewriteCond %{LA-U:REMOTE_USER} ^$
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+
+    <IfModule mod_auth_basic.c>
+        <IfModule mod_env.c>
+            # Chemin relatif depuis la racine du projet
+            AuthType Basic
+            AuthName "Admin Area Restricted"
+            AuthUserFile "%{DOCUMENT_ROOT}/../.htpasswd"  # <-- Solution clé
+            Require valid-user
+        </IfModule>
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

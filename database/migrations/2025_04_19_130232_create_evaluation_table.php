@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('evalue_id')->constrained('users');
             $table->integer('note');
             $table->text('commentaire');
+            $table->boolean('is_visible')->default(true);
             $table->date('date');
             $table->timestamps();
         });

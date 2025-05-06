@@ -89,3 +89,32 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
     });
 });
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('toast', () => ({
+        toasts: [],
+        addToast(type, message, duration = 3000) {
+            const id = Date.now();
+            this.toasts.push({ id, type, message });
+
+            if (duration) {
+                setTimeout(() => {
+                    this.removeToast(id);
+                }, duration);
+            }
+        },
+        removeToast(id) {
+            this.toasts = this.toasts.filter(toast => toast.id !== id);
+        }
+    }));
+});
+
+// Fonction helper globale pour afficher les toasts
+window.showToast = function(type, message, duration = 3000) {
+    const toastComponent = document.querySelector('[x-data="toast"]');
+    if (toastComponent) {
+        Alpine.$data(toastComponent).addToast(type, message, duration);
+    } else {
+        console.error('Toast component not found');
+    }
+};
