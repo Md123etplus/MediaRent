@@ -30,7 +30,7 @@ class ObjetController extends Controller
         'ville' => 'required|string',
         'prix_journalier' => 'required|numeric',
         'categorie_id' => 'required|integer|exists:categorie,id',
-        'etat' => 'required|string|in:dispo,indispo',
+        'etat' => 'required|string|in:neuf,bon,usé',
         'images' => 'required|array|min:1|max:3',
         'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
     ]);
@@ -43,7 +43,7 @@ class ObjetController extends Controller
     $objet->prix_journalier = $request->prix_journalier;
     $objet->categorie_id = $request->categorie_id;
     $objet->etat = $request->etat;
-    $objet->proprietaire_id = 1; // ou Auth::id()
+    $objet->proprietaire_id = Auth::id(); // ou Auth::id()
     $objet->save();
 
     // Enregistrement des images modifié
@@ -73,12 +73,16 @@ class ObjetController extends Controller
         $objet = Objet::with('categorie')->findOrFail($id);
         return view('objets.show', compact('objet'));
     }
-    public function edit($id)
-    {
-        $objet = Objet::findOrFail($id);
-        $categories = Categorie::all();
-        return view('objets.edit', compact('objet', 'categories'));
+    public function edit(Objet $objet)
+{
+    // Vérifie que l'utilisateur est bien le propriétaire
+    if ($objet->proprietaire_id !== auth()->id()) {
+        abort(403, 'Unauthorized action.');
     }
+
+    $categories = Categorie::all(); // Si vous avez des catégories
+    return view('objet.edit', compact('objet', 'categories'));
+}
 
     // Mise à jour d’un objet
     public function update(Request $request, $id)
@@ -96,27 +100,43 @@ class ObjetController extends Controller
         $objet = Objet::findOrFail($id);
         $objet->update($request->all());
 
-        return redirect()->route('objets.index')
+        return redirect()->route('mes.objets')
             ->with('success', 'Objet mis à jour avec succès.');
     }
 
-    // Suppression
-    public function destroy($id)
+    public function destroy(Objet $objet)
     {
-        $objet = Objet::findOrFail($id);
+        // Vérification du propriétaire
+        if ($objet->proprietaire_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+    
+        // Supprimez les images associées si nécessaire
+        // foreach ($objet->images as $image) {
+        //     Storage::delete($image->url);
+        //     $image->delete();
+        // }
+    
         $objet->delete();
-
-        return redirect()->route('objets.index')
-            ->with('success', 'Objet supprimé avec succès.');
+    
+        return redirect()->route('mes.objets')->with('success', 'Objet supprimé avec succès');
     }
 
-public function mesObjets()
-{
-    $objets = Objet::with(['images', 'categorie'])
-                ->where('proprietaire_id', 1)
-                ->latest()
-                ->get();
+    public function mesObjets()
+    {
+        // Vérifie d'abord si l'utilisateur est authentifié
+        if (auth()->check()) {
+            $objets = Objet::with(['images', 'categorie'])
+                        ->where('proprietaire_id', auth()->id()) // Utilise l'ID de l'utilisateur connecté
+                        ->latest()
+                        ->get();
+    
+            return view('objet.mes_objets', compact('objets'));
+        }
+    
+        // Redirige vers la page de connexion si l'utilisateur n'est pas authentifié
+        return redirect()->route('login')->with('error', 'Vous devez être connecté pour voir vos objets.');
+    }
 
-    return view('objet.mes_objets', compact('objets'));
-}
+
 }
