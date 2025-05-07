@@ -12,6 +12,25 @@ use Carbon\Carbon;
 use App\Models\User;
 class EvaluationController extends Controller
 {
+    public function show(Evaluation $evaluation)
+{
+    // Vérifier que l'évaluation appartient bien à l'utilisateur connecté
+    if ($evaluation->evaluateur_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // Charger les relations nécessaires
+    $evaluation->load([
+        'reservation.annonce.objet',
+        'reservation.annonce.proprietaire'
+    ]);
+
+    // Passez un indicateur pour la vue
+    return view('client.evaluations.show', [
+        'evaluation' => $evaluation,
+        'from_reservations' => request()->has('from_reservations')
+    ]);
+}
     public function index()
     {
     //     $user = Auth::user();
@@ -62,47 +81,44 @@ $evaluations = $testUser
 
 
     public function store(Request $request, Reservation $reservation)
-    {
-        // Vérifier que la réservation appartient bien à l'utilisateur connecté
-        if ($reservation->client_id !== Auth::id()) {
-            abort(403);
-        }
-        
-        // Validation
-        $request->validate([
-            'note_objet' => 'required|integer|min:1|max:5',
-            'note_proprietaire' => 'required|integer|min:1|max:5',
-            'commentaire_objet' => 'required|string|max:500',
-            'commentaire_proprietaire' => 'required|string|max:500',
-        ]);
-        
-        // Créer l'évaluation
-        Evaluation::create([
-            'objet_id' => $reservation->annonce->objet_id,
-            'evaluateur_id' => Auth::id(),
-            'evalue_id' => $reservation->annonce->proprietaire_id,
-            'note_objet' => $request->note_objet,
-            'note_proprietaire' => $request->note_proprietaire,
-            'commentaire_objet' => $request->commentaire_objet,
-            'commentaire_proprietaire' => $request->commentaire_proprietaire,
-            'date' => Carbon::now(),
-            'reservation_id' => $reservation->id,
-        ]);
-        
-        return redirect()->route('client.evaluations.index')
-            ->with('success', 'Votre évaluation a été enregistrée avec succès.');
+{
+    // Vérifier que la réservation appartient bien à l'utilisateur connecté
+    if ($reservation->client_id !== Auth::id()) {
+        abort(403,"Cette réservation ne vous appartient pas.");
     }
-
-    public function show(Evaluation $evaluation)
-    {
-        // Vérifier que l'évaluation appartient bien à l'utilisateur connecté
-        if ($evaluation->evaluateur_id !== Auth::id()) {
-            abort(403);
-        }
-        
-        return view('client.evaluations.show', compact('evaluation'));
-    }
-
+    
+    // Validation
+    $validated = $request->validate([
+        'note_objet' => 'required|integer|min:1|max:5',
+        'note_proprietaire' => 'required|integer|min:1|max:5',
+        'commentaire_objet' => 'required|string|max:500',
+        'commentaire_proprietaire' => 'required|string|max:500',
+    ]);
+    
+    // Créer l'évaluation
+    $evaluation = Evaluation::create([
+        'reservation_id' => $reservation->id,
+        'objet_id' => $reservation->annonce->objet_id,
+        'evaluateur_id' => Auth::id(),
+        'evalue_id' => $reservation->annonce->proprietaire_id,
+        'note_objet' => $request->note_objet,
+        'note_proprietaire' => $request->note_proprietaire,
+        'commentaire_objet' => $request->commentaire_objet,
+        'commentaire_proprietaire' => $request->commentaire_proprietaire,
+        'date' => Carbon::now(),
+        ...$validated
+    ]);
+  
+    // Mettre à jour le statut de la réservation
+    $reservation->update(['statut' => 'évaluée']);
+    
+    // Retourner une réponse JSON avec l'évaluation créée
+    return response()->json([
+        'success' => true,
+        'evaluation' => $evaluation,
+        'redirect' => route('client.reservations.index')
+    ]);
+}
     public function edit(Evaluation $evaluation)
     {
         // Vérifier que l'évaluation appartient bien à l'utilisateur connecté

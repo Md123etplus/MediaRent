@@ -4,32 +4,68 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Evaluation;
+use App\Models\Reservation;
 
 class EvaluationController extends Controller
 {
     public function index()
-    {
-        $evaluations = Evaluation::all();
-        return view('client.evaluations.index', compact('evaluations'));
-    }
+{
+    $evaluations = Evaluation::with([
+        'reservation.annonce.objet.images', 
+        'reservation.annonce.proprietaire'
+    ])->where('evaluateur_id', auth()->id())->get();
 
-    public function create()
-    {
-        return view('evaluations.create');
-    }
+    return view('client.evaluations.index', compact('evaluations'));
+}
 
     public function store(Request $request)
     {
-        $request->validate([
-            'note' => 'required|integer|min:1|max:5',
-            'commentaire' => 'nullable|string',
-            'evaluateur_id' => 'required|exists:Utilisateur,id',
-            'evalue_id' => 'required|exists:Utilisateur,id',
+        // Debug crucial
+    \Log::info("Creating evaluation for reservation:", [
+        'expected_id' => $reservation->id,
+        'actual_data' => $reservation->toArray()
+    ]);
+
+        $validated = $request->validate([
+            'reservation_id' => 'required|exists:reservations,id',
+            'note_objet' => 'required|integer|between:1,5',
+            'note_proprietaire' => 'required|integer|between:1,5',
+            'commentaire_objet' => 'nullable|string|max:500',
+            'commentaire_proprietaire' => 'nullable|string|max:500',
         ]);
 
-        Evaluation::create($request->all());
+        $reservation = Reservation::with(['annonce.objet', 'annonce.proprietaire'])
+            ->findOrFail($validated['reservation_id']);
 
-        return redirect()->route('evaluations.index')
-            ->with('success', 'Évaluation ajoutée avec succès.');
+        // Vérifier si une évaluation existe déjà
+        $existingEvaluation = Evaluation::where('reservation_id', $reservation->id)->first();
+        
+        if ($existingEvaluation) {
+            return response()->json(['error' => 'Une évaluation existe déjà pour cette réservation'], 422);
+        }
+
+        $evaluation = $reservation->evaluation()->create([
+            'reservation_id' => $reservation->id,
+            'objet_id' => $reservation->annonce->objet->id,
+            'evaluateur_id' => auth()->id(),
+            'evalue_id' => $reservation->annonce->proprietaire->id,
+            'note_objet' => $validated['note_objet'],
+            'note_proprietaire' => $validated['note_proprietaire'],
+            'commentaire_objet' => $validated['commentaire_objet'],
+            'commentaire_proprietaire' => $validated['commentaire_proprietaire'],
+            'date' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'evaluation' => $evaluation,
+            'message' => 'Évaluation soumise avec succès'
+        ]);
+    }
+
+    public function showByReservation($reservationId)
+    {
+        $evaluation = Evaluation::where('reservation_id', $reservationId)->firstOrFail();
+        return response()->json($evaluation);
     }
 }

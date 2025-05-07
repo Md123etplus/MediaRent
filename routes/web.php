@@ -322,24 +322,42 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 Route::prefix('client')->name('client.')->group(function() {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+   // Réservations
+   Route::prefix('reservations')->name('reservations.')->group(function() {
+    Route::get('/', [CReservationController::class, 'index'])->name('index');
+    Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
+    Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
+});
+// Route pour la recherche
+Route::get('/recherche', [RechercheController::class, 'index'])->name('recherche');
+
     
-    // Réservations
-    Route::prefix('reservations')->name('reservations.')->group(function() {
-        Route::get('/', [CReservationController::class, 'index'])->name('index');
-        Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
-        Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
-    });
+// Route pour le profil
+Route::get('/profil/edit', [ProfilController::class, 'edit'])->name('profil.edit');
+Route::put('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
+
+// Route pour l'aide
+Route::get('/aide', [AideController::class, 'index'])->name('aide');
+
+// Évaluations - Version corrigée et simplifiée
+Route::prefix('evaluations')->name('evaluations.')->group(function() {
+    // Liste des évaluations
+    Route::get('/', [EvaluationController::class, 'index'])->name('index');
     
-    // Évaluations
-    Route::prefix('evaluations')->name('evaluations.')->group(function() {
-        Route::get('/', [EvaluationController::class, 'index'])->name('index');
-        Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
-        Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
-        Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
-        Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
-        Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
-    });
+    // Création et stockage
+    Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
+    Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
+   
     
+    // Gestion des évaluations existantes
+    Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
+    Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
+    Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
+    
+    // Historique (si nécessaire)
+    Route::get('/history', [EvaluationController::class, 'history'])->name('history');
+});
+});
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function() {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
@@ -368,4 +386,3 @@ Route::prefix('client')->name('client.')->group(function() {
             return redirect()->route('client.dashboard');
         })->name('switch.default');
     }
-});
