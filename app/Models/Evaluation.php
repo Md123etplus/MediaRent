@@ -24,6 +24,7 @@ class Evaluation extends Model
         'reservation_id',
         'note',
         'commentaire',
+        'is_visible',
         'date',
         'type', // 'objet' ou 'utilisateur'
     ];

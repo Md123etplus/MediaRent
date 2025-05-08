@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr" x-data="{ darkMode: $persist(false) }" :class="{ 'dark': darkMode }">
-@stack('styles')
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,33 +11,21 @@
     <meta name="apple-mobile-web-app-title" content="MediaRent" />
 
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
-    <!-- CSS/JS Leaflet à charger une seule fois -->
-@push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-@endpush
-
-@push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@endpush
-
     
+    @livewireStyles
+    @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @yield('styles')
-   <!-- FullCalendar CSS -->
-  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
-
 </head>
-@stack('scripts')
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
     @include('components.navbar')
    
     <main class="flex-1">
         @yield('content')
-        @yield('scripts')
     </main>
+    
     @include('components.footer')
     
-    {{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer></script> --}}
+    @livewireScripts
+    @stack('scripts')
 </body>
 </html>
