@@ -2,30 +2,29 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
 class NouvelleReservation extends Mailable
 {
-    public $reservation;
-    public $utilisateur;
-    public $annonce;
+    use Queueable, SerializesModels;
 
-    public function __construct($reservation, $utilisateur, $annonce)
+    public $reservation;
+    public $annonce;
+    public $client;
+
+    public function __construct($reservation, $annonce, $client)
     {
         $this->reservation = $reservation;
-        $this->utilisateur = $utilisateur;
         $this->annonce = $annonce;
+        $this->client = $client;
     }
 
-    public function build()
-    {
-        return $this->from($this->utilisateur->email, $this->utilisateur->nom) // ✅ Utilisateur connecté
-                    ->subject('Nouvelle demande de réservation')
-                    ->view('emails.nouvelle-reservation')
-                    ->with([
-                        'reservation' => $this->reservation,
-                        'utilisateur' => $this->utilisateur,
-                        'annonce' => $this->annonce
-                    ]);
-    }
+public function build()
+{
+    $annonceName = $this->annonce->objet->nom ?? 'Annonce sans nom';
+    return $this->subject("Nouvelle Réservation: $annonceName")
+               ->view('emails.nouvelle_reservation');
+}
 }

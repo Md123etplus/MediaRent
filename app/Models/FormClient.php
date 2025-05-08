@@ -6,23 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormClient extends Model
 {
-    protected $table = 'reservation'; // On insère dans la table users
+    protected $table = 'bookings';
 
-    protected $fillable = [ 
+    protected $fillable = [
         'nom',
         'prenom',
         'email',
-        'mot_de_passe',
-        'role',
         'CIN',
-        'img_profil',
-        'img_cin_front',
-        'img_cin_back',
-    ];
-
-    protected $hidden = [
-        'mot_de_passe',
+        'annonce_id',
+        'date_debut',
+        'date_fin',
+        'prix_total'
     ];
 
     public $timestamps = true;
+
+    public function annonce()
+    {
+        return $this->belongsTo(Annonce::class);
+    }
 }

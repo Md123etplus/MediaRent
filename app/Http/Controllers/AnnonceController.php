@@ -171,4 +171,21 @@ public function archiver($id)
             'searchParams' => $request->all()
         ]);
     }
+
+
+
+    public function map()
+    {
+        $annonces = Annonce::with(['objet.images', 'objet.categorie'])
+                    ->whereHas('objet', function($query) {
+                        $query->whereNotNull('latitude')
+                              ->whereNotNull('longitude');
+                    })
+                    ->where('statut', 'active')  // Only show active listings
+                    ->get();
+    
+        // Use a consistent view name
+        return view('client.annonces.map', compact('annonces'));
+    }
+    
 }

@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NouvelleReservation;
+use App\Mail\ReservationAccepted;
+use App\Mail\ReservationRejected;
 
 
 
@@ -25,65 +27,96 @@ class ReservationController extends Controller
         $request->validate([
             'date_debut' => 'required|date',
             'date_fin' => 'required|date|after_or_equal:date_debut',
-            'statut' => 'required|in:en_attente,confirme,annule',
         ]);
     
-        $annonce = Annonce::findOrFail($request->input('annonce_id'));
+        $annonce = Annonce::with(['proprietaire', 'objet'])->findOrFail($request->input('annonce_id'));
     
-        $reservation = new Reservation();
-        $reservation->annonce_id = $annonce->id;
-        $reservation->client_id = Auth::id(); // utilisateur connecté//Auth::id()
-        $reservation->date_debut = $request->input('date_debut');
-        $reservation->date_fin = $request->input('date_fin');
-        $reservation->statut = 'en_attente';
-        $reservation->save();
+        $reservation = Reservation::create([
+            'annonce_id' => $annonce->id,
+            'client_id' => Auth::id() , 
+            'date_debut' => $request->input('date_debut'),
+            'date_fin' => $request->input('date_fin'),
+            'statut' => 'en_attente'
+        ]);
     
-        // Récupérer le propriétaire de l'annonce
-        $partenaire = $annonce->proprietaire;
+        // Envoi email au propriétaire
+        $this->sendReservationEmail($reservation, $annonce);
     
-        // Récupérer le client connecté
-        $utilisateur = User::findOrFail(2); // Auth::user(); // Utilisateur connecté
+        return redirect()->route('reservations.formClient')
+               ->with('success', 'Réservation enregistrée! Remplissez vos informations.');
+    }
     
-        // Envoi de l'email
-        if ($partenaire && $partenaire->email) {
-            Mail::to($partenaire->email)->send(
-                new \App\Mail\NouvelleReservation(
+    private function sendReservationEmail(Reservation $reservation, Annonce $annonce)
+    {
+        $proprietaire = $annonce->proprietaire; 
+        $client = Auth::user(); 
+    
+        if ($proprietaire && $proprietaire->email) {
+            Mail::to($proprietaire->email)->send(
+                new NouvelleReservation(
                     $reservation,
-                    $utilisateur,
-                    $annonce
+                    $annonce,
+                    $client
                 )
             );
         }
-    
-        return redirect()->route('reservations.formClient')
-            ->with('success', 'Réservation enregistrée, veuillez remplir vos informations personnelles.');
     }
-    
 
-    public function showForm($id)
-    {
-        $annonce = Annonce::findOrFail($id);
-        return view('reservations.create', compact('annonce'));
-    }
-//reponse a lemail du client
-    public function reponse($id, $decision)
+
+public function storeDates(Request $request, Annonce $annonce)
 {
-    $reservation = Reservation::findOrFail($id);
+    $validated = $request->validate([
+        'date_debut' => 'required|date|after_or_equal:today',
+        'date_fin' => 'required|date|after:date_debut'
+    ]);
 
-    // Vérification de décision
-    if (!in_array($decision, ['accepter', 'refuser'])) {
-        return redirect()->route('home')->with('error', 'Décision invalide.');
+    // Calcul du prix total
+    $jours = $validated['date_debut']->diffInDays($validated['date_fin']);
+    $prixTotal = $annonce->objet->prix_journalier * $jours;
+
+    // Stockage en session
+    session([
+        'reservation_data' => [
+            'annonce_id' => $annonce->id,
+            'date_debut' => $validated['date_debut'],
+            'date_fin' => $validated['date_fin'],
+            'prix_total' => $prixTotal
+        ]
+    ]);
+
+    return redirect()->route('reservations.formClient');
+}
+
+
+
+public function respond(Request $request, $id, $response)
+{
+    $reservation = Reservation::with(['annonce.objet', 'annonce.proprietaire', 'client'])
+                     ->findOrFail($id);
+
+    if (!in_array($response, ['accept', 'reject'])) {
+        return back()->with('error', 'Action invalide');
     }
 
     // Mise à jour du statut
-    $reservation->statut = ($decision === 'accepter') ? 'confirme' : 'annule';
+    $reservation->statut = ($response === 'accept') ? 'confirmée' : 'annulée';
     $reservation->save();
 
-    // Optionnel : Notifier le client ?
-    // Mail::to($reservation->client->email)->send(new ReponseReservation(...));
+    // Envoi de l'email approprié
+    $mailClass = ($response === 'accept') 
+        ? ReservationAccepted::class 
+        : ReservationRejected::class;
 
-    return redirect()->route('landing')->with('success', 'Vous avez bien ' . ($decision === 'accepter' ? 'accepté' : 'refusé') . ' la réservation.');
+    Mail::to($reservation->client->email)
+        ->send(new $mailClass($reservation, $reservation->annonce));
+
+    return back()->with('success', 
+        ($response === 'accept')
+            ? 'Réservation acceptée et client notifié'
+            : 'Réservation refusée et client notifié'
+    );
 }
+
 
     
 }
