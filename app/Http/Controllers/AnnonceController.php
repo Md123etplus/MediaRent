@@ -171,4 +171,26 @@ public function archiver($id)
             'searchParams' => $request->all()
         ]);
     }
+    // Afficher le formulaire de choix du forfait
+public function showPremiumForm(Annonce $annonce)
+{
+    if ($annonce->proprietaire_id !== Auth::id()) {
+        abort(403, "Vous n'êtes pas propriétaire de cette annonce.");
+    }
+
+    // Forfaits codés en dur (simulation)
+    $plans = [
+        ['id' => 1, 'name' => '7 jours', 'duration_days' => 7, 'price' => 9.99],
+        ['id' => 2, 'name' => '15 jours', 'duration_days' => 15, 'price' => 14.99],
+        ['id' => 3, 'name' => '1 mois', 'duration_days' => 30, 'price' => 19.99],
+    ];
+
+    return view('annonces.premium', compact('annonce', 'plans')); 
+}
+
+
+// Afficher la confirmation
+public function paymentSuccess(Annonce $annonce)
+{
+    return view('annonces.payment_success', compact('annonce')); }
 }

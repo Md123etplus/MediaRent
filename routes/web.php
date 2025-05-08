@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Models\Utilisateur;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
+use App\Http\Controllers\PaymentController;
 // Routes publiques
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
@@ -313,9 +313,18 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 //});
 
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
-
-
-
+//premium
+Route::middleware(['auth'])->group(function () {
+    Route::get('/annonces/{annonce}/premium', [AnnonceController::class, 'showPremiumForm'])
+    ->name('annonces.premium');
+    
+    Route::post('/annonces/{annonce}/process-payment', [PaymentController::class, 'processPayment'])
+    ->name('annonces.process-payment');
+   Route::get('/annonces/{annonce}/payment-success', [AnnonceController::class, 'paymentSuccess'])->name('annonces.payment-success');
+   Route::get('/annonces/{annonce}/payment-success/{reference}', 
+    [PaymentController::class, 'showSuccess'])
+    ->name('annonces.payment-success');
+});
 
 
 // Routes client avec protection standard
