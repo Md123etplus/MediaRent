@@ -34,6 +34,8 @@ class Reservation extends Model
     {
         return $this->belongsTo(User::class, 'client_id');
     }
+    
+    
 
     /**
      * Relation avec l'annonce
@@ -42,6 +44,8 @@ class Reservation extends Model
     {
         return $this->belongsTo(Annonce::class, 'annonce_id')->with(['objet.images']);
     }
+    
+    
 
     /**
      * Accessor pour le revenu de la réservation
@@ -101,4 +105,10 @@ class Reservation extends Model
 // {
 //     return $this->belongsTo(User::class, 'client_id');
 // }
+
+    // Note: `evaluation.objet_id` référence `reservation.id`
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'objet_id'); // 'objet_id' ici est en fait reservation_id
+    }
 }

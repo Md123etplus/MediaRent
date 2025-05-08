@@ -67,4 +67,6 @@ class Categorie extends Model
     {
         return $query->where('actif', true);
     }
+    
+    
 }

@@ -16,15 +16,14 @@ class Image extends Model
         'objet_id',
     ];
 
-    /**
-     * 🔁 Relation avec Objet
-     */
-    public function objet()
-    {
-        return $this->belongsTo(Objet::class);
-    }
+    
     public function images()
     {
         return $this->hasMany(Image::class);
+    }
+    
+    public function objet()
+    {
+        return $this->belongsTo(Objet::class, 'objet_id');
     }
 }

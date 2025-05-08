@@ -71,7 +71,7 @@ class Annonce extends Model
 
     public function objet()
     {
-        return $this->belongsTo(Objet::class);
+        return $this->belongsTo(Objet::class , 'objet_id');
     }
 
     public function proprietaire()
@@ -115,7 +115,7 @@ class Annonce extends Model
     // }
     public function reservations()
     {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(Reservation::class , 'annonce_id');
     }
 
     public function evaluations()

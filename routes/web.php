@@ -372,3 +372,30 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
         })->name('switch.default');
     }
 });
+
+
+use App\Http\Controllers\ClientDetailController;
+use App\Http\Controllers\PartenaireDetailController;
+use App\Http\Controllers\ObjetDetailController;
+
+// Routes pour les fiches de détail, protégées par le middleware 'auth'
+Route::middleware(['auth'])->group(function () {
+    // {client} sera l'ID de l'utilisateur avec role='client'
+    Route::get('/fiches/client/{client}', [ClientDetailController::class, 'show'])
+        ->name('fiches.client.show')
+        ->where('client', '[0-9]+'); // S'assurer que c'est un ID numérique
+
+    // {partenaire} sera l'ID de l'utilisateur avec role='partenaire'
+    Route::get('/fiches/partenaire/{partenaire}', [PartenaireDetailController::class, 'show'])
+        ->name('fiches.partenaire.show')
+        ->where('partenaire', '[0-9]+');
+
+    // {objet} sera l'ID de l'objet
+    Route::get('/fiches/objet/{objet}', [ObjetDetailController::class, 'show'])
+        ->name('fiches.objet.show')
+        ->where('objet', '[0-9]+');
+});
+
+// Assurez-vous d'avoir vos routes d'authentification (login, register, etc.)
+// Auth::routes(); // Si vous utilisez Laravel UI
+// Ou vos propres routes

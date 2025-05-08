@@ -204,4 +204,58 @@ class User extends Authenticatable implements MustVerifyEmail
     //         'mot_de_passe' => 'hashed',
     //     ];
     // }
+    
+
+    // Relation: Un utilisateur (client) a plusieurs réservations
+    public function reservationsAsClient()
+    {
+        return $this->hasMany(Reservation::class, 'client_id');
+    }
+
+    // Relation: Un utilisateur (partenaire) possède plusieurs objets
+    
+    // Relation: Un utilisateur (partenaire) a publié plusieurs annonces
+    public function annoncesAsProprietaire()
+    {
+        return $this->hasMany(Annonce::class, 'proprietaire_id');
+    }
+
+    // Relation: Evaluations reçues par cet utilisateur
+    public function evaluationsReceived()
+    {
+        return $this->hasMany(Evaluation::class, 'evalue_id');
+    }
+
+    // Relation: Evaluations données par cet utilisateur
+    public function evaluationsGiven()
+    {
+        return $this->hasMany(Evaluation::class, 'evaluateur_id');
+    }
+
+    // Accesseur: Surnom (on utilise prenom comme surnom ici)
+    public function getSurnomAttribute()
+    {
+        return $this->prenom;
+    }
+
+    // Accesseur: Note moyenne de l'utilisateur (client ou partenaire)
+    public function getAverageRatingAttribute()
+    {
+        // On arrondit à 1 décimale, ou null si pas de notes
+        return $this->evaluationsReceived()->avg('note') ? round($this->evaluationsReceived()->avg('note'), 1) : null;
+    }
+
+    // Accesseur: Nombre de locations (pour un client)
+    public function getNombreLocationsAttribute()
+    {
+        return $this->reservationsAsClient()->count();
+    }
+
+    // Accesseur: Nombre d'annonces (pour un partenaire)
+    public function getNombreAnnoncesAttribute()
+    {
+        return $this->annoncesAsProprietaire()->count();
+    }
+
+    
 }
