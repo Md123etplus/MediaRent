@@ -303,14 +303,6 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 
 
 
-//Route::get('/test-email', function () {
-  //  Mail::raw('Bonjour, ceci est un test Mailtrap !', function ($message) {
-     //   $message
-        //    ->to('mediarent@gmail.com')   // remplacez par bounoua.marwa@etu.uae.ac.ma
-          //  ->subject('Test d’envoi via Mailtrap');
-    //});
-    //return 'Email de test envoyé (ou en échec silencieux) !';
-//});
 
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 //premium
@@ -407,4 +399,66 @@ Route::middleware(['auth'])->group(function () {
     // Update profile and CIN images (profile photo, CIN front/back)
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');
+
+
+
+          // Ajoutez cette route dans votre fichier routes/web.php
+Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+
+// Route de test (uniquement en développement)
+if (app()->environment('local')) {
+    Route::get('/switch-to-default', function() {
+        $defaultUser = User::firstOrCreate(
+            ['id' => 2],
+            [
+                'nom' => 'Default',
+                'prenom' => 'User',
+                'email' => 'default.user@example.com',
+                'mot_de_passe' => bcrypt('password'),
+                'role' => 'client',
+                'CIN' => 'EE123456',
+                'img_profil' => '/images/default-profile.png',
+                'img_cin_front' => '/images/default-cin-front.jpg',
+                'img_cin_back' => '/images/default-cin-back.jpg'
+            ]
+        );
+        Auth::login($defaultUser);
+        return redirect()->route('client.dashboard');
+    })->name('switch.default');
+}
+
+
+Route::get('/annonces/map', [AnnonceController::class, 'map'])
+ ->name('annonces.map');
+
+
+ // routes/web.php
+Route::post('/annonces/{annonce}/reserver', [ReservationController::class, 'storeDates'])
+->name('reservations.storeDates');
+
+Route::get('/reservations/client', [ClientController::class, 'create'])
+->name('reservations.formClient');
+
+Route::post('/reservations/client', [ClientController::class, 'store'])
+->name('reservations.storeClient');
+
+
+
+ 
+Route::get('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+->name('reservations.response');
+
+
+Route::prefix('client')->name('client.')->group(function() {
+   
+    
+    Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+        ->name('reservations.response');
+});
+
+
+Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+    ->name('client.reservations.response');
+
+
 });
