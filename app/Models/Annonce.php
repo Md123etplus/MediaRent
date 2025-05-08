@@ -16,8 +16,10 @@ use App\Mail\NewAnnonceNotification; // Ensure this is the correct namespace for
 class Annonce extends Model
 {
     use HasFactory;
+    
 
     protected $table = 'annonce';
+    
     
 
     protected $fillable = [
@@ -213,5 +215,7 @@ public function isPremiumActive(): bool
         });
     });
 }
+
+
 
 }

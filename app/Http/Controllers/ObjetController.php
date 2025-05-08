@@ -87,61 +87,70 @@ class ObjetController extends Controller
         $objet = Objet::with('categorie')->findOrFail($id);
         return view('objets.show', compact('objet'));
     }
-    public function edit(Objet $objet)
+    public function edit($id)
 {
-    // Vérifie que l'utilisateur est bien le propriétaire
-    if ($objet->proprietaire_id !==Auth::id()) {
-        abort(403, 'Unauthorized action.');
-    }
-
-    $categories = Categorie::all(); // Si vous avez des catégories
+    $objet = Objet::where('proprietaire_id', Auth::id())
+                ->findOrFail($id);
+    $categories = Categorie::all();
+    
     return view('objet.edit', compact('objet', 'categories'));
 }
 
-    // Mise à jour d’un objet
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'description' => 'required|string',
-            'ville' => 'required|string|min:3',
-            'prix_journalier' => 'required|numeric|min:0',
-            'categorie_id' => 'required|exists:categorie,id',
-            'etat' => 'required|in:dispo,indispo'
-        ]);
+public function update(Request $request, $id)
+{
+    $objet = Objet::where('proprietaire_id', Auth::id())
+                ->findOrFail($id);
 
-        $objet = Objet::findOrFail($id);
+    $validated = $request->validate([
+        'nom' => 'required|string|max:255',
+        'description' => 'required|string',
+        'ville' => 'required|string|max:255',
+        'categorie_id' => 'required|exists:categorie,id',
+        'prix_journalier' => 'required|numeric|min:0',
+        'etat' => 'required|string|in:neuf,bon,usé',
+        'images' => 'sometimes|array|max:3',
+        'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        // Si la ville a changé, mettre à jour les coordonnées
-        if ($objet->ville !== $validated['ville']) {
-            $geodata = GeocoderService::getCoordinates($validated['ville']);
-            $validated['latitude'] = $geodata['lat'];
-            $validated['longitude'] = $geodata['lng'];
+    // Mise à jour des champs de base
+    $objet->update($validated);
+
+    // Gestion des images
+    if ($request->hasFile('images')) {
+        // Supprimer les anciennes images si nécessaire
+        foreach ($objet->images as $image) {
+            $imagePath = public_path($image->url);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $image->delete();
         }
 
-        $objet->update($validated);
+        // Ajouter les nouvelles images
+        foreach ($request->file('images') as $file) {
+            $filename = 'objet_'.$objet->id.'_'.time().'_'.$file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
 
-        return redirect()->route('mes.objets')
-            ->with('success', 'Objet mis à jour avec succès.');
-    }
-
-    public function destroy(Objet $objet)
-    {
-        // Vérification du propriétaire
-        if ($objet->proprietaire_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+            $objet->images()->create([
+                'url' => 'images/'.$filename
+            ]);
         }
-    
-        // Supprimez les images associées si nécessaire
-        // foreach ($objet->images as $image) {
-        //     Storage::delete($image->url);
-        //     $image->delete();
-        // }
-    
-        $objet->delete();
-    
-        return redirect()->route('mes.objets')->with('success', 'Objet supprimé avec succès');
     }
+
+    return redirect()->route('objet.mes_objets')->with('success', 'Objet mis à jour avec succès');
+}
+
+public function toggleStatut($id)
+{
+    $objet = Objet::where('proprietaire_id', Auth::id())
+                ->findOrFail($id);
+                
+    $objet->update([
+        'statut' => $objet->statut === 'active' ? 'archived' : 'active'
+    ]);
+
+    return back()->with('success', 'Statut de l\'objet mis à jour');
+}
 
     public function mesObjets()
     {
@@ -172,6 +181,23 @@ public function listeAnnonces()
         ->get();
 
     return view('annonces.index', compact('annonces'));
+}
+public function destroy(Objet $objet)
+{
+    // Vérification du propriétaire
+    if ($objet->proprietaire_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // Supprimez les images associées si nécessaire
+    // foreach ($objet->images as $image) {
+    //     Storage::delete($image->url);
+    //     $image->delete();
+    // }
+
+    $objet->delete();
+
+    return redirect()->route('mes.objets')->with('success', 'Objet supprimé avec succès');
 }
 
 }

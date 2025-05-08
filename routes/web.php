@@ -17,6 +17,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ObjetController;
 use App\Http\Controllers\UtilisateurController;
+// use App\Http\Controllers\ObjetController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ReclamationController;
 use App\Http\Controllers\Client\EvaluationController;
@@ -168,11 +169,17 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
     ->name('annonces.archive');
-
+   
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
-    ->name('annonces.restore');
+     ->name('annonces.restore');
+// Route pour afficher le formulaire de modification
+Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
+->name('annonces.edit');
+// Route pour traiter la modification
+Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
+->name('annonces.update');
 
 
 
@@ -183,8 +190,15 @@ Route::post('/reservations', [ReservationController::class, 'store'])->name('res
 
 Route::get('/annonces', [AnnonceController::class, 'Annonces'])->name('annonces.annonces');
 
-
+// Routes GET
 Route::get('/mes-objets', [ObjetController::class, 'mesObjets'])->name('objet.mes_objets');
+Route::get('/objet/{objet}/edit', [ObjetController::class, 'edit'])->name('objet.edit');
+
+// Route PUT pour la mise à jour
+Route::put('/objet/{objet}', [ObjetController::class, 'update'])->name('objet.update');
+
+// Route PATCH pour le changement de statut
+Route::patch('/objets/{objet}/toggle-statut', [ObjetController::class, 'toggleStatut'])->name('objet.toggleStatut');
 
 
 

@@ -10,7 +10,7 @@
         border-radius: 10px;
         box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     }
-    /* Style spécifique au formulaire */
+    
     h2 {
         text-align: center;
         color: #2c3e50;
@@ -98,7 +98,6 @@
         background-color: #3182ce;
     }
 
-    /* Style pour les messages */
     .alert-message {
         padding: 12px 15px;
         border-radius: 8px;
@@ -112,90 +111,69 @@
         border: 1px solid #a7f3d0;
     }
 
-    /* Style responsive */
     @media (max-width: 640px) {
         .annonce-form {
             padding: 20px;
         }
     }
-
-    .alert-danger {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fca5a5;
-    }
 </style>
 
 <div class="form-container">
-    <h2>Ajouter une annonce</h2>
+    <h2>Modifier l'annonce</h2>
 
     @if(session('success'))
         <div class="alert-message alert-success">{{ session('success') }}</div>
     @endif
-    @if($errors->has('limit'))
-             <div class="alert-message alert-danger mb-4">
-              {{ $errors->first('limit') }}
-              <a href="{{ route('annonces.mes_annonces') }}" class="font-semibold underline">Voir mes annonces</a>
-             </div>
-    @endif
-    <form class="annonce-form" action="{{ route('annonces.store') }}" method="POST">
-        @csrf
-        <input type="date" name="date_publication" value="{{ date('Y-m-d') }}" hidden>
-        <input type="number" name="proprietaire_id" value="1" hidden>
 
+    <form class="annonce-form" action="{{ route('annonces.update', $annonce->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        
         <div class="form-group">
             <label for="date_debut">Date début :</label>
-            <input type="date" id="date_debut" name="date_debut" required>
+            <input type="date" id="date_debut" name="date_debut" 
+                   value="{{ old('date_debut', $annonce->date_debut) }}" required>
         </div>
 
         <div class="form-group">
             <label for="date_fin">Date fin :</label>
-            <input type="date" id="date_fin" name="date_fin" required>
+            <input type="date" id="date_fin" name="date_fin" 
+                   value="{{ old('date_fin', $annonce->date_fin) }}" required>
         </div>
 
         <div class="form-group">
             <label for="adress">Adresse :</label>
-            <input type="text" id="adress" name="adress" required>
+            <input type="text" id="adress" name="adress" 
+                   value="{{ old('adress', $annonce->adress) }}" required>
         </div>
 
-                    <div class="form-group">
-                <label for="objet_id">Objet :</label>
-                <select id="objet_id" name="objet_id" required>
-                    @forelse($objets as $objet)
-                        <option value="{{ $objet->id }}">
-                            {{ $objet->nom }} 
-                            @if($objet->categorie)
-                                ({{ $objet->categorie->nom }})
-                            @endif
-                            - {{ $objet->prix_journalier }} DH/jour
-                        </option>
-                    @empty
-                        <option value="" disabled>Vous n'avez aucun objet</option>
-                    @endforelse
-                </select>
-                
-                @if($objets->isEmpty())
-                    <div class="mt-2 text-sm text-red-600">
-                        Vous devez d'abord <a href="{{ route('objets.create') }}" class="text-blue-600 underline">créer un objet</a> avant de publier une annonce.
-                    </div>
-                @endif
-            </div>
-            
+        <div class="form-group">
+            <label for="objet_id">Objet :</label>
+            <select id="objet_id" name="objet_id" required>
+                @foreach($objets as $objet)
+                    <option value="{{ $objet->id }}" 
+                        {{ $annonce->objet_id == $objet->id ? 'selected' : '' }}>
+                        {{ $objet->nom }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
         <div class="form-group">
             <label for="statut">Statut :</label>
             <select id="statut" name="statut" required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active" {{ $annonce->statut == 'active' ? 'selected' : '' }}>Active</option>
+                <option value="inactive" {{ $annonce->statut == 'inactive' ? 'selected' : '' }}>Inactive</option>
             </select>
         </div>
 
         <div class="form-group checkbox-container">
-            <input type="checkbox" id="premium" name="premium" value="1">
+            <input type="checkbox" id="premium" name="premium" value="1" 
+                {{ $annonce->premium ? 'checked' : '' }}>
             <label for="premium">Premium</label>
         </div>
 
-        <button type="submit" class="submit-btn">Publier</button>
-       
+        <button type="submit" class="submit-btn">Mettre à jour</button>
     </form>
 </div>
 @endsection

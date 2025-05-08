@@ -255,10 +255,10 @@
                 <td>
     <div class="action-buttons">
         <!-- Bouton Modifier (toujours visible) -->
-        <a 
-           class="btn btn-sm btn-primary">
-            <i class="fas fa-edit"></i> Modifier
-        </a>
+            <a href="{{ route('annonces.edit', $annonce->id) }}" 
+            class="btn btn-sm btn-primary">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
         
         @if($annonce->statut === 'active')
             <!-- Bouton Archiver (seulement si active) -->
