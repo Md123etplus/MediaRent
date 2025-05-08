@@ -39,6 +39,9 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         background: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .objet-card:hover {
@@ -101,6 +104,13 @@
         align-items: center;
         font-size: 0.8rem;
         color: #95a5a6;
+        margin-bottom: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
     }
 
     .empty-state {
@@ -136,7 +146,7 @@
                 <div class="objet-card">
                     <div class="objet-images">
                         @if($objet->images->isNotEmpty())
-                            <img src="{{ asset('' . $objet->images->first()->url) }}" alt="Image de {{ $objet->nom }}">
+                            <img src="{{ asset($objet->images->first()->url) }}" alt="Image de {{ $objet->nom }}">
                         @else
                             <div style="background: #f5f5f5; height: 100%; display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #999;">Aucune image</span>
@@ -157,6 +167,25 @@
                             <span class="badge-category">{{ $objet->categorie->nom ?? 'Non catégorisé' }}</span>
                             <span>Ajouté le {{ $objet->created_at->format('d/m/Y') }}</span>
                         </div>
+
+                       <div class="action-buttons mt-2">
+    <!-- Bouton Modifier -->
+    <a href="{{ route('objet.edit', $objet->id) }}" 
+       class="btn btn-sm btn-primary">
+        <i class="fas fa-edit"></i> Modifier
+    </a>
+    
+    <!-- Bouton Changer Statut -->
+    <form action="{{ route('objet.toggleStatut', $objet->id) }}" method="POST" 
+          onsubmit="return confirm('Voulez-vous changer le statut de cet objet ?')">
+        @csrf
+        @method('PATCH')
+        <button type="submit" class="btn btn-sm {{ $objet->statut === 'active' ? 'btn-secondary' : 'btn-success' }}">
+            <i class="fas {{ $objet->statut === 'active' ? 'fa-archive' : 'fa-check' }}"></i>
+            {{ $objet->statut === 'active' ? 'Archiver' : 'Activer' }}
+        </button>
+    </form>
+</div>
                     </div>
                 </div>
             @endforeach

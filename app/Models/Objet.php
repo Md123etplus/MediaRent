@@ -17,6 +17,7 @@ class Objet extends Model
     use HasFactory;
 
     protected $table = 'objet';
+    
 
     protected $fillable = [
         'nom', 

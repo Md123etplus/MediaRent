@@ -9,10 +9,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-// use App\Models\Objet;
-// use App\Models\Utilisateur;
 use App\Models\User;
-// use App\Models\Categorie;
+
+
 class ObjetController extends Controller
 {
     public function create()
@@ -74,46 +73,74 @@ class ObjetController extends Controller
         return view('objets.show', compact('objet'));
     }
     public function edit($id)
-    {
-        $objet = Objet::findOrFail($id);
-        $categories = Categorie::all();
-        return view('objets.edit', compact('objet', 'categories'));
+{
+    $objet = Objet::where('proprietaire_id', auth()->id())
+                ->findOrFail($id);
+    $categories = Categorie::all();
+    
+    return view('objet.edit', compact('objet', 'categories'));
+}
+
+public function update(Request $request, $id)
+{
+    $objet = Objet::where('proprietaire_id', auth()->id())
+                ->findOrFail($id);
+
+    $validated = $request->validate([
+        'nom' => 'required|string|max:255',
+        'description' => 'required|string',
+        'ville' => 'required|string|max:255',
+        'categorie_id' => 'required|exists:categorie,id',
+        'prix_journalier' => 'required|numeric|min:0',
+        'etat' => 'required|string|in:neuf,bon,usé',
+        'images' => 'sometimes|array|max:3',
+        'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+    ]);
+
+    // Mise à jour des champs de base
+    $objet->update($validated);
+
+    // Gestion des images
+    if ($request->hasFile('images')) {
+        // Supprimer les anciennes images si nécessaire
+        foreach ($objet->images as $image) {
+            $imagePath = public_path($image->url);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $image->delete();
+        }
+
+        // Ajouter les nouvelles images
+        foreach ($request->file('images') as $file) {
+            $filename = 'objet_'.$objet->id.'_'.time().'_'.$file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+
+            $objet->images()->create([
+                'url' => 'images/'.$filename
+            ]);
+        }
     }
 
-    // Mise à jour d’un objet
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'ville' => 'required|string|max:100',
-            'proprietaire_id' => 'required|exists:Utilisateur,id',
-            'categorie_id' => 'required|exists:Categorie,id',
-            'prix_journalier' => 'required|numeric',
-            'etat' => 'required|string'
-        ]);
+    return redirect()->route('objet.mes_objets')->with('success', 'Objet mis à jour avec succès');
+}
 
-        $objet = Objet::findOrFail($id);
-        $objet->update($request->all());
+public function toggleStatut($id)
+{
+    $objet = Objet::where('proprietaire_id', auth()->id())
+                ->findOrFail($id);
+                
+    $objet->update([
+        'statut' => $objet->statut === 'active' ? 'archived' : 'active'
+    ]);
 
-        return redirect()->route('objets.index')
-            ->with('success', 'Objet mis à jour avec succès.');
-    }
-
-    // Suppression
-    public function destroy($id)
-    {
-        $objet = Objet::findOrFail($id);
-        $objet->delete();
-
-        return redirect()->route('objets.index')
-            ->with('success', 'Objet supprimé avec succès.');
-    }
+    return back()->with('success', 'Statut de l\'objet mis à jour');
+}
 
 public function mesObjets()
 {
     $objets = Objet::with(['images', 'categorie'])
-                ->where('proprietaire_id', 1)
+                ->where('proprietaire_id', auth()->id())
                 ->latest()
                 ->get();
 
