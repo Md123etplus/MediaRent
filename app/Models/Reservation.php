@@ -38,10 +38,10 @@ class Reservation extends Model
     /**
      * Relation avec l'annonce
      */
-    public function annonce(): BelongsTo
-    {
-        return $this->belongsTo(Annonce::class, 'annonce_id')->with(['objet.images']);
-    }
+    public function annonce()
+{
+    return $this->belongsTo(Annonce::class)->withDefault();
+}
 
     /**
      * Accessor pour le revenu de la réservation
@@ -87,11 +87,11 @@ class Reservation extends Model
     //     return $this->belongsTo(Annonce::class, 'annonce_id');
     // }
 
-    public function evaluation()
-    {
-        return $this->hasOne(Evaluation::class, 'objet_id', 'annonce_id');
-    }
-
+  public function evaluation()
+{
+    // Spécifiez explicitement la clé étrangère
+    return $this->hasOne(Evaluation::class, 'reservation_id');
+}
 
     public function reclamations()
     {

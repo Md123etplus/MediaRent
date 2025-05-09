@@ -7,56 +7,51 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
 use App\Models\User;
+use Carbon\Carbon; 
 
 class CReservationController extends Controller
 {
     
     
         
-        public function index(Request $request)
-{
-    // $clientId = 2;
-    // $query = \App\Models\User::find($clientId)
-    //     ->reservations()
-    //     ->with([
-    //         'annonce.objet.images', 
-    //         'annonce.proprietaire',
-    //         'evaluation' // Charger l'évaluation liée
-    //     ])
-    //     ->orderBy('created_at', 'desc');
-    $query = \App\Models\User::find(Auth::id())
-    ->reservations()
-    ->with([
-        'annonce.objet.images', 
-        'annonce.proprietaire',
-        'evaluation' // Charger l'évaluation liée
-    ])
-    ->orderBy('created_at', 'desc');
-            
-        // Ajout des filtres
-        if ($request->has('search')) {
+    public function index(Request $request)
+    {
+        $query = Auth::user()->reservations()
+            ->with([
+                'annonce.objet.images', 
+                'annonce.proprietaire',
+                'evaluation' // ⛔️ Retirer le where ici !
+            ])
+            ->orderBy('created_at', 'desc');
+    
+        // Filtre par recherche texte
+        if ($request->filled('search')) {
             $query->whereHas('annonce.objet', function($q) use ($request) {
-                $q->where('nom', 'like', '%'.$request->search.'%');
+                $q->where('nom', 'like', '%'.$request->search.'%')
+                  ->orWhere('ville', 'like', '%'.$request->search.'%');
             });
         }
-        
-        if ($request->has('status')) {
+    
+        // Filtre par statut
+        if ($request->filled('status')) {
             $query->where('statut', $request->status);
         }
-        
-        if ($request->has('date_from')) {
-            $query->where('date_debut', '>=', $request->date_from);
+    
+        if ($request->filled('date_from')) {
+            $dateFrom = Carbon::parse($request->date_from)->startOfDay();
+            $query->where('date_debut', '>=', $dateFrom);
         }
         
-        if ($request->has('date_to')) {
-            $query->where('date_fin', '<=', $request->date_to);
-        }
-        
-        $recentReservations = $query->paginate(10);
-        
+      
+        // Ajoutez cette ligne pour voir la requête SQL générée (debug)
+        // \Log::debug($query->toSql());
+    
+        $recentReservations = $query->paginate(10)
+            ->appends($request->query());
+    
         return view('client.reservations.index', compact('recentReservations'));
     }
-
+    
     public function show(Reservation $reservation)
     {
         // Vérifier que la réservation appartient bien à l'utilisateur connecté
@@ -85,7 +80,7 @@ class CReservationController extends Controller
         }
         
         // Vérifier que la réservation peut être annulée
-        if ($reservation->statut !== 'en attente') {
+        if ($reservation->statut !== 'en_attente') {
             return back()->with('error', 'Seules les réservations en attente peuvent être annulées.');
         }
         

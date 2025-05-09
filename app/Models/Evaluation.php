@@ -18,17 +18,28 @@ class Evaluation extends Model
 
     // Définissez les champs remplissables
     protected $fillable = [
-        'objet_id',
-        'evaluateur_id',
-        'evalue_id',
-        'reservation_id',
-        'note',
-        'commentaire',
-        'is_visible',
-        'date',
-        'type', // 'objet' ou 'utilisateur'
+    'reservation_id',
+    'objet_id',
+    'evaluateur_id', 
+    'evalue_id',
+    'note_objet',
+    'is_visible',
+    'note_proprietaire',
+    'commentaire_objet',
+    'commentaire_proprietaire',
+    'date'// 'objet' ou 'utilisateur'
     ];
-
+    // protected $fillable = [ there was two different versions, so i had to keep the recent one since it has migrations related to it
+    //     'objet_id',
+    //     'evaluateur_id',
+    //     'evalue_id',
+    //     'reservation_id',
+    //     'note',
+    //     'commentaire',
+    //     'is_visible',
+    //     'date',
+    //     'type', // 'objet' ou 'utilisateur'
+    // ];
     protected $casts = [
         'note' => 'integer',
         'created_at' => 'datetime',
@@ -61,11 +72,17 @@ class Evaluation extends Model
     /**
      * Relation avec la réservation associée
      */
-    public function reservation(): BelongsTo
-    {
-        return $this->belongsTo(Reservation::class, 'reservation_id');
-    }
+    // Dans app/Models/Evaluation.php
+//protected $with = ['reservation']; // Chargement automatique
 
+public function reservation()
+{
+    return $this->belongsTo(Reservation::class, 'reservation_id')->withDefault([
+        'date_debut' => now(),
+        'date_fin' => now()->addDays(1),
+        // autres valeurs par défaut
+    ]);
+}
     /**
      * Scope pour les évaluations d'objets
      */

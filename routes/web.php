@@ -45,6 +45,7 @@ use Illuminate\Http\Request;
 // use App\Http\Controllers\Client\EvaluationController;
 use App\Http\Controllers\Client\NotificationController;
 // use App\Models\Utilisateur;
+use App\Http\Controllers\AideController;
 
 // Routes publiques
 Route::get('/dashboard/client', function () {
@@ -389,6 +390,8 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
     });
+    // Route::get('/aide', [AideController::class, 'index'])->name('aide');//ajouter par Hala
+
 
     // Ajoutez cette route dans votre fichier routes/web.php
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
