@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('utilisateur', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
             $table->string('prenom');
             $table->string('email')->unique();
             $table->string('mot_de_passe');
-            $table->enum('role', ['']); // Define valid roles here
+            $table->enum('role', ['client','partenaire'])->default('client'); // Define valid roles here
+            $table->boolean('is_suspended')->default(false);
             $table->string('CIN');
             $table->text('img_profil');
             $table->text('img_cin_front');
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('utilisateur');
+        Schema::dropIfExists('users');
     }
 };

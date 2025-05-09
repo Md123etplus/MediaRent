@@ -1,0 +1,111 @@
+/* Dashboard Client Styles */
+.client-sidebar {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow p-4;
+}
+
+.client-sidebar-item {
+  @apply block px-4 py-2 rounded transition-colors duration-200;
+}
+
+.client-sidebar-item:hover {
+  @apply bg-gray-100 dark:bg-gray-700;
+}
+
+.client-sidebar-item.active {
+  @apply bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200;
+}
+
+/* Stats Cards */
+.stats-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center;
+}
+
+.stats-card-value {
+  @apply text-3xl font-bold;
+}
+
+.stats-card-label {
+  @apply text-gray-500 dark:text-gray-400 mt-2;
+}
+
+/* Rating Stars */
+.rating-stars {
+  @apply flex justify-center;
+}
+
+.rating-stars input[type="radio"] {
+  @apply hidden;
+}
+
+.rating-stars label {
+  @apply cursor-pointer;
+}
+
+.rating-stars label svg {
+  @apply w-10 h-10;
+}
+
+/* Reservation Status */
+.status-badge {
+  @apply px-2 py-1 text-xs rounded-full;
+}
+
+.status-confirmed {
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+.status-pending {
+  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+}
+
+.status-cancelled {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+/* Notification Item */
+.notification-item {
+  @apply flex items-start p-3 rounded-lg transition-colors duration-200;
+}
+
+.notification-item.unread {
+  @apply bg-blue-50 dark:bg-blue-900;
+}
+
+.notification-item.read {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+.notification-icon {
+  @apply flex-shrink-0 pt-1;
+}
+
+.notification-content {
+  @apply ml-3 flex-1;
+}
+
+.notification-time {
+  @apply text-xs text-gray-500 dark:text-gray-400 mt-1;
+}
+
+/* Responsive Table */
+.responsive-table {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.responsive-table th {
+  @apply px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+}
+
+.responsive-table td {
+  @apply px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white;
+}
+
+.dark .responsive-table th {
+  @apply bg-gray-800;
+}
+
+.dark .responsive-table tr {
+  @apply bg-gray-800 hover:bg-gray-700;
+}
+
+

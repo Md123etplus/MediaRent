@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reclamation', function (Blueprint $table) {
             $table->id();
             $table->text('contenu');
-            $table->foreignId('utilisateur_id')->constrained('utilisateur');
+            $table->foreignId('utilisateur_id')->constrained(table: 'users');
             $table->foreignId('reservation_id')->constrained('reservation');
             $table->dateTime('date_creation')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->string('statut', 50)->nullable()->default('en_attente');
