@@ -1,0 +1,155 @@
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Container principal */
+.annonce-detail {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Galerie */
+.annonce-gallery {
+    margin-bottom: 20px;
+}
+
+.gallery-main {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.gallery-image {
+    display: none;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.gallery-image.active {
+    display: block;
+}
+
+.gallery-thumbnails {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.thumbnail {
+    width: 60px;
+    height: 60px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.thumbnail.active {
+    border-color: #007bff;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Informations de l'annonce */
+.annonce-body {
+    padding-top: 10px;
+}
+
+.annonce-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.annonce-price {
+    font-size: 22px;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+/* Métadonnées (ville, catégorie, date) */
+.annonce-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Description */
+.annonce-description {
+    margin-bottom: 30px;
+}
+
+.annonce-description h3 {
+    margin-bottom: 8px;
+    font-size: 20px;
+    color: #333;
+}
+
+.annonce-description p {
+    line-height: 1.6;
+}
+
+/* Carte propriétaire */
+.partner-card {
+    padding: 15px;
+    border: 1px solid #eee;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+}
+
+.partner-info h4 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.partner-info p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .annonce-meta {
+        flex-direction: column;
+    }
+
+    .thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+
+    .annonce-title {
+        font-size: 22px;
+    }
+
+    .annonce-price {
+        font-size: 18px;
+    }
+}

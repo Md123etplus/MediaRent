@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('contenu');
             $table->text('contenu_email');
             $table->string('sujet_email');
-            $table->foreignId('utilisateur_id')->constrained('utilisateur');
+            $table->foreignId('utilisateur_id')->constrained(table: 'users');
             $table->foreignId('annonce_id')->nullable()->constrained('annonce');
             $table->dateTime('date_creation')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->boolean('envoyee')->default(false);
