@@ -180,9 +180,10 @@
                             <td>{{ $annonce->adress }}</td>
                             <td>{{ $annonce->updated_at->format('d/m/Y H:i') }}</td>
                             <td>
-                                <form action="{{ route('annonces.restore', $annonce->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('annonces.restore', $annonce->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-restore btn-sm" onclick="return confirm('Restaurer cette annonce ?')">
+                                    @method('PATCH')  <!-- Cette ligne transforme la requête en PATCH -->
+                                    <button type="submit" class="btn btn-restore btn-sm">
                                         <i class="fas fa-undo me-1"></i> Restaurer
                                     </button>
                                 </form>

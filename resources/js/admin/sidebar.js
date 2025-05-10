@@ -58,3 +58,63 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('annonces-menu-button');
+    const menu = document.getElementById('annonces-menu');
+    const chevron = document.getElementById('annonces-chevron');
+
+    menuButton.addEventListener('click', function(e) {
+        e.stopPropagation(); // Empêche la propagation du clic
+
+        // Basculer la visibilité du menu
+        menu.classList.toggle('hidden');
+
+        // Faire pivoter la flèche
+        if (menu.classList.contains('hidden')) {
+            chevron.classList.remove('transform', 'rotate-180');
+        } else {
+            chevron.classList.add('transform', 'rotate-180');
+        }
+    });
+
+    // Fermer le menu si on clique ailleurs
+    document.addEventListener('click', function() {
+        menu.classList.add('hidden');
+        chevron.classList.remove('transform', 'rotate-180');
+    });
+
+    // Empêcher la fermeture quand on clique dans le menu
+    menu.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+});
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('toast', () => ({
+        toasts: [],
+        addToast(type, message, duration = 3000) {
+            const id = Date.now();
+            this.toasts.push({ id, type, message });
+
+            if (duration) {
+                setTimeout(() => {
+                    this.removeToast(id);
+                }, duration);
+            }
+        },
+        removeToast(id) {
+            this.toasts = this.toasts.filter(toast => toast.id !== id);
+        }
+    }));
+});
+
+// Fonction helper globale pour afficher les toasts
+window.showToast = function(type, message, duration = 3000) {
+    const toastComponent = document.querySelector('[x-data="toast"]');
+    if (toastComponent) {
+        Alpine.$data(toastComponent).addToast(type, message, duration);
+    } else {
+        console.error('Toast component not found');
+    }
+};

@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Route;
 // use App\Models\Utilisateur;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
+use App\Http\Controllers\PaymentController;
 // Routes publiques
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ObjetController;
 use App\Http\Controllers\UtilisateurController;
+// use App\Http\Controllers\ObjetController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ReclamationController;
 use App\Http\Controllers\Client\EvaluationController;
@@ -27,6 +28,12 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AnnonceController;
+use App\Http\Controllers\Admin\AdminAnnonceController;
+use App\Http\Controllers\Admin\AdminEvaluationController;
+use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminReservationController;
+use App\Http\Middleware\AdminAuth;
 // use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -38,6 +45,7 @@ use Illuminate\Http\Request;
 // use App\Http\Controllers\Client\EvaluationController;
 use App\Http\Controllers\Client\NotificationController;
 // use App\Models\Utilisateur;
+use App\Http\Controllers\AideController;
 
 // Routes publiques
 Route::get('/dashboard/client', function () {
@@ -112,12 +120,34 @@ Route::get('/blog', function () {
 })->name('blog');
 
 
-Route::prefix('admin')->group(function () { //->middleware(['auth', 'admin'])
-    Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::patch('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
-         ->name('admin.users.toggle-suspension');
-    // ... autres routes admin
+Route::prefix('admin')->group(function() {
+    // Connexion
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login']);
+
+    // Déconnexion
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+    // Zone sécurisée
+    Route::middleware(AdminAuth::class)->group(function() {
+        Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/annonces/{type}', [AdminAnnonceController::class, 'index'])->name('admin.annonces.index');
+        Route::post('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
+            ->name('admin.users.toggle-suspension');
+        Route::get('/annonces/{annonce}/details', [AdminAnnonceController::class, 'getDetails'])
+                ->name('admin.annonces.details');
+        Route::post('/annonces/{annonce}/toggle-archive', [AdminAnnonceController::class, 'toggleArchive'])
+        ->name('admin.annonces.toggle-archive');
+        // ->middleware('auth');
+
+        Route::get('/evaluations', [AdminEvaluationController::class, 'index'])->name('admin.evaluations.index');
+        Route::post('/evaluations/{evaluation}/toggle-visibility', [AdminEvaluationController::class, 'toggleVisibility'])->name('admin.evaluations.toggle-visibility');
+
+        Route::get('/export', [ExportController::class, 'exportData'])->name('admin.export');
+
+        Route::get('/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations.index');
+    });
 });
 Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 // Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
@@ -135,7 +165,7 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
 
     Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
     ->name('annonces.mes_annonces');
-  
+
 
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
@@ -144,10 +174,16 @@ Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archi
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
-    ->name('annonces.restore');
+     ->name('annonces.restore');
+// Route pour afficher le formulaire de modification
+Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
+->name('annonces.edit');
+// Route pour traiter la modification
+Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
+->name('annonces.update');
 
 
-     
+
 
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
@@ -155,8 +191,15 @@ Route::post('/reservations', [ReservationController::class, 'store'])->name('res
 
 Route::get('/annonces', [AnnonceController::class, 'Annonces'])->name('annonces.annonces');
 
-
+// Routes GET
 Route::get('/mes-objets', [ObjetController::class, 'mesObjets'])->name('objet.mes_objets');
+Route::get('/objet/{objet}/edit', [ObjetController::class, 'edit'])->name('objet.edit');
+
+// Route PUT pour la mise à jour
+Route::put('/objet/{objet}', [ObjetController::class, 'update'])->name('objet.update');
+
+// Route PATCH pour le changement de statut
+Route::patch('/objets/{objet}/toggle-statut', [ObjetController::class, 'toggleStatut'])->name('objet.toggleStatut');
 
 
 
@@ -191,7 +234,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Routes pour les annonces
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
-        
+
     Route::get('/partenaire', [PartenaireDashboardController::class, 'index'])->name('partenaire.index');
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
@@ -303,33 +346,34 @@ Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::clas
 
 
 
-//Route::get('/test-email', function () {
-  //  Mail::raw('Bonjour, ceci est un test Mailtrap !', function ($message) {
-     //   $message
-        //    ->to('mediarent@gmail.com')   // remplacez par bounoua.marwa@etu.uae.ac.ma
-          //  ->subject('Test d’envoi via Mailtrap');
-    //});
-    //return 'Email de test envoyé (ou en échec silencieux) !';
-//});
 
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
-
-
-
+//premium
+Route::middleware(['auth'])->group(function () {
+    Route::get('/annonces/{annonce}/premium', [AnnonceController::class, 'showPremiumForm'])
+    ->name('annonces.premium');
+    
+    Route::post('/annonces/{annonce}/process-payment', [PaymentController::class, 'processPayment'])
+    ->name('annonces.process-payment');
+   Route::get('/annonces/{annonce}/payment-success', [AnnonceController::class, 'paymentSuccess'])->name('annonces.payment-success');
+   Route::get('/annonces/{annonce}/payment-success/{reference}', 
+    [PaymentController::class, 'showSuccess'])
+    ->name('annonces.payment-success');
+});
 
 
 // Routes client avec protection standard
 Route::prefix('client')->name('client.')->group(function() {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Réservations
     Route::prefix('reservations')->name('reservations.')->group(function() {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
         Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
     });
-    
+
     // Évaluations
     Route::prefix('evaluations')->name('evaluations.')->group(function() {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
@@ -339,13 +383,15 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
         Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
     });
-    
+
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function() {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
     });
+    // Route::get('/aide', [AideController::class, 'index'])->name('aide');//ajouter par Hala
+
 
     // Ajoutez cette route dans votre fichier routes/web.php
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
@@ -374,6 +420,90 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
 });
 //newsletter
 Route::get('/newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm');
-Route::get('/offline', function () {
-    return view('offline');
-    });
+//edit profile
+
+
+// Route::get('/edit-profile',[UtilisateurController::class, 'editProfile'])->name('profile.show');)
+Route::middleware(['auth'])->group(function () {
+    // Display user profile
+    Route::get('/profile', [UtilisateurController::class, 'showProfile'])
+        ->name('profile.show');
+    
+    // Show profile edit form
+    Route::get('/profile/edit', [UtilisateurController::class, 'editProfile'])
+        ->name('profile.edit');
+    
+    // Update basic profile information (name, email, CIN)
+    Route::put('/profile/update', [UtilisateurController::class, 'updateProfile'])
+        ->name('profile.update');
+    
+    // Update user password (separate from basic info for security)
+    Route::post('/profile/update-password', [UtilisateurController::class, 'updatePasswordProfile'])
+        ->name('profile.update-password');
+    
+    // Update profile and CIN images (profile photo, CIN front/back)
+    Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
+        ->name('profile.update-images');
+
+
+
+          // Ajoutez cette route dans votre fichier routes/web.php
+Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+
+// Route de test (uniquement en développement)
+if (app()->environment('local')) {
+    Route::get('/switch-to-default', function() {
+        $defaultUser = User::firstOrCreate(
+            ['id' => 2],
+            [
+                'nom' => 'Default',
+                'prenom' => 'User',
+                'email' => 'default.user@example.com',
+                'mot_de_passe' => bcrypt('password'),
+                'role' => 'client',
+                'CIN' => 'EE123456',
+                'img_profil' => '/images/default-profile.png',
+                'img_cin_front' => '/images/default-cin-front.jpg',
+                'img_cin_back' => '/images/default-cin-back.jpg'
+            ]
+        );
+        Auth::login($defaultUser);
+        return redirect()->route('client.dashboard');
+    })->name('switch.default');
+}
+
+
+Route::get('/annonces/map', [AnnonceController::class, 'map'])
+ ->name('annonces.map');
+
+
+ // routes/web.php
+Route::post('/annonces/{annonce}/reserver', [ReservationController::class, 'storeDates'])
+->name('reservations.storeDates');
+
+Route::get('/reservations/client', [ClientController::class, 'create'])
+->name('reservations.formClient');
+
+Route::post('/reservations/client', [ClientController::class, 'store'])
+->name('reservations.storeClient');
+
+
+
+ 
+Route::get('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+->name('reservations.response');
+
+
+Route::prefix('client')->name('client.')->group(function() {
+   
+    
+    Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+        ->name('reservations.response');
+});
+
+
+Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+    ->name('client.reservations.response');
+
+
+});

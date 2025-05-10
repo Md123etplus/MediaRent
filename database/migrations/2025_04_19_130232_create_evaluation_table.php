@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('evaluation', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('objet_id')->constrained('reservation'); // Possible schema error
+            $table->foreignId('objet_id')->constrained(table: 'objet'); // Possible schema error
             $table->foreignId('evaluateur_id')->constrained('users');
             $table->foreignId('evalue_id')->constrained('users');
             $table->integer('note');
             $table->text('commentaire');
+            $table->boolean('is_visible')->default(true);
             $table->date('date');
             $table->timestamps();
         });

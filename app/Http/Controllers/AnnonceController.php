@@ -15,41 +15,46 @@ class AnnonceController extends Controller{
     
     public function create()
     {
-        $categories = Categorie::all();
+        // Récupère uniquement les objets de l'utilisateur connecté
         $objets = Objet::where('proprietaire_id', Auth::id())->get();
         
-        return view('annonces.create', compact('categories', 'objets'));
+        return view('annonces.create', compact('objets'));
     }
 
     public function store(Request $request)
     {
+        // Validation des données
         $validated = $request->validate([
             'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut',
-            'adress' => 'required|string',
-            'objet_id' => 'nullable|exists:objet,id',
-            'date_publication' => 'required|date',
+            'date_fin' => 'required|date|after:date_debut',
+            'adress' => 'required|string|max:255',
+            'objet_id' => 'required|exists:objet,id',
             'statut' => 'required|in:active,inactive',
-            'proprietaire_id' => 'required|exists:users,id',
-            'premium' => 'nullable|boolean',
-            
+            'premium' => 'sometimes|boolean'
         ]);
-
-        // Vérifier que l'objet appartient bien à l'utilisateur
-        $objet = Objet::findOrFail($validated['objet_id']);
-        if ($objet->proprietaire_id !== Auth::id()) {
-            abort(403, "Vous n'êtes pas propriétaire de cet objet");
+    
+        // Vérification seulement si l'annonce est active
+        if ($request->statut == 'active') {
+            $annoncesActives = Annonce::where('proprietaire_id', Auth::id())
+                                    ->where('statut', 'active')
+                                    ->count();
+    
+            if ($annoncesActives >= 5) {
+                return back()->withInput()->withErrors([
+                    'limit' => 'Vous avez atteint la limite de 5 annonces actives. 
+                               Vous pouvez créer cette annonce comme "inactive" ou archiver une annonce existante.'
+                ]);
+            }
         }
-        
-        $validated['date_publication'] = now();
-        $validated['premium'] = $request->has('premium');
-        $validated['proprietaire_id'] = Auth::id(); // utilisateur connecté
-        Annonce::create($validated);
-
-        return redirect()->route('annonces.create')->with('success', 'Annonce ajoutée !');
-
-        // return redirect()->route('partenaire.dashboard')
-        //        ->with('success', 'Annonce créée avec succès');
+    
+        // Création de l'annonce
+        $annonce = new Annonce();
+        $annonce->fill($validated);
+        $annonce->proprietaire_id = Auth::id();
+        $annonce->date_publication = now();
+        $annonce->save();
+    
+        return redirect()->route('annonces.mes_annonces')->with('success', 'Annonce créée avec succès');
     }
 
     public function index()
@@ -82,11 +87,12 @@ class AnnonceController extends Controller{
 public function mesAnnonces()
 {
     $annonces = Annonce::where('proprietaire_id', Auth::id())
-    ->whereIn('statut', ['active', 'archivée']) // Affiche les deux statuts
-    ->orderBy('created_at', 'desc')
-    ->get();
+        ->orderBy('created_at', 'desc')
+        ->get();
+
     return view('annonces.mes_annonces', compact('annonces'));
 }
+
 
 
 public function archiver($id)
@@ -103,6 +109,28 @@ public function archiver($id)
 
         return redirect()->back()->with('success', 'Annonce archivée avec succès.');
     }
+
+    public function restore($id)
+    {
+        // Vérifier le nombre d'annonces actives
+        $activeAnnonces = Annonce::where('proprietaire_id', Auth::id())
+                               ->where('statut', 'active')
+                               ->count();
+    
+        if ($activeAnnonces >= 5) {
+            return redirect()->back()
+                   ->with('error', 'Vous avez déjà 5 annonces actives. Vous ne pouvez pas en restaurer plus.');
+        }
+    
+        $annonce = Annonce::findOrFail($id);
+        $annonce->update(['statut' => 'active']);
+    
+        return redirect()->back()
+               ->with('success', 'Annonce restaurée avec succès');
+    }
+
+    
+
     public function search(Request $request)
     {
         $request->validate([
@@ -171,4 +199,77 @@ public function archiver($id)
             'searchParams' => $request->all()
         ]);
     }
+    // Afficher le formulaire de choix du forfait
+public function showPremiumForm(Annonce $annonce)
+{
+    if ($annonce->proprietaire_id !== Auth::id()) {
+        abort(403, "Vous n'êtes pas propriétaire de cette annonce.");
+    }
+
+    // Forfaits codés en dur (simulation)
+    $plans = [
+        ['id' => 1, 'name' => '7 jours', 'duration_days' => 7, 'price' => 9.99],
+        ['id' => 2, 'name' => '15 jours', 'duration_days' => 15, 'price' => 14.99],
+        ['id' => 3, 'name' => '1 mois', 'duration_days' => 30, 'price' => 19.99],
+    ];
+
+    return view('annonces.premium', compact('annonce', 'plans')); 
+}
+
+
+// Afficher la confirmation
+public function paymentSuccess(Annonce $annonce)
+{
+    return view('annonces.payment_success', compact('annonce')); }
+
+
+
+    public function map()
+    {
+        $annonces = Annonce::with(['objet.images', 'objet.categorie'])
+                    ->whereHas('objet', function($query) {
+                        $query->whereNotNull('latitude')
+                              ->whereNotNull('longitude');
+                    })
+                    ->where('statut', 'active')  // Only show active listings
+                    ->get();
+    
+        // Use a consistent view name
+        return view('client.annonces.map', compact('annonces'));
+    }
+    
+
+    public function edit(Annonce $annonce)
+    {
+    $objets = Objet::all(); // Ou Objet::where(...) selon vos besoins
+    return view('annonces.edit', compact('annonce', 'objets'));
+    }
+
+    public function update(Request $request, Annonce $annonce)
+{
+    // Validation des données
+    $validatedData = $request->validate([
+        'date_debut' => 'required|date',
+        'date_fin' => 'required|date|after:date_debut',
+        'adress' => 'required|string|max:255',
+        'objet_id' => 'required|exists:objet,id', // Notez 'objet' au singulier
+        'statut' => 'required|in:active,inactive', // Correction du nom du champ
+        'premium' => 'sometimes|boolean'
+    ]);
+
+    // Vérification des autorisations
+    if ($annonce->proprietaire_id !== Auth::id()) {
+        abort(403, 'Action non autorisée');
+    }
+
+    // Conversion de la valeur checkbox
+    $validatedData['premium'] = $request->has('premium');
+
+    // Mise à jour de l'annonce
+    $annonce->update($validatedData);
+
+    // Redirection vers la route 'annonces.index' (mes-annonces)
+    return redirect()->back()->with('success', 'Annonce modifier avec succès.');
+}
+
 }

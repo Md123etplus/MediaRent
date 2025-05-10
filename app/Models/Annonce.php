@@ -10,13 +10,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log; // Import the Log facade (ensures Log is defined)
 use App\Mail\NewAnnonceNotification; // Ensure this is the correct namespace for the Mailable class
 
 class Annonce extends Model
 {
     use HasFactory;
+    
 
     protected $table = 'annonce';
+    
     
 
     protected $fillable = [
@@ -92,15 +95,19 @@ class Annonce extends Model
         return $query->where('statut', 'active');
     }
 
+    public function scopeDisponible($query)
+    {
+        return $query->where('statut', 'disponible');
+    }
     public function scopeArchived($query)
     {
-        return $query->where('statut', 'archivée');
+        return $query->whereIn('statut', ['inactive', 'archivée']);
     }
 
-    public function scopePremium($query)
-    {
-        return $query->where('premium', true);
-    }
+   // public function scopePremium($query)
+   // {
+    //    return $query->where('premium', true);
+    //}
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'annonce_id');
@@ -115,6 +122,27 @@ class Annonce extends Model
     // {
     //     return $this->belongsTo(User::class, 'proprietaire_id');
     // }
+
+    // Ajoutez ces accessors/mutators
+public function getIsPremiumAttribute()
+{
+    return (bool) $this->premium; // Convertit en booléen
+}
+
+public function scopePremium($query)
+{
+    return $query->where('premium', 1)
+                ->where('premium_until', '>', now());
+}
+
+// Dans app/Models/Annonce.php
+public function isPremiumActive(): bool
+{
+    return $this->premium == 1 && 
+           (!empty($this->premium_until) && $this->premium_until > now());
+}
+
+
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
@@ -178,7 +206,16 @@ class Annonce extends Model
                 Mail::to($subscriber->email)->send(new NewAnnonceNotification($annonce)); // Send email directly
             }
         }
+        static::updated(function ($annonce) {
+            Log::debug('Annonce updated', [
+                'id' => $annonce->id,
+                'changes' => $annonce->getChanges(),
+                'premium' => $annonce->premium
+            ]);
+        });
     });
 }
+
+
 
 }
