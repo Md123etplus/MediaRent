@@ -6,7 +6,7 @@ CREATE TABLE `Utilisateur`(
     `prenom` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `mot_de_passe` VARCHAR(255) NOT NULL,
-    `role` ENUM('') NOT NULL,
+    `role` ENUM('partenaire','client','admin') NOT NULL,
     `CIN` VARCHAR(255) NOT NULL,
     `img_profil` TEXT NOT NULL,
     `img_cin_front` TEXT NOT NULL,

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('statut', 50);
             $table->boolean('premium')->default(false);
             $table->foreignId('objet_id')->constrained('objet');
-            $table->foreignId('proprietaire_id')->constrained('utilisateur');
+            $table->foreignId('proprietaire_id')->constrained(table: 'users');
             $table->date('date_debut');
             $table->date('date_fin');
             $table->text('adress');

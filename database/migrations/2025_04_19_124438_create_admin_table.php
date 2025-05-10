@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('email');
             $table->string('mot_pass');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
