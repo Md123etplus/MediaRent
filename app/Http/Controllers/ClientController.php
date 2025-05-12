@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\FormClient;
+use App\Models\User;
 
 class ClientController extends Controller
 {
@@ -43,5 +44,15 @@ class ClientController extends Controller
 
     return redirect()->route('reservations.confirmation')->with('success', 'Compte créé avec succès !');
 }
+
+public function show(User $client) // Route Model Binding
+    {
+        if (!$client->isClient()) {
+            abort(404, 'Client non trouvé.');
+        }
+        // Les données calculées sont dans les accesseurs du modèle User
+
+        return view('fiches.client', compact('client'));
+    }
 
 }

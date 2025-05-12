@@ -56,18 +56,7 @@ class Evaluation extends Model
     /**
      * Relation avec l'utilisateur qui a fait l'évaluation
      */
-    public function evaluateur(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evaluateur_id');
-    }
 
-    /**
-     * Relation avec l'utilisateur évalué (si c'est une évaluation d'utilisateur)
-     */
-    public function evalue(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evalue_id');
-    }
 
     /**
      * Relation avec la réservation associée
@@ -106,4 +95,20 @@ public function reservation()
     {
         return $this->note.'/5';
     }
+
+// La FK dans `evaluation` nommée `objet_id` pointe vers `reservation.id`
+public function reservationAssociee()
+{
+    return $this->belongsTo(Reservation::class, 'objet_id');
+}
+
+public function evaluateur()
+{
+    return $this->belongsTo(User::class, 'evaluateur_id');
+}
+
+public function evalue()
+{
+    return $this->belongsTo(User::class, 'evalue_id');
+}
 }

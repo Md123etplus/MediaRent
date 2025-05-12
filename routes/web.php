@@ -46,6 +46,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Client\NotificationController;
 // use App\Models\Utilisateur;
 use App\Http\Controllers\AideController;
+use App\Http\Controllers\PartenaireController;
 
 // Routes publiques
 Route::get('/dashboard/client', function () {
@@ -56,7 +57,7 @@ Route::get('/dashboard/client', function () {
 //     return view('register.sign-up');
 // })->name('register');
 
-Route::get('/', function() {
+Route::get('/', function () {
     return view('landing');
 })->name('home');
 Route::get('/premium', function () {
@@ -103,7 +104,7 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 */
-Route::get('/categories',function(){
+Route::get('/categories', function () {
     return view('categories.main');
 })->name('categories');
 
@@ -120,7 +121,7 @@ Route::get('/blog', function () {
 })->name('blog');
 
 
-Route::prefix('admin')->group(function() {
+Route::prefix('admin')->group(function () {
     // Connexion
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AdminAuthController::class, 'login']);
@@ -129,16 +130,16 @@ Route::prefix('admin')->group(function() {
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
     // Zone sécurisée
-    Route::middleware(AdminAuth::class)->group(function() {
-        Route::get('/', [DashboardController::class, 'index']) ->name('admin.dashboard');
+    Route::middleware(AdminAuth::class)->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::get('/annonces/{type}', [AdminAnnonceController::class, 'index'])->name('admin.annonces.index');
         Route::post('/users/{user}/toggle-suspension', [UserController::class, 'toggleSuspension'])
             ->name('admin.users.toggle-suspension');
         Route::get('/annonces/{annonce}/details', [AdminAnnonceController::class, 'getDetails'])
-                ->name('admin.annonces.details');
+            ->name('admin.annonces.details');
         Route::post('/annonces/{annonce}/toggle-archive', [AdminAnnonceController::class, 'toggleArchive'])
-        ->name('admin.annonces.toggle-archive');
+            ->name('admin.annonces.toggle-archive');
         // ->middleware('auth');
 
         Route::get('/evaluations', [AdminEvaluationController::class, 'index'])->name('admin.evaluations.index');
@@ -163,24 +164,24 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
     ->name('annonces.show');
 
 
-    Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
+Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
     ->name('annonces.mes_annonces');
 
 
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
     ->name('annonces.archive');
-   
+
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
-     ->name('annonces.restore');
+    ->name('annonces.restore');
 // Route pour afficher le formulaire de modification
 Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
-->name('annonces.edit');
+    ->name('annonces.edit');
 // Route pour traiter la modification
 Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
-->name('annonces.update');
+    ->name('annonces.update');
 
 
 
@@ -208,7 +209,7 @@ Route::patch('/objets/{objet}/toggle-statut', [ObjetController::class, 'toggleSt
 
 // Annonces (accessibles à tous)
 Route::get('/annonces', [AnnonceController::class, 'index'])
-     ->name('annonces.index');
+    ->name('annonces.index');
 
 // Espace partenaire
 // middleware(['auth'])
@@ -219,16 +220,16 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
 
     // Gestion des disponibilités
     Route::get('/partenaire/disponibilites', [PartenaireDashboardController::class, 'disponibilites'])
-    ->name('partenaire.disponibilites');
+        ->name('partenaire.disponibilites');
     // Gestion des annonces
     Route::put('/annonce/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
         ->name('annonce.restore');
-        Route::put('/partenaire/annonces/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
+    Route::put('/partenaire/annonces/{id}/restore', [PartenaireDashboardController::class, 'restaurerAnnonce'])
         ->name('partenaire.annonce.restore');
     // Réservations
     Route::get('/reservations', [PartenaireDashboardController::class, 'reservations'])
         ->name('reservations');
-        Route::get('/disponibilites', [PartenaireDashboardController::class, 'disponibilites'])
+    Route::get('/disponibilites', [PartenaireDashboardController::class, 'disponibilites'])
         ->name('disponibilites');
 
     // Routes pour les annonces
@@ -236,9 +237,9 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
 
     Route::get('/partenaire', [PartenaireDashboardController::class, 'index'])->name('partenaire.index');
-     // Routes pour les objets
-     Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
-     Route::get('/objets', [ObjetController::class, 'index'])->name('objets.index');
+    // Routes pour les objets
+    Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
+    Route::get('/objets', [ObjetController::class, 'index'])->name('objets.index');
 });
 
 // Gestion des annonces (réservée aux partenaires)
@@ -304,31 +305,31 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/annonce/{annonce}/reserver', [ReservationController::class, 'reserverForm'])
-         ->name('reservations.form');
+        ->name('reservations.form');
     Route::post('/annonce/{annonce}/reserver', [ReservationController::class, 'store'])
-         ->name('reservations.store');
+        ->name('reservations.store');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 
 
 Route::get('/annonces/{annonce}/reservations', [ReservationController::class, 'create'])
-->name('reservations.create');
- Route::post('/annonces/{annonce}/reservations', [ReservationController::class, 'store'])
-         ->name('reservations.store');
+    ->name('reservations.create');
+Route::post('/annonces/{annonce}/reservations', [ReservationController::class, 'store'])
+    ->name('reservations.store');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
 
 
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showForm'])
     ->name('annonces.reserver');
- // web.php
+// web.php
 
 
 
 // OU version alternative (sans paramètre de route)
 Route::post('/reservations', [ReservationController::class, 'store'])
-->name('reservations.store');
+    ->name('reservations.store');
 
 Route::get('/reservations/confirmation', function () {
     return view('reservations.confirmation');
@@ -351,31 +352,33 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
 //premium
 Route::middleware(['auth'])->group(function () {
     Route::get('/annonces/{annonce}/premium', [AnnonceController::class, 'showPremiumForm'])
-    ->name('annonces.premium');
-    
+        ->name('annonces.premium');
+
     Route::post('/annonces/{annonce}/process-payment', [PaymentController::class, 'processPayment'])
-    ->name('annonces.process-payment');
-   Route::get('/annonces/{annonce}/payment-success', [AnnonceController::class, 'paymentSuccess'])->name('annonces.payment-success');
-   Route::get('/annonces/{annonce}/payment-success/{reference}', 
-    [PaymentController::class, 'showSuccess'])
-    ->name('annonces.payment-success');
+        ->name('annonces.process-payment');
+    Route::get('/annonces/{annonce}/payment-success', [AnnonceController::class, 'paymentSuccess'])->name('annonces.payment-success');
+    Route::get(
+        '/annonces/{annonce}/payment-success/{reference}',
+        [PaymentController::class, 'showSuccess']
+    )
+        ->name('annonces.payment-success');
 });
 
 
 // Routes client avec protection standard
-Route::prefix('client')->name('client.')->group(function() {
+Route::prefix('client')->name('client.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Réservations
-    Route::prefix('reservations')->name('reservations.')->group(function() {
+    Route::prefix('reservations')->name('reservations.')->group(function () {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
         Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
     });
 
     // Évaluations
-    Route::prefix('evaluations')->name('evaluations.')->group(function() {
+    Route::prefix('evaluations')->name('evaluations.')->group(function () {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
         Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
         Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
@@ -385,7 +388,7 @@ Route::prefix('client')->name('client.')->group(function() {
     });
 
     // Notifications
-    Route::prefix('notifications')->name('notifications.')->group(function() {
+    Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
@@ -394,11 +397,11 @@ Route::prefix('client')->name('client.')->group(function() {
 
 
     // Ajoutez cette route dans votre fichier routes/web.php
-Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+    Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
     // Route de test (uniquement en développement)
     if (app()->environment('local')) {
-        Route::get('/switch-to-default', function() {
+        Route::get('/switch-to-default', function () {
             $defaultUser = User::firstOrCreate(
                 ['id' => 2],
                 [
@@ -428,82 +431,94 @@ Route::middleware(['auth'])->group(function () {
     // Display user profile
     Route::get('/profile', [UtilisateurController::class, 'showProfile'])
         ->name('profile.show');
-    
+
     // Show profile edit form
     Route::get('/profile/edit', [UtilisateurController::class, 'editProfile'])
         ->name('profile.edit');
-    
+
     // Update basic profile information (name, email, CIN)
     Route::put('/profile/update', [UtilisateurController::class, 'updateProfile'])
         ->name('profile.update');
-    
+
     // Update user password (separate from basic info for security)
     Route::post('/profile/update-password', [UtilisateurController::class, 'updatePasswordProfile'])
         ->name('profile.update-password');
-    
+
     // Update profile and CIN images (profile photo, CIN front/back)
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');
 
 
 
-          // Ajoutez cette route dans votre fichier routes/web.php
-Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+    // Ajoutez cette route dans votre fichier routes/web.php
+    Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
-// Route de test (uniquement en développement)
-if (app()->environment('local')) {
-    Route::get('/switch-to-default', function() {
-        $defaultUser = User::firstOrCreate(
-            ['id' => 2],
-            [
-                'nom' => 'Default',
-                'prenom' => 'User',
-                'email' => 'default.user@example.com',
-                'mot_de_passe' => bcrypt('password'),
-                'role' => 'client',
-                'CIN' => 'EE123456',
-                'img_profil' => '/images/default-profile.png',
-                'img_cin_front' => '/images/default-cin-front.jpg',
-                'img_cin_back' => '/images/default-cin-back.jpg'
-            ]
-        );
-        Auth::login($defaultUser);
-        return redirect()->route('client.dashboard');
-    })->name('switch.default');
-}
-
-
-Route::get('/annonces/map', [AnnonceController::class, 'map'])
- ->name('annonces.map');
+    // Route de test (uniquement en développement)
+    if (app()->environment('local')) {
+        Route::get('/switch-to-default', function () {
+            $defaultUser = User::firstOrCreate(
+                ['id' => 2],
+                [
+                    'nom' => 'Default',
+                    'prenom' => 'User',
+                    'email' => 'default.user@example.com',
+                    'mot_de_passe' => bcrypt('password'),
+                    'role' => 'client',
+                    'CIN' => 'EE123456',
+                    'img_profil' => '/images/default-profile.png',
+                    'img_cin_front' => '/images/default-cin-front.jpg',
+                    'img_cin_back' => '/images/default-cin-back.jpg'
+                ]
+            );
+            Auth::login($defaultUser);
+            return redirect()->route('client.dashboard');
+        })->name('switch.default');
+    }
 
 
- // routes/web.php
-Route::post('/annonces/{annonce}/reserver', [ReservationController::class, 'storeDates'])
-->name('reservations.storeDates');
-
-Route::get('/reservations/client', [ClientController::class, 'create'])
-->name('reservations.formClient');
-
-Route::post('/reservations/client', [ClientController::class, 'store'])
-->name('reservations.storeClient');
+    Route::get('/annonces/map', [AnnonceController::class, 'map'])
+        ->name('annonces.map');
 
 
+    // routes/web.php
+    Route::post('/annonces/{annonce}/reserver', [ReservationController::class, 'storeDates'])
+        ->name('reservations.storeDates');
 
- 
-Route::get('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
-->name('reservations.response');
+    Route::get('/reservations/client', [ClientController::class, 'create'])
+        ->name('reservations.formClient');
+
+    Route::post('/reservations/client', [ClientController::class, 'store'])
+        ->name('reservations.storeClient');
 
 
-Route::prefix('client')->name('client.')->group(function() {
-   
-    
-    Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+
+
+    Route::get('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
         ->name('reservations.response');
+
+
+    Route::prefix('client')->name('client.')->group(function () {
+
+
+        Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+            ->name('reservations.response');
+    });
+
+
+    Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
+        ->name('client.reservations.response');
 });
 
 
-Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
-    ->name('client.reservations.response');
+// Fiche Objet
+Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.objet.show');
+// Fiche Partenaire
+// {partenaire} sera l'ID de l'utilisateur. Le contrôleur vérifiera le rôle.
+//Route::get('/partenaires/{partenaire}', [PartenaireController::class, 'show'])->name('fiches.partenaire.show');
 
+// Fiche Client
+// {client} sera l'ID de l'utilisateur. Le contrôleur vérifiera le rôle.
+Route::get('/clients/{client}', [ClientController::class, 'show'])->name('fiches.client.show');
 
-});
+Route::get('/partenaires/{user}', [App\Http\Controllers\PartenaireController::class, 'show'])->name('partenaire.show');
+
