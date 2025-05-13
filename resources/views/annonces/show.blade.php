@@ -233,12 +233,12 @@
 
         <!-- Bouton "Passer en Premium"  -->
         {{-- DEBUG - À supprimer après diagnostic --}}
-<div style="background: #f8f8f8; padding: 10px; margin-bottom: 20px;">
+{{-- <div style="background: #f8f8f8; padding: 10px; margin-bottom: 20px;">
     <h4>Debug:</h4>
     <p>Utilisateur connecté: {{ auth()->check() ? 'Oui (ID: '.auth()->id().')' : 'Non' }}</p>
     <p>Propriétaire annonce: {{ $annonce->proprietaire_id }}</p>
     <p>Statut premium: {{ $annonce->premium ? 'Oui' : 'Non' }}</p>
-</div>
+</div> --}}
 
 
 @if(auth()->check() && auth()->id() == $annonce->proprietaire_id)
@@ -429,7 +429,8 @@
         <!-- Propriétaire -->
         <div class="partner-card">
             <h4>👤 {{ $annonce->proprietaire->full_name ?? 'Propriétaire inconnu' }}</h4>
-            <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p>
+            <a href="/commentaires/{{ $annonce->proprietaire->id ?? 'Propriétaire inconnu' }}" style="color:#2980b9;">Voir commentaires sur le proprietaire</a>
+            {{-- <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p> --}}
             @if($annonce->proprietaire->moyenne_notes)
                 <p>⭐ Note moyenne : {{ number_format($annonce->proprietaire->moyenne_notes, 1) }}/5</p>
             @endif
