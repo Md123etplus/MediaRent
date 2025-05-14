@@ -108,7 +108,7 @@
                                 'id' => $review->id,
                                 'image' => $review->evaluateur->img_profil ?? 'https://via.placeholder.com/32',
                                 'user' => $review->evaluateur->prenom.' '.$review->evaluateur->nom,
-                                'rating' => $review->note,
+                                'rating' => $review->note_objet,
                                 'comment' => $review->commentaire,
                                 'item' => $review->objet->nom,
                                 'date' => Carbon\Carbon::parse($review->date)->format('d F Y'),
