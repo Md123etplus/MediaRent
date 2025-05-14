@@ -13,7 +13,7 @@ class AdminEvaluationController extends Controller
     {
         // Top 5 annonces les mieux notées
         $topAnnonces = Annonce::with(['objet', 'proprietaire'])
-            ->withAvg('evaluations as moyenne_notes', 'note')
+            ->withAvg('evaluations as moyenne_notes', 'note_objet')
             ->withCount('evaluations')
             ->whereHas('evaluations')
             ->orderByDesc('moyenne_notes')
@@ -43,9 +43,9 @@ class AdminEvaluationController extends Controller
         // Statistiques globales
         $stats = [
             'total_evaluations' => Evaluation::count(),
-            'moyenne_generale' => round(Evaluation::avg('note'), 1),
+            'moyenne_generale' => round(Evaluation::avg('note_objet'), 1),
             'evaluations_ce_mois' => Evaluation::whereMonth('created_at', now()->month)->count(),
-            'pourcentage_positives' => round(Evaluation::where('note', '>=', 4)->count() / max(1, Evaluation::count()) * 100),
+            'pourcentage_positives' => round(Evaluation::where('note_objet', '>=', 4)->count() / max(1, Evaluation::count()) * 100),
         ];
 
         // Données pour les graphiques
@@ -92,7 +92,7 @@ class AdminEvaluationController extends Controller
         // Répartition par note
         $notesDistribution = [];
         for ($i = 1; $i <= 5; $i++) {
-            $notesDistribution[$i] = Evaluation::where('note', $i)->count();
+            $notesDistribution[$i] = Evaluation::where('note_objet', $i)->count();
         }
 
         // Évolutions mensuelles
@@ -100,7 +100,7 @@ class AdminEvaluationController extends Controller
                 YEAR(created_at) as year,
                 MONTH(created_at) as month,
                 COUNT(*) as count,
-                AVG(note) as avg_note
+                AVG(note_objet) as avg_note
             ')
             ->where('created_at', '>=', now()->subMonths(6))
             ->groupBy('year', 'month')

@@ -111,7 +111,7 @@
                                     @include('admin.components.review-item', [
                                         'image' => $evaluation->evaluateur->img_profil ?? 'https://via.placeholder.com/40',
                                         'user' => $evaluation->evaluateur->full_name,
-                                        'rating' => $evaluation->note,
+                                        'rating' => $evaluation->note_objet,
                                         'comment' => $evaluation->commentaire,
                                         'item' => $evaluation->objet->nom,
                                         'date' => $evaluation->created_at->format('d/m/Y'),
@@ -146,7 +146,7 @@
                     @include('admin.components.review-item', [
                         'image' => $evaluation->evaluateur->img_profil ?? 'https://via.placeholder.com/40',
                         'user' => $evaluation->evaluateur->full_name,
-                        'rating' => $evaluation->note,
+                        'rating' => $evaluation->note_objet,
                         'comment' => $evaluation->commentaire,
                         'item' => $evaluation->objet ? $evaluation->objet->nom : 'Utilisateur',
                         'date' => $evaluation->created_at->format('d/m/Y'),
