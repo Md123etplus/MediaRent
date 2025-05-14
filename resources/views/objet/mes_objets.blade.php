@@ -55,15 +55,26 @@
         overflow: hidden;
     }
 
-    .objet-images img {
-        width: 100%;
+    .objet-carousel {
+        position: relative;
         height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s;
     }
 
-    .objet-card:hover .objet-images img {
-        transform: scale(1.05);
+    .carousel-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .carousel-dot {
+        transition: background 0.3s ease;
+    }
+
+    .carousel-dot:hover {
+        background: rgba(255,255,255,0.8) !important;
     }
 
     .objet-details {
@@ -113,6 +124,38 @@
         gap: 10px;
     }
 
+    .action-buttons .btn {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .action-buttons .btn-primary {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .action-buttons .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .action-buttons .btn-danger {
+        background-color: #e74c3c;
+        border-color: #e74c3c;
+    }
+
+    .action-buttons .btn-danger:hover {
+        background-color: #c0392b;
+        border-color: #c0392b;
+        transform: translateY(-2px);
+    }
+
     .empty-state {
         text-align: center;
         padding: 40px;
@@ -143,10 +186,26 @@
     @else
         <div class="objets-grid">
             @foreach($objets as $objet)
-                <div class="objet-card">
+                <div class="objet-card" id="objet-{{ $objet->id }}">
                     <div class="objet-images">
                         @if($objet->images->isNotEmpty())
-                            <img src="{{ asset($objet->images->first()->url) }}" alt="Image de {{ $objet->nom }}">
+                            <div class="objet-carousel" style="height: 100%; position: relative;">
+                                @foreach($objet->images as $image)
+                                    <div class="carousel-slide" style="height: 100%; display: {{ $loop->first ? 'block' : 'none' }};">
+                                        <img src="{{ asset($image->url) }}" alt="Image de {{ $objet->nom }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                @endforeach
+                                
+                                @if($objet->images->count() > 1)
+                                    <div style="position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px;">
+                                        @foreach($objet->images as $image)
+                                            <span class="carousel-dot" 
+                                                  style="width: 8px; height: 8px; background: {{ $loop->first ? '#3498db' : 'rgba(255,255,255,0.5)' }}; border-radius: 50%; cursor: pointer;"
+                                                  onclick="showSlide(this, {{ $loop->index }}, 'objet-{{ $objet->id }}')"></span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
                         @else
                             <div style="background: #f5f5f5; height: 100%; display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #999;">Aucune image</span>
@@ -168,28 +227,29 @@
                             <span>Ajouté le {{ $objet->created_at->format('d/m/Y') }}</span>
                         </div>
 
-                       <div class="action-buttons mt-2">
-    <!-- Bouton Modifier -->
-    <a href="{{ route('objet.edit', $objet->id) }}" 
-       class="btn btn-sm btn-primary">
-        <i class="fas fa-edit"></i> Modifier
-    </a>
-    
-    <!-- Bouton Changer Statut -->
-    <form action="{{ route('objet.toggleStatut', $objet->id) }}" method="POST" 
-          onsubmit="return confirm('Voulez-vous changer le statut de cet objet ?')">
-        @csrf
-        @method('PATCH')
-        <button type="submit" class="btn btn-sm {{ $objet->statut === 'active' ? 'btn-secondary' : 'btn-success' }}">
-            <i class="fas {{ $objet->statut === 'active' ? 'fa-archive' : 'fa-check' }}"></i>
-            {{ $objet->statut === 'active' ? 'Archiver' : 'Activer' }}
-        </button>
-    </form>
-</div>
+                        <div class="action-buttons mt-2">
+                            <a href="{{ route('objet.edit', $objet->id) }}" 
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Modifier</a>
+                        </div>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 </div>
+
+<script>
+    function showSlide(dot, index, carouselId) {
+        const carousel = document.querySelector(`#${carouselId} .objet-carousel`);
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        const dots = carousel.querySelectorAll('.carousel-dot');
+        
+        slides.forEach(slide => slide.style.display = 'none');
+        dots.forEach(d => d.style.background = 'rgba(255,255,255,0.5)');
+        
+        slides[index].style.display = 'block';
+        dot.style.background = '#3498db';
+    }
+</script>
 @endsection
