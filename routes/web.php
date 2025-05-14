@@ -135,19 +135,19 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
 
     Route::get('/mes-annonces', [AnnonceController::class, 'mesAnnonces'])
     ->name('annonces.mes_annonces');
-  
+
 
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
     ->name('annonces.archive');
-   
+
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
     ->name('annonces.restore');
 
 
-     
+
 
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
@@ -191,7 +191,7 @@ Route::prefix('partenaire')->name('partenaire.')->group(function () {
     // Routes pour les annonces
     Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.index');
     Route::get('/annonces/create', [AnnonceController::class, 'create'])->name('annonces.create');
-        
+
     Route::get('/partenaire', [PartenaireDashboardController::class, 'index'])->name('partenaire.index');
      // Routes pour les objets
      Route::get('/objets/create', [ObjetController::class, 'create'])->name('objets.create');
@@ -322,14 +322,14 @@ Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.s
 Route::prefix('client')->name('client.')->group(function() {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Réservations
     Route::prefix('reservations')->name('reservations.')->group(function() {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
         Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
     });
-    
+
     // Évaluations
     Route::prefix('evaluations')->name('evaluations.')->group(function() {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
@@ -338,8 +338,14 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
         Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
+        Route::get('/thank-you', function () {
+            return view('evaluations.thank-you');
+        })->name('evaluations.thank-you');
+        Route::get('/{evaluation}', [EvaluationController::class, 'show'])
+            ->middleware('can:view,evaluation')
+            ->name('evaluations.show');
     });
-    
+
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function() {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
@@ -382,19 +388,19 @@ Route::middleware(['auth'])->group(function () {
     // Display user profile
     Route::get('/profile', [UtilisateurController::class, 'showProfile'])
         ->name('profile.show');
-    
+
     // Show profile edit form
     Route::get('/profile/edit', [UtilisateurController::class, 'editProfile'])
         ->name('profile.edit');
-    
+
     // Update basic profile information (name, email, CIN)
     Route::put('/profile/update', [UtilisateurController::class, 'updateProfile'])
         ->name('profile.update');
-    
+
     // Update user password (separate from basic info for security)
     Route::post('/profile/update-password', [UtilisateurController::class, 'updatePasswordProfile'])
         ->name('profile.update-password');
-    
+
     // Update profile and CIN images (profile photo, CIN front/back)
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');

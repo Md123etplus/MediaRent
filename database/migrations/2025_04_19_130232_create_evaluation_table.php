@@ -19,6 +19,12 @@ return new class extends Migration
             $table->integer('note');
             $table->text('commentaire');
             $table->date('date');
+            $table->enum('type', ['client_to_partner', 'partner_to_client'])->default('client_to_partner')->after('id');
+            $table->boolean('is_public')->default(false)->after('commentaire');
+            $table->timestamp('sent_at')->nullable()->after('is_public');
+            $table->timestamp('reminded_at')->nullable()->after('sent_at');
+            $table->integer('reminder_count')->default(0)->after('reminded_at');
+            $table->foreignId('reservation_id')->constrained()->after('objet_id');
             $table->timestamps();
         });
     }
