@@ -100,9 +100,10 @@
                             <p class="text-xs text-blue-200 opacity-80">Découvrez nos offres</p>
                         </div>
                     </div>
-                    <button class="mt-4 w-full py-2.5 px-3 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
-                        Explorer
-                    </button>
+                    <button onclick="window.location.href='{{ route('annonces.search') }}'" 
+        class="mt-4 w-full py-2.5 px-3 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+    Explorer
+</button>
                 </div>
             </div>
             
