@@ -521,4 +521,3 @@ Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.ob
 Route::get('/clients/{client}', [ClientController::class, 'show'])->name('fiches.client.show');
 
 Route::get('/partenaires/{user}', [App\Http\Controllers\PartenaireController::class, 'show'])->name('partenaire.show');
-

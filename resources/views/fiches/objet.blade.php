@@ -3,290 +3,354 @@
 @section('title', 'Fiche Objet: ' . $objet->nom)
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header avec effet néon -->
-    <header class="fiche-header mb-10 p-8 bg-gradient-to-r from-indigo-900 to-purple-900 rounded-3xl shadow-2xl relative overflow-hidden">
-        <!-- Effet de particules animées -->
-        <div class="absolute inset-0 opacity-20">
-            <div class="absolute top-1/4 left-1/4 w-48 h-48 rounded-full bg-pink-500 mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-            <div class="absolute bottom-1/3 right-1/3 w-56 h-56 rounded-full bg-cyan-500 mix-blend-overlay filter blur-3xl opacity-50 animate-pulse delay-300"></div>
-        </div>
-        
-        <div class="relative z-10">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 drop-shadow-lg neon-text">{{ $objet->nom }}</h1>
-            <p class="text-white/90 flex items-center text-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-cyan-300" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                </svg>
-                Proposé par:
-                @if($objet->proprietaire)
-                    <a href="{{ route('partenaire.show', $objet->proprietaire->id) }}" 
-                       class="ml-2 font-bold text-cyan-300 hover:text-white transition-colors duration-300 flex items-center group">
-                        {{ $objet->proprietaire->nom }} {{ $objet->proprietaire->prenom }}
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                @else
-                    <span class="ml-2 italic text-gray-300">Information non disponible</span>
-                @endif
-            </p>
-        </div>
-    </header>
-
-    <!-- Galerie d'images avec effet lightbox -->
-    @if($objet->images && $objet->images->count() > 0)
-        <div class="mb-12">
-            <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                <span class="inline-block mr-2">📸</span> Galerie Photos
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach($objet->images as $image)
-                    <div class="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-                        <img src="{{ asset($image->url) }}" 
-                             alt="Photo de {{ $objet->nom }}" 
-                             class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                            <span class="text-white font-medium">Voir en grand</span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @else
-        <div class="mb-12 text-center py-12 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
-            <div class="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </div>
-            <h3 class="text-xl font-medium text-gray-700 mb-2">Aucune photo disponible</h3>
-            <p class="text-gray-500 max-w-md mx-auto">Cet objet ne contient pas encore d'images</p>
-        </div>
-    @endif
-
-    <!-- Grid d'informations -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <!-- Colonne Principale -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Carte Catégorie -->
-            <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 hover:border-indigo-300 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-start">
-                    <div class="bg-indigo-100 p-3 rounded-xl mr-4 shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Catégorie</h3>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">{{ $objet->categorie->nom ?? 'Non spécifiée' }}</p>
-                    </div>
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <!-- Effets de particules cosmiques -->
+        <div class="absolute inset-0 overflow-hidden">
+            @for ($i = 0; $i < 15; $i++)
+                <div class="absolute rounded-full opacity-10 animate-float-{{ $i }}"
+                    style="background: conic-gradient(from {{ rand(0, 360) }}deg, 
+                        hsl({{ rand(200, 260) }}, 100%, 50%), 
+                        hsl({{ rand(260, 320) }}, 100%, 50%));
+                        width: {{ rand(5, 15) }}px; 
+                        height: {{ rand(5, 15) }}px;
+                        top: {{ rand(0, 100) }}%;
+                        left: {{ rand(0, 100) }}%;
+                        animation-delay: {{ $i * 0.5 }}s">
                 </div>
-            </div>
-
-            <!-- Carte Prix -->
-            <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 hover:border-green-300 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-start">
-                    <div class="bg-green-100 p-3 rounded-xl mr-4 shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Prix journalier</h3>
-                        <p class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-600 mt-1">
-                            {{ number_format($objet->prix_journalier, 2, ',', ' ') }} €
-                        </p>
-                        <p class="text-sm text-gray-500 mt-1">TVA incluse</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Carte Localisation -->
-            <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 hover:border-cyan-300 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-start">
-                    <div class="bg-cyan-100 p-3 rounded-xl mr-4 shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Localisation</h3>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">{{ $objet->ville }}</p>
-                        <p class="text-sm text-gray-500 mt-1 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Livraison possible: {{ $objet->option_livraison_texte }}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            @endfor
         </div>
 
-        <!-- Colonne Secondaire - Avis -->
-        <div class="space-y-6">
-            <!-- Carte Évaluations -->
-            <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 hover:border-yellow-300 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    Évaluations
-                </h3>
+        <!-- Hologramme flottant -->
+        <div class="max-w-6xl mx-auto transform perspective-1000">
+            <div class="relative group">
+                <!-- Effet holographique 3D -->
+                <div
+                    class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 
+                        rounded-3xl blur-xl opacity-70 group-hover:opacity-100 
+                        rotate-x-60 rotate-y-0 rotate-z-0 transform-style-preserve-3d 
+                        transition-all duration-1000 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]">
+                </div>
 
-                @if($objet->nombre_avis_objet > 0)
-                    <div class="flex items-center mb-4">
-                        <div class="text-5xl font-bold text-yellow-500 mr-4">
-                            {{ number_format($objet->note_moyenne_objet, 1) }}
-                        </div>
-                        <div>
-                            <div class="flex items-center mb-1">
-                                @for($i = 1; $i <= 5; $i++)
-                                    @if($i <= floor($objet->note_moyenne_objet))
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    @endif
-                                @endfor
+                <!-- Carte principale -->
+                <div
+                    class="relative bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] 
+                       border border-white/10 overflow-hidden transform-style-preserve-3d 
+                       transition-all duration-700 group-hover:rotate-x-3 group-hover:rotate-y-3 group-hover:translate-z-20">
+                    <!-- Galerie holographique -->
+                    <div class="h-[500px] overflow-hidden relative group/gallery">
+                        @if ($objet->images->count() > 0)
+                            <img src="{{ asset($objet->images->first()->url) }}" alt="Photo de {{ $objet->nom }}"
+                                class="w-full h-full object-cover transition-all duration-1000 group-hover/gallery:scale-110">
+
+                            <!-- Effet de lumière -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                             </div>
-                            <p class="text-sm text-gray-600">{{ $objet->nombre_avis_objet }} avis</p>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <button class="w-full py-2 px-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-medium rounded-lg shadow hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
-                            Voir tous les avis
-                        </button>
-                    </div>
-                @else
-                    <div class="text-center py-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-gray-500">Aucun avis pour cet objet</p>
-                        <button class="mt-4 py-2 px-4 bg-gray-100 text-gray-700 font-medium rounded-lg shadow-sm hover:bg-gray-200 transition-colors duration-300">
-                            Soyez le premier à évaluer
-                        </button>
-                    </div>
-                @endif
-            </div>
 
-            <!-- Carte Statistiques -->
-            <div class="bg-gradient-to-br from-white to-gray-50 p-6 rounded-2xl border border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all duration-300">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Statistiques
-                </h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Locations effectuées</span>
-                        <span class="font-bold text-blue-600">{{ $objet->nombre_locations }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Disponibilité</span>
-                        <span class="font-bold {{ $objet->periodes_disponibilite->count() > 0 ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $objet->periodes_disponibilite->count() > 0 ? 'Disponible' : 'Indisponible' }}
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">État</span>
-                        <span class="font-bold 
-                            @if($objet->etat === 'excellent') text-green-600
-                            @elseif($objet->etat === 'bon') text-blue-600
-                            @elseif($objet->etat === 'moyen') text-yellow-600
-                            @else text-gray-600
-                            @endif">
-                            {{ ucfirst($objet->etat) }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section Description -->
-    <div class="fiche-section mb-12 bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl border border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-xl transition-all duration-300">
-        <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-            <span class="inline-block mr-2">📝</span> Description
-        </h2>
-        <div class="prose max-w-none text-gray-700">
-            <p class="text-lg leading-relaxed">{{ $objet->description }}</p>
-        </div>
-    </div>
-
-    <!-- Section Disponibilités -->
-    <div class="fiche-section mb-12 bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl border border-gray-200 hover:border-cyan-300 shadow-lg hover:shadow-xl transition-all duration-300">
-        <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-500">
-            <span class="inline-block mr-2">📅</span> Disponibilités
-        </h2>
-        
-        @if($objet->periodes_disponibilite && $objet->periodes_disponibilite->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($objet->periodes_disponibilite as $periode)
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 hover:border-green-300 shadow-sm hover:shadow-md transition-all duration-300">
-                        <div class="flex items-center">
-                            <div class="bg-green-100 p-2 rounded-lg mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                            <!-- Badge holographique -->
+                            @if ($objet->images->count() > 1)
+                                <div
+                                    class="absolute top-6 right-6 bg-black/50 backdrop-blur-sm text-white px-4 py-2 
+                                        rounded-full text-sm font-bold flex items-center border border-white/20 
+                                        shadow-[0_0_15px_rgba(124,58,237,0.6)] hover:shadow-[0_0_25px_rgba(124,58,237,0.9)] 
+                                        transition-all duration-500">
+                                    <span class="text-yellow-300 mr-1">✨</span> +{{ $objet->images->count() - 1 }} photos
+                                </div>
+                            @endif
+                        @else
+                            <div
+                                class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                                <div class="text-center p-8 backdrop-blur-sm rounded-xl border border-white/10">
+                                    <span class="text-8xl opacity-50">🖼️</span>
+                                    <p class="text-white/50 mt-4 text-lg">Aucune photo disponible</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="font-medium text-gray-800">Du {{ $periode['debut'] }}</p>
-                                <p class="text-sm text-gray-600">au {{ $periode['fin'] }}</p>
+                        @endif
+
+                        <!-- Miniatures holographiques -->
+                        @if ($objet->images->count() > 1)
+                            <div
+                                class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 
+                                    bg-black/50 backdrop-blur-md p-3 rounded-xl border border-white/10 
+                                    shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
+                                @foreach ($objet->images->take(5) as $image)
+                                    <div
+                                        class="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-white/20 
+                                            hover:border-purple-400 hover:scale-125 hover:z-10 
+                                            transition-all duration-300 cursor-pointer shadow-lg 
+                                            hover:shadow-[0_0_20px_rgba(168,85,247,0.7)]">
+                                        <img src="{{ asset($image->url) }}" alt="Photo supplémentaire"
+                                            class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/30 hover:bg-transparent transition"></div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Contenu principal -->
+                    <div class="p-8 space-y-8">
+                        <!-- En-tête avec effet néon -->
+                        <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-3 mb-3">
+                                    <h1
+                                        class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 
+                                           tracking-tight drop-shadow-[0_2px_10px_rgba(167,139,250,0.6)]">
+                                        {{ $objet->nom }}
+                                    </h1>
+                                    <span
+                                        class="px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-purple-900/50 to-blue-900/50 
+                                            text-purple-200 border border-purple-400/30 shadow-[inset_0_1px_5px_rgba(255,255,255,0.3)] 
+                                            flex items-center hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] transition">
+                                        <span class="mr-1.5">🏷️</span> {{ $objet->categorie->nom }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-purple-100/80 text-lg">
+                                    <span class="mr-2 text-purple-300">📍</span> {{ $objet->ville }}
+                                </div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-blue-900/40 to-purple-900/40 p-5 rounded-xl 
+                                    border border-blue-400/20 shadow-[0_5px_15px_rgba(59,130,246,0.3)] 
+                                    hover:shadow-[0_8px_25px_rgba(59,130,246,0.5)] transition">
+                                <div class="text-4xl font-black text-white">
+                                    {{ number_format($objet->prix_journalier, 2) }} <span
+                                        class="text-xl text-blue-200">€/jour</span>
+                                </div>
+                                <div class="text-sm text-blue-300 font-medium mt-1">TVA incluse</div>
                             </div>
                         </div>
+
+                        <!-- Cartes d'information 3D -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <!-- État -->
+                            <div
+                                class="bg-gradient-to-br from-green-900/40 to-emerald-900/40 p-5 rounded-xl 
+                                    border border-green-400/20 hover:shadow-[0_8px_25px_rgba(74,222,128,0.4)] 
+                                    transition-all duration-500 hover:-translate-y-1.5">
+                                <div class="text-sm text-green-300 font-medium flex items-center">
+                                    <span class="mr-2">🔄</span> État
+                                </div>
+                                <div class="font-bold text-white text-xl mt-2 capitalize flex items-center">
+                                    <span
+                                        class="w-3 h-3 rounded-full bg-green-400 mr-2 shadow-[0_0_8px_rgba(74,222,128,0.7)]"></span>
+                                    {{ $objet->etat }}
+                                </div>
+                            </div>
+
+                            <!-- Note moyenne -->
+                            <div
+                                class="bg-gradient-to-br from-amber-900/40 to-yellow-900/40 p-5 rounded-xl 
+                                    border border-amber-400/20 hover:shadow-[0_8px_25px_rgba(234,179,8,0.4)] 
+                                    transition-all duration-500 hover:-translate-y-1.5">
+                                <div class="text-sm text-amber-300 font-medium flex items-center">
+                                    <span class="mr-2">⭐</span> Note moyenne
+                                </div>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-3xl font-black text-white mr-3">{{ number_format($note, 1) }}</span>
+                                    <div class="flex">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= round($note))
+                                                <span
+                                                    class="text-amber-400 text-xl drop-shadow-[0_0_5px_rgba(234,179,8,0.7)]">★</span>
+                                            @else
+                                                <span class="text-gray-500 text-xl">★</span>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Disponibilité -->
+                            <div
+                                class="bg-gradient-to-br from-gray-800/50 to-blue-900/40 p-5 rounded-xl 
+                                    border border-blue-400/20 hover:shadow-[0_8px_25px_rgba(59,130,246,0.4)] 
+                                    transition-all duration-500 hover:-translate-y-1.5">
+                                <div class="text-sm text-blue-300 font-medium flex items-center">
+                                    <span class="mr-2">📅</span> Disponibilité
+                                </div>
+                                <div class="mt-2">
+                                    <span
+                                        class="px-3 py-1.5 rounded-full text-sm font-bold 
+                                    {{ $disponible ? 'bg-green-900/50 text-green-200 border border-green-400/30 shadow-[0_0_10px_rgba(74,222,128,0.3)]' : 'bg-red-900/50 text-red-200 border border-red-400/30 shadow-[0_0_10px_rgba(248,113,113,0.3)]' }} 
+                                    flex items-center justify-center w-min">
+                                        <span class="mr-1.5">{{ $disponible ? '✅' : '❌' }}</span>
+                                        {{ $disponible ? 'Disponible' : 'Indisponible' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description avec effet de parchemin -->
+                        <div
+                            class="mt-10 bg-gradient-to-br from-gray-800/50 to-purple-900/30 p-8 rounded-2xl 
+                                border border-purple-400/20 shadow-[inset_0_5px_15px_rgba(0,0,0,0.3)]">
+                            <h2
+                                class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200 
+                                   mb-6 flex items-center drop-shadow-[0_2px_5px_rgba(167,139,250,0.5)]">
+                                <span class="mr-3">📜</span> Description
+                            </h2>
+                            <div class="prose prose-invert max-w-none text-gray-200 border-l-2 border-purple-400/50 pl-6">
+                                {{ $objet->description }}
+                            </div>
+                        </div>
+
+                        <!-- Propriétaire avec carte VIP -->
+                        <div class="mt-12 pt-8 border-t border-white/10">
+                            <h2
+                                class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-pink-200 
+                                   mb-6 flex items-center drop-shadow-[0_2px_5px_rgba(236,72,153,0.3)]">
+                                <span class="mr-3">👑</span> Proposé par
+                            </h2>
+                            <a href="{{ route('partenaire.show', $objet->proprietaire->id) }}"
+                                class="block hover:transform hover:scale-105 transition-all duration-300">
+                                <div
+                                    class="flex items-center p-6 bg-gradient-to-br from-gray-800/60 to-indigo-900/50 rounded-2xl 
+                                        border border-indigo-400/30 hover:shadow-[0_10px_30px_rgba(79,70,229,0.4)] 
+                                        transition-all duration-500 cursor-pointer group/owner">
+                                    <div class="relative">
+                                        <div
+                                            class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 
+                                                flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(139,92,246,0.6)] 
+                                                group-hover/owner:shadow-[0_0_30px_rgba(139,92,246,0.9)] transition">
+                                            👨
+                                        </div>
+                                        <div
+                                            class="absolute -bottom-1 -right-1 bg-yellow-400 text-xs font-black rounded-full 
+                                                px-2 py-0.5 shadow-md transform rotate-6 border border-yellow-200">
+                                            PARTENAIRE
+                                        </div>
+                                    </div>
+                                    <div class="ml-6">
+                                        <p class="font-bold text-white text-xl">{{ $objet->proprietaire->nom }}
+                                            {{ $objet->proprietaire->prenom }}</p>
+                                        <div class="flex items-center text-sm text-purple-200/80 mt-2">
+                                            <span class="mr-2">📅</span> Membre depuis
+                                            {{ $objet->proprietaire->created_at->format('M Y') }}
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 mt-3">
+                                            <span
+                                                class="text-xs bg-blue-900/50 text-blue-200 px-3 py-1 rounded-full 
+                                                   flex items-center border border-blue-400/30">
+                                                <span class="mr-1.5">📦</span>
+                                                {{ $objet->proprietaire->objets_count ?? 0 }} objets proposés
+                                            </span>
+                                            @if ($objet->proprietaire->note_moyenne)
+                                                <span
+                                                    class="text-xs bg-green-900/50 text-green-200 px-3 py-1 rounded-full 
+                                                       flex items-center border border-green-400/30">
+                                                    <span class="mr-1.5">⭐</span> Note:
+                                                    {{ number_format($objet->proprietaire->note_moyenne, 1) }}/5
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="mt-4">
+                                            <span class="text-sm text-indigo-300 hover:text-indigo-200 flex items-center">
+                                                Voir le profil complet
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 ml-1 group-hover/owner:translate-x-1 transition-transform"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Bouton de réservation futuriste -->
+                        @if ($disponible)
+                            <div class="mt-12">
+                                <button
+                                    class="w-full group relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 
+                                        text-white px-8 py-6 rounded-2xl font-black text-xl tracking-wide 
+                                        hover:shadow-[0_15px_35px_rgba(99,102,241,0.5)] transition-all duration-700 
+                                        transform hover:-translate-y-1.5">
+                                    <span class="relative z-10 flex items-center justify-center">
+                                        <span class="mr-3 text-2xl">🚀</span>
+                                        <span class="drop-shadow-[0_2px_5px_rgba(255,255,255,0.4)]">Réserver
+                                            maintenant</span>
+                                    </span>
+                                    <span
+                                        class="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 
+                                           opacity-0 group-hover:opacity-100 transition-opacity duration-700"></span>
+                                    <span
+                                        class="absolute -inset-2 bg-white/10 rounded-2xl transform rotate-3 scale-110 
+                                           group-hover:rotate-0 group-hover:scale-105 transition-all duration-1000"></span>
+                                    <span
+                                        class="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                        <span
+                                            class="absolute top-0 right-0 w-16 h-16 -mt-5 -mr-5 bg-white rounded-full 
+                                               opacity-20 animate-ping-slow"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        @endif
                     </div>
-                @endforeach
+                </div>
             </div>
-        @else
-            <div class="text-center py-8">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 class="text-xl font-medium text-gray-700 mb-2">Aucune disponibilité actuelle</h3>
-                <p class="text-gray-500">Cet objet n'a pas de périodes de disponibilité annoncées pour le moment.</p>
-            </div>
-        @endif
+        </div>
     </div>
 
-    <!-- Bouton d'action principal -->
-    <div class="text-center mb-12">
-        <button class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-full shadow-xl hover:shadow-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 text-lg">
-            Réserver cet objet
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline ml-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-</div>
+    <style>
+        @keyframes float {
 
-<!-- Style personnalisé pour l'effet néon -->
-<style>
-    .neon-text {
-        text-shadow: 0 0 5px rgba(99, 102, 241, 0.5), 
-                     0 0 10px rgba(99, 102, 241, 0.4), 
-                     0 0 15px rgba(99, 102, 241, 0.3);
-        animation: neon-glow 1.5s ease-in-out infinite alternate;
-    }
-    
-    @keyframes neon-glow {
-        from {
-            text-shadow: 0 0 5px rgba(99, 102, 241, 0.5), 
-                         0 0 10px rgba(99, 102, 241, 0.4), 
-                         0 0 15px rgba(99, 102, 241, 0.3);
+            0%,
+            100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-30px) translateX(10px) rotate(5deg);
+            }
+
+            50% {
+                transform: translateY(-15px) translateX(-15px) rotate(-5deg);
+            }
+
+            75% {
+                transform: translateY(-25px) translateX(15px) rotate(3deg);
+            }
         }
-        to {
-            text-shadow: 0 0 10px rgba(99, 102, 241, 0.7), 
-                         0 0 20px rgba(99, 102, 241, 0.6), 
-                         0 0 30px rgba(99, 102, 241, 0.5);
+
+        @keyframes ping-slow {
+            0% {
+                transform: scale(0.5);
+                opacity: 0.8;
+            }
+
+            70%,
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
         }
-    }
-</style>
+
+        .animate-ping-slow {
+            animation: ping-slow 3s infinite cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        .rotate-x-60 {
+            transform: rotateX(60deg);
+        }
+
+        @for ($i = 0; $i < 15; $i++)
+            .animate-float-{{ $i }} {
+                animation: float {{ 15 + $i }}s ease-in-out infinite;
+                animation-delay: {{ $i * 0.7 }}s;
+            }
+        @endfor
+    </style>
 @endsection

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GeocoderService;
+use Illuminate\Support\Facades\DB;
 // use App\Models\Objet;
 // use App\Models\Utilisateur;
 use App\Models\User;
@@ -195,17 +196,24 @@ class ObjetController extends Controller
 
         return redirect()->route('mes.objets')->with('success', 'Objet supprimé avec succès');
     }
-    public function show(Objet $objet)
+    public function show($id)
     {
-        $objet->load([
-            'categorie',
-            'proprietaire',
-            'images',
-            'annonces',
-            'annonces.reservations',
-            'annonces.reservations.evaluation'
-        ]);
+        $objet = Objet::with(['images', 'evaluations'])->findOrFail($id);
 
-        return view('fiches.objet', compact('objet'));
+        // Calcul note moyenne
+        $note = DB::table('evaluation')
+            ->join('reservation', 'evaluation.reservation_id', '=', 'reservation.id')
+            ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')
+            ->where('annonce.objet_id', $id)
+            ->avg('evaluation.note_objet') ?? 0;
+
+        // Vérifier disponibilité
+        $disponible = DB::table('annonce')
+            ->where('objet_id', $id)
+            ->where('statut', 'active')
+            ->where('date_fin', '>=', now())
+            ->exists();
+
+        return view('fiches.objet', compact('objet', 'note', 'disponible'));
     }
 }
