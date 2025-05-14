@@ -95,7 +95,7 @@
         <!-- Right side navigation -->
         <div class="flex items-center gap-4">
             <!-- Desktop Navigation -->
-            <nav class="hidden md:flex items-center gap-4">
+            <nav class="block md:flex items-center gap-4">
                 @if(request()->is('/'))
                     <a href="#how-it-works" class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Comment ça marche</a>
                     <a href="#categories"  class="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors dark:text-white">Catégories</a>

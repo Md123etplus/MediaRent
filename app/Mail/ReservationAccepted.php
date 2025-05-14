@@ -17,10 +17,9 @@ class ReservationAccepted extends Mailable
         $this->annonce = $annonce;
     }
 
-
     public function build()
     {
-        return $this->subject('Votre réservation a été acceptée !')
+        return $this->subject('Statut de votre réservation')
                    ->view('emails.reservation_accepted')
                    ->with([
                        'reservation' => $this->reservation,
