@@ -170,7 +170,7 @@ Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])
 // Route pour archiver (POST)
 Route::post('/mes-annonces/{annonce}/archive', [AnnonceController::class, 'archiver'])
     ->name('annonces.archive');
-   
+
 
 // Route pour restaurer (POST)
 Route::post('/mes-annonces/{annonce}/restore', [AnnonceController::class, 'restore'])
@@ -181,9 +181,6 @@ Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
 // Route pour traiter la modification
 Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
 ->name('annonces.update');
-
-
-
 
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
@@ -382,6 +379,12 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
         Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
+        Route::get('/thank-you', function () {
+            return view('evaluations.thank-you');
+        })->name('evaluations.thank-you');
+        Route::get('/{evaluation}', [EvaluationController::class, 'show'])
+            ->middleware('can:view,evaluation')
+            ->name('evaluations.show');
     });
 
     // Notifications
@@ -428,24 +431,22 @@ Route::middleware(['auth'])->group(function () {
     // Display user profile
     Route::get('/profile', [UtilisateurController::class, 'showProfile'])
         ->name('profile.show');
-    
+
     // Show profile edit form
     Route::get('/profile/edit', [UtilisateurController::class, 'editProfile'])
         ->name('profile.edit');
-    
+
     // Update basic profile information (name, email, CIN)
     Route::put('/profile/update', [UtilisateurController::class, 'updateProfile'])
         ->name('profile.update');
-    
+
     // Update user password (separate from basic info for security)
     Route::post('/profile/update-password', [UtilisateurController::class, 'updatePasswordProfile'])
         ->name('profile.update-password');
-    
+
     // Update profile and CIN images (profile photo, CIN front/back)
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');
-
-
 
           // Ajoutez cette route dans votre fichier routes/web.php
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
@@ -504,6 +505,5 @@ Route::prefix('client')->name('client.')->group(function() {
 
 Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
     ->name('client.reservations.response');
-
 
 });

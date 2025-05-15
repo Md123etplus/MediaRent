@@ -20,7 +20,11 @@ return new class extends Migration
             $table->text('commentaire_objet');
             $table->boolean('is_visible')->default(true);
             $table->date('date');
-
+            $table->enum('type', ['client_to_partner', 'partner_to_client'])->default('client_to_partner')->after('id');
+            $table->boolean('is_public')->default(false)->after('commentaire');
+            $table->timestamp('sent_at')->nullable()->after('is_public');
+            $table->timestamp('reminded_at')->nullable()->after('sent_at');
+            $table->integer('reminder_count')->default(0)->after('reminded_at');
             // Ajouter les nouvelles colonnes
             $table->integer('note_proprietaire');
             $table->text('commentaire_proprietaire');
