@@ -42,7 +42,7 @@ class DashboardController extends Controller
 
             // Evaluations
             'total_evaluations' => Evaluation::count(),
-            'avg_rating' => Evaluation::avg('note') ?? 0,
+            'avg_rating' => Evaluation::avg('note_objet') ?? 0,
             'new_evaluations' => Evaluation::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count(),
         ];
 

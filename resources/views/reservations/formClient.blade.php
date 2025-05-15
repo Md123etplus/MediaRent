@@ -28,13 +28,15 @@
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-semibold mb-1">Email</label>
-            <input type="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" required>
+            <label class="block text-sm font-semibold mb-1">Email</label>
+            <input type="text" value="{{ $email }}" class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+            <input type="hidden" name="email" value="{{ $email }}">
         </div>
+
 
         <div>
             <label for="CIN" class="block text-sm font-semibold mb-1">CIN</label>
-            <input type="text" name="CIN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" required>
+            <input type="text"  value="{{ $cin }}" name="CIN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" readonly>
         </div>
 
         <div class="text-center pt-4">

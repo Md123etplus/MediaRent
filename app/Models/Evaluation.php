@@ -14,7 +14,7 @@ class Evaluation extends Model
     protected $table = 'evaluation';
 
     // Désactivez les timestamps si vous n'avez pas created_at et updated_at
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Définissez les champs remplissables
     protected $fillable = [
@@ -24,12 +24,13 @@ class Evaluation extends Model
     'evalue_id',
     'note_objet',
     'is_visible',
-    'note_proprietaire',
+    'note_proprietaire',//there was two different versions, so i had to keep the recent one since it has migrations related to it
     'commentaire_objet',
     'commentaire_proprietaire',
-    'date'// 'objet' ou 'utilisateur'
+    'date',
+    'type'// 'objet' ou 'utilisateur'
     ];
-    // protected $fillable = [ there was two different versions, so i had to keep the recent one since it has migrations related to it
+    // protected $fillable = [ 
     //     'objet_id',
     //     'evaluateur_id',
     //     'evalue_id',
@@ -40,10 +41,11 @@ class Evaluation extends Model
     //     'date',
     //     'type', // 'objet' ou 'utilisateur'
     // ];
-    protected $casts = [
-        'note' => 'integer',
-        'created_at' => 'datetime',
-    ];
+
+    // protected $casts = [
+    //     'note_objet' => 'integer',
+    //     'created_at' => 'datetime',
+    // ];
 
     /**
      * Relation avec l'objet évalué
@@ -93,7 +95,7 @@ public function reservation()
      */
     public function getNoteTextAttribute(): string
     {
-        return $this->note.'/5';
+        return $this->note_objet.'/5';
     }
 
 // La FK dans `evaluation` nommée `objet_id` pointe vers `reservation.id`
