@@ -195,7 +195,7 @@ class ExportController extends Controller
                     $eval->evalue->nom . ' ' . $eval->evalue->prenom,
                     $eval->objet->nom ?? 'N/A',
                     $eval->note_objet . '/5',
-                    '"' . str_replace('"', '""', $eval->commentaire) . '"', // Protection des guillemets
+                    '"' . str_replace('"', '""', $eval->commentaire_objet) . '"', // Protection des guillemets
                     $eval->created_at->format('d/m/Y H:i'),
                     $eval->is_visible ? 'Oui' : 'Non'
                 ]);
