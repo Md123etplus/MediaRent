@@ -2,187 +2,194 @@
 
 @section('client-content')
 <div class="min-h-full">
-   
-
-    <!-- Main Content (le reste du code reste inchangé) -->
+    <!-- Main Content -->
     <div class="md:pl-64 flex flex-col flex-1">
         <main class="flex-1 p-6">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Card: Ongoing Reservations -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Réservations en cours</p>
-                            <p class="text-3xl font-semibold text-blue-600 dark:text-blue-400 mt-1">{{ $ongoingReservations ?? 0 }}</p>
-                        </div>
-                        <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            <!-- Bienvenue Section avec Animation et Citation (conservé comme demandé) -->
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg mb-8 overflow-hidden relative">
+                <div class="absolute inset-0 bg-pattern opacity-10"></div>
+                <div class="relative z-10 p-8">
+                    <div class="flex items-center animate-fadeIn">
+                        <div class="mr-5">
+                            <svg class="w-14 h-14 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Card: Past Reservations -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Réservations passées</p>
-                            <p class="text-3xl font-semibold text-green-600 dark:text-green-400 mt-1">{{ $pastReservations ?? 0 }}</p>
-                        </div>
-                        <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
+                            <h1 class="text-3xl font-bold text-white tracking-tight">Bienvenue, {{ auth()->user()->prenom }}!</h1>
+                            <p class="text-blue-100 mt-1 max-w-2xl">{{ now()->format('l, d F Y') }}</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Card: Average Rating -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Note moyenne</p>
-                            <div class="flex items-center mt-1">
-                                <p class="text-3xl font-semibold text-yellow-600 dark:text-yellow-400 mr-2">{{ number_format($averageRating ?? 0, 1) }}</p>
-                                <div class="flex">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($averageRating ?? 0))
-                                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                            </svg>
-                                        @elseif($i - 0.5 <= ($averageRating ?? 0))
-                                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <defs>
-                                                    <linearGradient id="half-star" x1="0" x2="100%" y1="0" y2="0">
-                                                        <stop offset="50%" stop-color="currentColor"></stop>
-                                                        <stop offset="50%" stop-color="#D1D5DB"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                                <path fill="url(#half-star)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                            </svg>
-                                        @else
-                                            <svg class="w-5 h-5 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                            </svg>
-                                        @endif
-                                    @endfor
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                            </svg>
-                        </div>
+                    
+                    <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 animate-slideUp" style="animation-delay: 0.2s">
+                        <blockquote class="italic text-white text-lg">
+                            "Le partage d'objets n'est pas seulement une façon de vivre plus économiquement, c'est aussi une façon de vivre plus intensément - en connectant des personnes et créant des communautés."
+                        </blockquote>
+                        <p class="text-right text-blue-100 mt-2">- L'équipe de MediaRent</p>
                     </div>
                 </div>
+                
+                <!-- Décoration de fond -->
+                <div class="absolute -bottom-8 -right-8 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute -top-16 -left-16 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl"></div>
             </div>
-
-            <!-- Recent Reservations -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Dernières réservations</h3>
-                    <a href="{{ route('client.reservations.index') }}" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Voir tout</a>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Objet</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dates</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse($recentReservations ?? [] as $reservation)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ $reservation->annonce->objet->images->first()->url ?? '/images/placeholder.png' }}" alt="{{ $reservation->annonce->objet->nom }}">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $reservation->annonce->objet->nom }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $reservation->annonce->objet->ville }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($reservation->date_debut)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($reservation->date_fin)->format('d/m/Y') }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $reservation->statut === 'confirmée' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                                           ($reservation->statut === 'en attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 
-                                           'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200') }}">
-                                        {{ $reservation->statut }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('client.reservations.show', $reservation->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4">Détails</a>
-                                    @if($reservation->statut === 'terminée' && !$reservation->evaluation)
-                                        <a href="{{ route('client.evaluations.create', $reservation->id) }}" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">Évaluer</a>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Aucune réservation récente
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Notifications -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Notifications récentes</h3>
-                    <a href="#" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Marquer tout comme lu</a>
-                </div>
-                <div class="space-y-4">
-                    @forelse($notifications ?? [] as $notification)
-                    <div class="flex items-start p-4 rounded-lg transition-all duration-200 {{ $notification->lue ? 'bg-gray-50 dark:bg-gray-700' : 'bg-blue-50 dark:bg-blue-900/50' }}">
-                        <div class="flex-shrink-0 pt-1">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            
+            <!-- Nouvelles cartes statiques bien designées -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Carte 1: Explorer le catalogue -->
+                <div class="relative group overflow-hidden rounded-3xl shadow-xl transition-all duration-500 hover:shadow-2xl border border-gray-100 dark:border-gray-800">
+                    <!-- Fond avec effet de morphing -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-violet-500 to-fuchsia-500 opacity-90 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"></div>
+                    
+                    <!-- Motif de fond -->
+                    <div class="absolute inset-0 bg-grid-pattern opacity-20 mix-blend-overlay"></div>
+                    
+                    <!-- Élément de décoration -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16 transform rotate-12"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-violet-800/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
+                    
+                    <div class="relative z-10 p-8 md:p-10 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-lg flex items-center justify-center mb-6 shadow-lg border border-white/20">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
+                            
+                            <h2 class="text-2xl font-bold text-white mb-3 tracking-tight">Explorez Notre Collection</h2>
+                            <p class="text-purple-50 opacity-90 mb-6 max-w-md">Découvrez notre catalogue diversifié d'objets disponibles à la location. Trouvez exactement ce dont vous avez besoin pour votre prochain projet ou événement.</p>
                         </div>
-                        <div class="ml-4 flex-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $notification->contenu }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {{ $notification->date_creation->diffForHumans() }}
-                            </p>
-                        </div>
-                        @if(!$notification->lue)
-                        <form action="{{ route('client.notifications.markAsRead', $notification->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        
+                        <a href="{{ route('annonces.index') }}" class="group-hover:bg-white/95 inline-flex items-center px-6 py-3 rounded-full text-white group-hover:text-violet-600 bg-white/20 backdrop-blur-md border border-white/25 font-medium transition-all duration-300 text-sm shadow-md hover:shadow-xl w-fit">
+    <span>Parcourir mes annonces </span>
+    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+    </svg>
+</a>
+                    </div>
+                    
+                    <!-- Élément décoratif animé -->
+                    <div class="absolute right-8 bottom-8 opacity-70 group-hover:opacity-90 transition-all duration-500 group-hover:scale-110">
+                        <svg class="w-24 h-24 text-white/20" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M39.5 71.5Q25 91 29.5 111.5T54 143.5T97.5 168T148 147T169.5 107T147 65T115.5 36T74 40.5T39.5 71.5Z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Carte 2: Assistant de Réservation -->
+                <div class="relative group overflow-hidden rounded-3xl shadow-xl transition-all duration-500 hover:shadow-2xl border border-gray-100 dark:border-gray-800">
+                    <!-- Fond avec effet de morphing -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 opacity-90 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"></div>
+                    
+                    <!-- Motif de fond -->
+                    <div class="absolute inset-0 bg-dot-pattern opacity-20 mix-blend-overlay"></div>
+                    
+                    <!-- Élément de décoration -->
+                    <div class="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -ml-16 -mt-16"></div>
+                    <div class="absolute bottom-0 right-0 w-48 h-48 bg-teal-800/20 rounded-full blur-3xl -mr-10 -mb-10"></div>
+                    
+                    <div class="relative z-10 p-8 md:p-10 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-lg flex items-center justify-center mb-6 shadow-lg border border-white/20">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                            </button>
-                        </form>
-                        @endif
+                            </div>
+                            
+                            <h2 class="text-2xl font-bold text-white mb-3 tracking-tight">Gestion mes réservations</h2>
+                            <p class="text-green-50 opacity-90 mb-6 max-w-md">Gérez toutes vos locations en un seul endroit. Visualisez l'historique, suivez les réservations en cours et préparez vos prochaines aventures.</p>
+                        </div>
+                        
+                        <a href="{{ route('client.reservations.index') }}" class="group-hover:bg-white/95 inline-flex items-center px-6 py-3 rounded-full text-white group-hover:text-emerald-600 bg-white/20 backdrop-blur-md border border-white/25 font-medium transition-all duration-300 text-sm shadow-md hover:shadow-xl w-fit">
+    <span>Parcourir mes reservations</span>
+    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+    </svg>
+</a>
+
                     </div>
-                    @empty
-                    <div class="text-center py-6">
-                        <p class="text-gray-500 dark:text-gray-400">Aucune notification</p>
+                    
+                    <!-- Élément décoratif animé -->
+                    <div class="absolute right-8 bottom-8 opacity-70 group-hover:opacity-90 transition-all duration-500 group-hover:scale-110">
+                        <svg class="w-24 h-24 text-white/20" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M42 66Q20 82 21.5 112.5T46 158.5T89 171T134 159.5T156.5 115T137 58.5T98 33.5T60.5 42.5T42 66Z" fill="currentColor"></path>
+                        </svg>
                     </div>
-                    @endforelse
                 </div>
             </div>
         </main>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .bg-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .bg-grid-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.2' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm1 1v38h38V1H1z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .bg-dot-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.2' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fadeIn {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+    
+    .animate-slideUp {
+        animation: slideUp 0.8s ease-out forwards;
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation au survol des cartes
+        const cards = document.querySelectorAll('.card-hover');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

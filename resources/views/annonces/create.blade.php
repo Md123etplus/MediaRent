@@ -118,6 +118,12 @@
             padding: 20px;
         }
     }
+
+    .alert-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    }
 </style>
 
 <div class="form-container">
@@ -126,7 +132,12 @@
     @if(session('success'))
         <div class="alert-message alert-success">{{ session('success') }}</div>
     @endif
-
+    @if($errors->has('limit'))
+             <div class="alert-message alert-danger mb-4">
+              {{ $errors->first('limit') }}
+              <a href="{{ route('annonces.mes_annonces') }}" class="font-semibold underline">Voir mes annonces</a>
+             </div>
+    @endif
     <form class="annonce-form" action="{{ route('annonces.store') }}" method="POST">
         @csrf
         <input type="date" name="date_publication" value="{{ date('Y-m-d') }}" hidden>
@@ -147,15 +158,29 @@
             <input type="text" id="adress" name="adress" required>
         </div>
 
-        <div class="form-group">
-            <label for="objet_id">Objet :</label>
-            <select id="objet_id" name="objet_id" required>
-                @foreach($objets as $objet)
-                    <option value="{{ $objet->id }}">{{ $objet->nom }}</option>
-                @endforeach
-            </select>
-        </div>
-
+                    <div class="form-group">
+                <label for="objet_id">Objet :</label>
+                <select id="objet_id" name="objet_id" required>
+                    @forelse($objets as $objet)
+                        <option value="{{ $objet->id }}">
+                            {{ $objet->nom }} 
+                            @if($objet->categorie)
+                                ({{ $objet->categorie->nom }})
+                            @endif
+                            - {{ $objet->prix_journalier }} DH/jour
+                        </option>
+                    @empty
+                        <option value="" disabled>Vous n'avez aucun objet</option>
+                    @endforelse
+                </select>
+                
+                @if($objets->isEmpty())
+                    <div class="mt-2 text-sm text-red-600">
+                        Vous devez d'abord <a href="{{ route('objets.create') }}" class="text-blue-600 underline">créer un objet</a> avant de publier une annonce.
+                    </div>
+                @endif
+            </div>
+            
         <div class="form-group">
             <label for="statut">Statut :</label>
             <select id="statut" name="statut" required>
@@ -170,6 +195,7 @@
         </div>
 
         <button type="submit" class="submit-btn">Publier</button>
+       
     </form>
 </div>
 @endsection

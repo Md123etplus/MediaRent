@@ -16,7 +16,7 @@ class PartenaireDashboardController extends Controller
     public function index()
     {
         // $user = Auth::user();
-        $user = User::find(Auth::id()); // Replace 1 with your test user's ID
+        $user = User::find(Auth::id()); 
 
         // if (!$user || $user->role !== 'partenaire') {
         //     abort(403, 'Accès réservé aux partenaires');
@@ -51,9 +51,9 @@ class PartenaireDashboardController extends Controller
         
         // Annonces archivées
         $annoncesArchives = Annonce::where('proprietaire_id', $user->id)
-            ->where('statut', 'archivée')
-            ->with('objet.categorie')
-            ->get();
+        ->whereIn('statut', ['inactive', 'archivée'])  // Cherche les deux statuts
+        ->with('objet.categorie')
+        ->get();
     
         // Objets pour le modal
         $objets = Objet::where('proprietaire_id', $user->id)->get();
@@ -81,15 +81,26 @@ class PartenaireDashboardController extends Controller
 
     
     public function restaurerAnnonce($id)
-    {
-        $annonce = Annonce::onlyTrashed()->findOrFail($id);
-        $annonce->restore();
+{
+    $user = Auth::user();
+    
+    // Recherchez l'annonce (sans withTrashed/onlyTrashed)
+    $annonce = Annonce::where('id', $id)
+                ->where('proprietaire_id', $user->id)
+                ->firstOrFail();
 
+    // Vérifiez si l'annonce est archivée/inactive
+    if (in_array($annonce->statut, ['archivée', 'inactive'])) {
+        // Restaurez en mettant le statut à 'active'
+        $annonce->update(['statut' => 'active']);
+        
         return redirect()->route('partenaire.annonces.index')
             ->with('success', 'Annonce restaurée avec succès');
     }
 
-
+    return redirect()->back()
+        ->with('error', "Cette annonce n'était pas archivée");
+}
     public function disponibilites()
     {
         $user = Auth::user();
@@ -113,20 +124,23 @@ class PartenaireDashboardController extends Controller
     public function toggleAnnonce($id)
     {
         $user = Auth::user();
-
+    
         if (!$user || $user->role !== 'partenaire') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-
+    
         $annonce = Annonce::with('objet')
             ->where('id', $id)
             ->where('proprietaire_id', $user->id)
             ->firstOrFail();
-
-        $newStatus = $annonce->statut === 'archivée' ? 'active' : 'archivée';
+    
+        // Modification ici pour gérer 'inactive' et 'archivée'
+        $newStatus = in_array($annonce->statut, ['archivée', 'inactive']) 
+            ? 'active' 
+            : 'inactive'; // Vous pouvez mettre 'archivée' si vous préférez
         
         $annonce->update(['statut' => $newStatus]);
-
+    
         return response()->json([
             'success' => true,
             'message' => "Annonce {$annonce->objet->nom} marquée comme {$newStatus}",
@@ -134,7 +148,6 @@ class PartenaireDashboardController extends Controller
             'annonce_id' => $annonce->id
         ]);
     }
-
     public function reservations()
     {
         $user = Auth::user();
@@ -162,30 +175,35 @@ class PartenaireDashboardController extends Controller
     }
 
     public function updateDisponibilite(Request $request, $id)
-    {
-        $user = Auth::user();
-        
-        if (!$user || $user->role !== 'partenaire') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+{
+    $validated = $request->validate([
+        'date_debut' => 'required|date|after_or_equal:today',
+        'date_fin' => 'required|date|after_or_equal:date_debut',
+        'objet_id' => 'required|exists:objets,id'
+    ]);
 
-        $validated = $request->validate([
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after_or_equal:date_debut'
-        ]);
-
-        $annonce = Annonce::where('id', $id)
-            ->where('proprietaire_id', $user->id)
-            ->firstOrFail();
-
-        $annonce->update([
+    // Utilisez updateOrCreate pour éviter de créer des doublons
+    $annonce = Annonce::updateOrCreate(
+        ['id' => $id],
+        [
             'date_debut' => $validated['date_debut'],
-            'date_fin' => $validated['date_fin']
-        ]);
+            'date_fin' => $validated['date_fin'],
+            'objet_id' => $validated['objet_id'],
+            'proprietaire_id' => Auth::id(),
+            'statut' => 'disponible' // Nouveau statut
+        ]
+    );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Disponibilité mise à jour avec succès'
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'Disponibilité enregistrée',
+        'event' => [
+            'id' => $annonce->id,
+            'title' => 'Dispo: '.$annonce->objet->nom,
+            'start' => $annonce->date_debut->format('Y-m-d'),
+            'end' => $annonce->date_fin->format('Y-m-d'),
+            'color' => '#10B981' // Couleur verte
+        ]
+    ]);
+}
 }

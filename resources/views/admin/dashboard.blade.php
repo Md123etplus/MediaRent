@@ -93,7 +93,7 @@
                         @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les réservations</a>
+                        <a href="{{ route('admin.reservations.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les réservations</a>
                     </div>
                 </div>
 
@@ -105,17 +105,19 @@
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($recentReviews as $review)
                             @include('admin.components.review-item', [
+                                'id' => $review->id,
                                 'image' => $review->evaluateur->img_profil ?? 'https://via.placeholder.com/32',
                                 'user' => $review->evaluateur->prenom.' '.$review->evaluateur->nom,
-                                'rating' => $review->note,
-                                'comment' => $review->commentaire,
+                                'rating' => $review->note_objet,
+                                'comment' => $review->commentaire_objet,
                                 'item' => $review->objet->nom,
-                                'date' => Carbon\Carbon::parse($review->date)->format('d F Y')
+                                'date' => Carbon\Carbon::parse($review->date)->format('d F Y'),
+                                'is_visible' => $review->is_visible
                             ])
                         @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir tous les avis</a>
+                        <a href="{{ route('admin.evaluations.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir tous les avis</a>
                     </div>
                 </div>
             </div>
@@ -162,6 +164,7 @@
                             @endphp
 
                             @include('admin.components.listing-item', [
+                                'id' => $annonce->id,
                                 'title' => $annonce->objet->nom,
                                 'status' => ucfirst($annonce->statut),
                                 'statusColor' => $statusColor,
@@ -174,7 +177,7 @@
                         @endforeach
                     </div>
                     <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right">
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les annonces premium</a>
+                        <a href="{{ route('admin.annonces.index', 'premium') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Voir toutes les annonces premium</a>
                     </div>
                 </div>
             </div>

@@ -238,17 +238,27 @@
                 <td>{{ $annonce->id }}</td>
                 <td>{{ $annonce->date_publication }}</td>
                 <td>{{ $annonce->statut }}</td>
-                <td>{{ $annonce->premium ? 'Oui' : 'Non' }}</td>
+                <td>
+                    @if($annonce->premium)
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Oui
+                        </span>
+                    @else
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-times-circle"></i> Non
+                        </span>
+                    @endif
+                </td>
                 <td>{{ $annonce->date_debut }}</td>
                 <td>{{ $annonce->date_fin }}</td>
                 <td>{{ $annonce->adress }}</td>
                 <td>
     <div class="action-buttons">
         <!-- Bouton Modifier (toujours visible) -->
-        <a 
-           class="btn btn-sm btn-primary">
-            <i class="fas fa-edit"></i> Modifier
-        </a>
+            <a href="{{ route('annonces.edit', $annonce->id) }}" 
+            class="btn btn-sm btn-primary">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
         
         @if($annonce->statut === 'active')
             <!-- Bouton Archiver (seulement si active) -->

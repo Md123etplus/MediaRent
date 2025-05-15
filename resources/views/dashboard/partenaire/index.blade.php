@@ -243,6 +243,10 @@ input:focus, select:focus {
         <i class="fas fa-boxes"></i>
         <span>Mes objets</span>
       </a>
+      <a href="{{ route('annonces.index') }}" class="nav-item">
+        <i class="fas fa-boxes"></i>
+        <span>Option Premium</span>
+      </a>
 
       <div class="mt-10 px-2">
         <form action="{{ route('logout') }}" method="POST">

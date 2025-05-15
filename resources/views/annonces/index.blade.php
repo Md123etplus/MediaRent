@@ -223,6 +223,11 @@
     <div class="row">
         @forelse($annonces as $annonce)
             @if($annonce->statut === 'active') <!-- Double vérification côté vue -->
+            {{-- afficher annonces du current user --}}
+            @if((auth()->check() && $annonce->proprietaire_id === auth()->id()))
+                {{-- abort("403");     --}}
+            <!-- Vous pouvez ajouter un badge ou une indication spéciale ici si besoin -->
+            @endif
             <div class="col-md-4 mb-4">
                 <div class="card @if($annonce->premium) premium @endif">
                     <!-- Badge Statut -->

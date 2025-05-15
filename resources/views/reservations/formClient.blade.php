@@ -1,59 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-10 max-w-2xl bg-white shadow-lg rounded-xl">
-    <h2 class="text-2xl font-semibold mb-6 text-center text-primary">Informations personnelles du client</h2>
+<div class="container mx-auto px-6 py-10 max-w-2xl bg-white text-gray-800 rounded-2xl shadow-xl">
+    <h2 class="text-3xl font-bold mb-8 text-center text-blue-800">Informations du client</h2>
 
     @if($errors->any())
-        <div class="mb-4 text-red-600">
-            <ul class="list-disc list-inside">
+        <div class="mb-6 bg-red-100 text-red-800 rounded-lg p-4">
+            <ul class="list-disc list-inside text-sm">
                 @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+                    <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
 
-    <form action="{{ route('reservations.storeClient') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+    <form action="{{ route('reservations.storeClient') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
         <div>
-            <label for="nom" class="block text-sm font-medium">Nom</label>
-            <input type="text" name="nom" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
+            <label for="nom" class="block text-sm font-semibold mb-1">Nom</label>
+            <input type="text" name="nom" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" required>
         </div>
 
         <div>
-            <label for="prenom" class="block text-sm font-medium">Prénom</label>
-            <input type="text" name="prenom" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
+            <label for="prenom" class="block text-sm font-semibold mb-1">Prénom</label>
+            <input type="text" name="prenom" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" required>
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-medium">Email</label>
-            <input type="email" name="email" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
+            <label class="block text-sm font-semibold mb-1">Email</label>
+            <input type="text" value="{{ $email }}" class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+            <input type="hidden" name="email" value="{{ $email }}">
         </div>
+
 
         <div>
-            <label for="CIN" class="block text-sm font-medium">CIN</label>
-            <input type="text" name="CIN" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" required>
+            <label for="CIN" class="block text-sm font-semibold mb-1">CIN</label>
+            <input type="text"  value="{{ $cin }}" name="CIN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition" readonly>
         </div>
 
-        <!--<div>
-            <label for="img_profil" class="block text-sm font-medium">Image de profil</label>
-            <input type="file" name="img_profil" accept="image/*" class="mt-1 w-full" required>
-        </div>
-
-        <div>
-            <label for="img_cin_front" class="block text-sm font-medium">CIN Recto</label>
-            <input type="file" name="img_cin_front" accept="image/*" class="mt-1 w-full" required>
-        </div>
-
-        <div>
-            <label for="img_cin_back" class="block text-sm font-medium">CIN Verso</label>
-            <input type="file" name="img_cin_back" accept="image/*" class="mt-1 w-full" required>
-        </div>-->
-
-        <div class="text-center">
-            <button type="submit" class="btn-primary px-6 py-2">Valider</button>
+        <div class="text-center pt-4">
+            <button type="submit" class="bg-blue-800 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-full shadow-md transition duration-300">
+                Valider
+            </button>
         </div>
     </form>
 </div>

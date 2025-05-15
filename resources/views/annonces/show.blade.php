@@ -170,6 +170,7 @@
 }
 </style>
 
+
 <div class="annonce-wrapper">
     <div class="annonce-left">
         <!-- Galerie principale -->
@@ -230,10 +231,206 @@
             </button>
         </form>
 
+        <!-- Bouton "Passer en Premium"  -->
+        {{-- DEBUG - À supprimer après diagnostic --}}
+{{-- <div style="background: #f8f8f8; padding: 10px; margin-bottom: 20px;">
+    <h4>Debug:</h4>
+    <p>Utilisateur connecté: {{ auth()->check() ? 'Oui (ID: '.auth()->id().')' : 'Non' }}</p>
+    <p>Propriétaire annonce: {{ $annonce->proprietaire_id }}</p>
+    <p>Statut premium: {{ $annonce->premium ? 'Oui' : 'Non' }}</p>
+</div> --}}
+
+
+@if(auth()->check() && auth()->id() == $annonce->proprietaire_id)
+    @if(!$annonce->premium)
+        <div class="premium-cta-wrapper" style="margin-top: 25px;">
+            <a href="{{ route('annonces.premium', $annonce) }}" class="glowing-premium-btn">
+                <span class="icon-crown">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" fill="currentColor"/>
+                        <path d="M5 16H19V19C19 20.1046 18.1046 21 17 21H7C5.89543 21 5 20.1046 5 19V16Z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span class="btn-text">Boostez en Premium</span>
+                <span class="hover-effect"></span>
+            </a>
+            <div class="sparkle-effect">
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+            </div>
+        </div>
+    @else
+        <div class="premium-active-badge">
+            <span class="badge-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
+                </svg>
+            </span>
+            @if ($annonce->premium_expires_at)
+                <span class="badge-text">
+                    Premium jusqu'au {{ $annonce->premium_expires_at->format('d/m/Y') }}
+                </span>
+            @endif
+            <div class="active-pulse"></div>
+        </div>
+    @endif
+@endif
+
+<style>
+/* Style principal du bouton */
+.glowing-premium-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #FF6BFF 0%, #A855F7 50%, #6366F1 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    overflow: hidden;
+    z-index: 1;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+}
+
+/* Effet de survol */
+.glowing-premium-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6);
+}
+
+/* Effet de lumière au survol */
+.hover-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.2), 
+        transparent);
+    transition: 0.6s;
+    z-index: -1;
+}
+
+.glowing-premium-btn:hover .hover-effect {
+    left: 100%;
+}
+
+/* Effets de paillettes */
+.sparkle-effect {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+}
+
+.sparkle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.sparkle:nth-child(1) {
+    width: 5px;
+    height: 5px;
+    top: 10px;
+    right: 10px;
+    animation: sparkle 2s infinite;
+}
+
+.sparkle:nth-child(2) {
+    width: 3px;
+    height: 3px;
+    top: 5px;
+    right: 20px;
+    animation: sparkle 2.3s infinite 0.3s;
+}
+
+.sparkle:nth-child(3) {
+    width: 4px;
+    height: 4px;
+    top: 15px;
+    right: 5px;
+    animation: sparkle 1.7s infinite 0.7s;
+}
+
+@keyframes sparkle {
+    0% { transform: scale(0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Badge Premium actif */
+.premium-active-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+    font-weight: 500;
+    border-radius: 12px;
+    margin-top: 25px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.active-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+    animation: pulse 3s infinite;
+    border-radius: 12px;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 0.3; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+/* Icônes SVG */
+.icon-crown, .badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .glowing-premium-btn {
+        padding: 14px 24px;
+        font-size: 0.9rem;
+    }
+    
+    .premium-active-badge {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
         <!-- Propriétaire -->
         <div class="partner-card">
             <h4>👤 {{ $annonce->proprietaire->full_name ?? 'Propriétaire inconnu' }}</h4>
-            <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p>
+            <a href="/commentaires/{{ $annonce->proprietaire->id ?? 'Propriétaire inconnu' }}" style="color:#2980b9;">Voir commentaires sur le proprietaire</a>
+            {{-- <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p> --}}
             @if($annonce->proprietaire->moyenne_notes)
                 <p>⭐ Note moyenne : {{ number_format($annonce->proprietaire->moyenne_notes, 1) }}/5</p>
             @endif
