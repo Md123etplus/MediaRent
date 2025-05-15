@@ -372,15 +372,19 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Routes client avec protection standard
-Route::prefix('client')->name('client.')->group(function() {
+Route::prefix('client')->name('client.')->middleware('auth')->group(function() {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Réservations
     Route::prefix('reservations')->name('reservations.')->group(function() {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
+        Route::get('/livraisons', [CReservationController::class, 'livraisons'])->name('livraisons');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
         Route::delete('/{reservation}/cancel', [CReservationController::class, 'cancel'])->name('cancel');
+        // Ajoutez cette nouvelle route pour la livraison
+        Route::put('/{reservation}/update-livraison', [CReservationController::class, 'updateLivraison'])
+            ->name('updateLivraison');
     });
 
     // Évaluations

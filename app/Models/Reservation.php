@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Reservation extends Model
 {
     use HasFactory;
+    const DELIVERY_FEE = 20.00; // Frais de livraison fixes en MAD
+    const COMMISSION_RATE = 0.05; // 5% de commission
+
     protected $table = 'reservation';
 
     protected $fillable = [
@@ -17,7 +20,12 @@ class Reservation extends Model
         'annonce_id',
         'date_debut',
         'date_fin',
-        'statut'
+        'statut',
+        'livraison',
+        'frais_livraison',
+        'adresse_livraison',
+        'statut_livraison',
+        'commission_entreprise'
     ];
 
     protected $casts = [
@@ -101,4 +109,10 @@ class Reservation extends Model
 // {
 //     return $this->belongsTo(User::class, 'client_id');
 // }
+
+    public function calculateCommission()
+    {
+        $prixLocation = $this->annonce->objet->prix_journalier * $this->duration_days;
+        return $prixLocation * self::COMMISSION_RATE;
+    }
 }

@@ -7,13 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
 use App\Models\User;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 
 class CReservationController extends Controller
 {
-    
-    
-        
     public function index(Request $request)
     {
         $query = Auth::user()->reservations()
@@ -92,5 +89,49 @@ class CReservationController extends Controller
         return redirect()->route('client.reservations.index')
             ->with('success', 'La réservation a été annulée avec succès.');
     }
+
+    public function updateLivraison(Request $request, Reservation $reservation)
+    {
+        $request->validate([
+            'option_livraison' => 'required|in:livraison,recuperation',
+            'adresse_livraison' => 'required_if:option_livraison,livraison',
+        ]);
+
+        $isLivraison = $request->option_livraison === 'livraison';
+        
+        // Prix de base (prix journalier × nombre de jours)
+        $prixBase = $reservation->annonce->objet->prix_journalier * $reservation->duration_days;
+        
+        // Ajouter les frais de livraison si l'option est sélectionnée
+        $fraisLivraison = $isLivraison ? Reservation::DELIVERY_FEE : 0;
+        
+        // Calculer la commission (5% du prix total)
+        $commission = ($prixBase + $fraisLivraison) * Reservation::COMMISSION_RATE;
+        
+        $reservation->update([
+            'livraison' => $isLivraison,
+            'adresse_livraison' => $isLivraison ? $request->adresse_livraison : null,
+            'statut_livraison' => $isLivraison ? 'en_attente' : null,
+            'frais_livraison' => $fraisLivraison,
+            'commission_entreprise' => $commission
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Option de livraison mise à jour',
+            'total' => $prixBase + $fraisLivraison + $commission,
+            'redirect_url' => route('client.reservations.livraisons')
+        ]);
+    }
+
+    public function livraisons()
+    {
+        $livraisons = Auth::user()->reservations()
+            ->where('livraison', true)
+            ->with(['annonce.objet', 'annonce.proprietaire'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('client.reservations.livraisons', compact('livraisons'));
+    }
 }
-   

@@ -83,6 +83,31 @@
                             <span class="ml-auto bg-blue-400/50 py-0.5 px-2 rounded-md text-xs font-medium shadow-sm animate-pulse">{{ $ongoingReservations }}</span>
                         @endif
                     </a>
+
+                    <!-- État des livraisons -->
+                    <a href="{{ route('client.reservations.livraisons') }}" 
+                       class="group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 ease-in-out transform hover:scale-102
+                        {{ request()->routeIs('client.reservations.livraisons') ? 'bg-white/20 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                        
+                        <!-- Indicateur actif -->
+                        @if(request()->routeIs('client.reservations.livraisons'))
+                            <span class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-md"></span>
+                        @endif
+                        
+                        <div class="mr-3 flex-shrink-0 transition-all duration-300 
+                            {{ request()->routeIs('client.reservations.livraisons') ? 'bg-white/30 shadow-lg' : 'bg-white/10 group-hover:bg-white/20' }} 
+                            p-2.5 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                            </svg>
+                        </div>
+                        <span>État des livraisons</span>
+                        @if(isset($pendingDeliveries) && $pendingDeliveries > 0)
+                            <span class="ml-auto bg-yellow-400/50 py-0.5 px-2 rounded-md text-xs font-medium shadow-sm animate-pulse">
+                                {{ $pendingDeliveries }}
+                            </span>
+                        @endif
+                    </a>
                 </nav>
             </div>
             
@@ -224,6 +249,31 @@
                         <span>Mes réservations</span>
                         @if(isset($ongoingReservations) && $ongoingReservations > 0)
                             <span class="ml-auto bg-blue-400/50 py-0.5 px-2 rounded-md text-xs font-medium shadow-sm animate-pulse">{{ $ongoingReservations }}</span>
+                        @endif
+                    </a>
+
+                    <!-- État des livraisons -->
+                    <a href="{{ route('client.reservations.livraisons') }}" 
+                       class="group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 ease-in-out transform hover:scale-102
+                        {{ request()->routeIs('client.reservations.livraisons') ? 'bg-white/20 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
+                        
+                        <!-- Indicateur actif -->
+                        @if(request()->routeIs('client.reservations.livraisons'))
+                            <span class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-md"></span>
+                        @endif
+                        
+                        <div class="mr-3 flex-shrink-0 transition-all duration-300 
+                            {{ request()->routeIs('client.reservations.livraisons') ? 'bg-white/30 shadow-lg' : 'bg-white/10 group-hover:bg-white/20' }} 
+                            p-2.5 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                            </svg>
+                        </div>
+                        <span>État des livraisons</span>
+                        @if(isset($pendingDeliveries) && $pendingDeliveries > 0)
+                            <span class="ml-auto bg-yellow-400/50 py-0.5 px-2 rounded-md text-xs font-medium shadow-sm animate-pulse">
+                                {{ $pendingDeliveries }}
+                            </span>
                         @endif
                     </a>
                 </nav>

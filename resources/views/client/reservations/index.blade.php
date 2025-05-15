@@ -210,7 +210,7 @@
             <button onclick="openEvaluationFormModal({{ $reservation->id }})"
                 class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8-2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
                 Évaluer
             </button>
@@ -233,6 +233,150 @@
                                     @endif
                                 </div>
                             </div>
+                            <!-- Dans la section des options de livraison -->
+<div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Options de livraison</h4>
+    
+    <form id="livraisonForm_{{ $reservation->id }}" 
+          action="{{ route('client.reservations.updateLivraison', $reservation->id) }}" 
+          method="POST" 
+          class="space-y-4"
+          onsubmit="return handleLivraisonSubmit(event)">
+        @csrf
+        @method('PUT')
+        
+        <!-- Options radio -->
+        <div class="space-y-3">
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                <input type="radio" name="option_livraison" value="recuperation" 
+                       class="h-5 w-5 text-blue-600" 
+                       {{ !$reservation->livraison ? 'checked' : '' }}
+                       onchange="updatePrixTotal(this, {{ $reservation->id }})">
+                <span class="ml-3">Récupération sur place</span>
+            </label>
+            
+            <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                <input type="radio" name="option_livraison" value="livraison" 
+                       class="h-5 w-5 text-blue-600" 
+                       {{ $reservation->livraison ? 'checked' : '' }}
+                       onchange="updatePrixTotal(this, {{ $reservation->id }})">
+                <span class="ml-3">
+                    Livraison à domicile 
+                    <span class="text-sm text-blue-600">(+20.00 MAD)</span>
+                </span>
+            </label>
+        </div>
+
+        <!-- Adresse de livraison -->
+        <div id="adresseLivraison_{{ $reservation->id }}" 
+             class="{{ !$reservation->livraison ? 'hidden' : '' }}">
+            <textarea name="adresse_livraison" 
+                      rows="3" 
+                      class="w-full p-3 border rounded-lg resize-none"
+                      placeholder="Votre adresse de livraison complète">{{ $reservation->adresse_livraison }}</textarea>
+        </div>
+
+        <!-- Récapitulatif des prix -->
+        <div id="prixRecap_{{ $reservation->id }}" class="mt-4 space-y-2">
+    <div class="flex justify-between">
+        <span>Prix de location ({{ $days }} jours × {{ number_format($reservation->annonce->objet->prix_journalier, 2) }} MAD)</span>
+        <span class="prix-location">{{ number_format($days * $reservation->annonce->objet->prix_journalier, 2) }} MAD</span>
+    </div>
+    <div class="flex justify-between text-blue-600 frais-livraison" style="display: none;">
+        <span>Frais de livraison</span>
+        <span>20.00 MAD</span>
+    </div>
+    <div class="flex justify-between font-bold border-t pt-2 mt-2">
+        <span>Total</span>
+        <span class="total-amount">{{ number_format($days * $reservation->annonce->objet->prix_journalier, 2) }} MAD</span>
+    </div>
+    <div class="text-xs text-gray-500">
+        *Commission de 5% incluse
+    </div>
+</div>
+
+        <button type="submit" 
+                id="submitBtn_{{ $reservation->id }}" 
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+            Confirmer l'option
+        </button>
+    </form>
+</div>
+
+<script>
+function updatePrixTotal(radio, reservationId) {
+    const container = document.getElementById(`prixRecap_${reservationId}`);
+    const adresseSection = document.getElementById(`adresseLivraison_${reservationId}`);
+    const fraisLivraisonSection = container.querySelector('.frais-livraison');
+    const totalElement = container.querySelector('.total-amount');
+    const prixLocationText = container.querySelector('.prix-location').textContent;
+    const prixLocation = parseFloat(prixLocationText.replace(/[^0-9.-]+/g,"")); // Nettoie le texte pour garder que les chiffres
+    
+    if (radio.value === 'livraison') {
+        adresseSection.classList.remove('hidden');
+        fraisLivraisonSection.style.display = 'flex';
+        // Ajoute les frais de livraison au prix total
+        const totalAvecLivraison = prixLocation + 20;
+        totalElement.textContent = `${totalAvecLivraison.toFixed(2)} MAD`;
+    } else {
+        adresseSection.classList.add('hidden');
+        fraisLivraisonSection.style.display = 'none';
+        totalElement.textContent = `${prixLocation.toFixed(2)} MAD`;
+    }
+}
+
+async function handleLivraisonSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    
+    button.disabled = true;
+    button.classList.add('opacity-50', 'cursor-not-allowed');
+    button.textContent = 'Option confirmée';
+    
+    try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            localStorage.setItem(`livraison_confirmed_${form.id.split('_')[1]}`, 'true');
+            // Redirection vers la page des livraisons
+            window.location.href = data.redirect_url;
+        } else {
+            throw new Error(data.message || 'Une erreur est survenue');
+        }
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+        button.textContent = 'Confirmer l\'option';
+    }
+
+    return false;
+}
+
+// Vérifier l'état au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[id^="livraisonForm_"]').forEach(form => {
+        const reservationId = form.id.split('_')[1];
+        if (localStorage.getItem(`livraison_confirmed_${reservationId}`)) {
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+            button.textContent = 'Option confirmée';
+        }
+    });
+});
+</script>
                         </div>
                     </div>
                 @endforeach
@@ -302,7 +446,7 @@
                         <div class="flex items-center space-x-2" id="objetRating">
                             @for($i = 1; $i <= 5; $i++)
                                 <svg class="w-10 h-10 cursor-pointer text-gray-300 dark:text-gray-600 rating-star hover:text-yellow-400 transition-colors duration-200" data-rating="{{ $i }}" data-target="objet" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8-2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                 </svg>
                             @endfor
                         </div>
@@ -316,7 +460,7 @@
                         <div class="flex items-center space-x-2" id="proprietaireRating">
                             @for($i = 1; $i <= 5; $i++)
                                 <svg class="w-10 h-10 cursor-pointer text-gray-300 dark:text-gray-600 rating-star hover:text-yellow-400 transition-colors duration-200" data-rating="{{ $i }}" data-target="proprietaire" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8-2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                 </svg>
                             @endfor
                         </div>
@@ -332,7 +476,7 @@
                     <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 font-medium">
                         <span class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 01-1.414-1.414L10 8.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
                             Envoyer l'évaluation
                         </span>
@@ -412,7 +556,7 @@ function openEvaluationHistoryModal(evaluation) {
     let objetStars = '';
     for (let i = 1; i <= 5; i++) {
         objetStars += `<svg class="w-6 h-6 ${i <= evaluation.note_objet ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8-2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
         </svg>`;
     }
     document.getElementById('historyObjetRatingStars').innerHTML = objetStars;
@@ -421,7 +565,7 @@ function openEvaluationHistoryModal(evaluation) {
     let proprietaireStars = '';
     for (let i = 1; i <= 5; i++) {
         proprietaireStars += `<svg class="w-6 h-6 ${i <= evaluation.note_proprietaire ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8-2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
         </svg>`;
     }
     document.getElementById('historyProprietaireRatingStars').innerHTML = proprietaireStars;
