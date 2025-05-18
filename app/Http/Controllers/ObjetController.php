@@ -110,14 +110,27 @@ public function update(Request $request, $id)
         'etat' => 'required|string|in:neuf,bon,usé',
         'images' => 'sometimes|array|max:3',
         'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+        'keep_images' => 'sometimes|array',
+        'keep_images.*' => 'exists:image,id',
     ]);
 
     // Mise à jour des champs de base
-    $objet->update($validated);
+    $objet->update($request->except(['images', 'keep_images']));
 
-    // Gestion des images
-    if ($request->hasFile('images')) {
-        // Supprimer les anciennes images si nécessaire
+    // Gestion des images existantes
+    if ($request->has('keep_images')) {
+        // Supprimer les images qui ne sont pas dans keep_images
+        $imagesToDelete = $objet->images()->whereNotIn('id', $request->keep_images)->get();
+        
+        foreach ($imagesToDelete as $image) {
+            $imagePath = public_path($image->url);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $image->delete();
+        }
+    } else {
+        // Si aucune image n'est marquée à conserver, supprimer toutes les images existantes
         foreach ($objet->images as $image) {
             $imagePath = public_path($image->url);
             if (file_exists($imagePath)) {
@@ -125,8 +138,10 @@ public function update(Request $request, $id)
             }
             $image->delete();
         }
+    }
 
-        // Ajouter les nouvelles images
+    // Gestion des nouvelles images
+    if ($request->hasFile('images')) {
         foreach ($request->file('images') as $file) {
             $filename = 'objet_'.$objet->id.'_'.time().'_'.$file->getClientOriginalName();
             $file->move(public_path('images'), $filename);

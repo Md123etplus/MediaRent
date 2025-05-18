@@ -166,12 +166,28 @@
         background-color: #cbd5e0;
         color: #2d3748;
     }
+
+    .error-message {
+        color: #e53e3e;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
 </style>
 
 <div class="form-container">
     <h1 class="form-title">Modifier l'objet</h1>
 
-    <form method="POST" action="{{ route('objet.update', $objet->id) }}" enctype="multipart/form-data">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('objet.update', $objet->id) }}" enctype="multipart/form-data" id="edit-object-form">
         @csrf
         @method('PUT')
 
@@ -245,31 +261,39 @@
             @if($objet->images->isNotEmpty())
                 <div class="mt-3">
                     <h6>Images actuelles :</h6>
-                    <div class="image-preview-container">
+                    <div class="image-preview-container" id="existing-images-container">
                         @foreach($objet->images as $image)
                             <div class="preview-item">
                                 <img src="{{ asset($image->url) }}" alt="Image de l'objet">
                                 <button type="button" class="remove-btn" 
-                                        onclick="this.parentElement.remove()">×</button>
-                                <input type="hidden" name="keep_images[]" value="{{ $image->id }}">
+                                        onclick="toggleImageKeep(this, '{{ $image->id }}')">×</button>
+                                <input type="hidden" name="keep_images[]" value="{{ $image->id }}" class="keep-image-input">
                             </div>
                         @endforeach
                     </div>
-                    <small class="text-muted">Cochez les images à conserver</small>
+                    <small class="text-muted">Cliquez sur × pour supprimer une image</small>
                 </div>
             @endif
+            
+            <!-- Prévisualisation des nouvelles images -->
+            <div class="image-preview-container mt-3" id="new-images-container" style="display: none;">
+                <h6>Nouvelles images :</h6>
+            </div>
+
+            <!-- Message d'erreur pour le nombre d'images -->
+            <div id="image-error" class="error-message" style="display: none;"></div>
         </div>
 
         <button type="submit" class="form-submit">Mettre à jour</button>
         <a href="{{ route('objet.mes_objets') }}" class="btn-secondary">Annuler</a>
     </form>
 </div>
-
 <script>
 // Script pour gérer l'upload d'images
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('images');
     const dropZone = document.querySelector('.file-upload-area');
+    const newImagesContainer = document.getElementById('new-images-container');
     
     // Gestion du drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -313,9 +337,69 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function handleFiles(files) {
-        // Implémentez ici la prévisualisation des nouvelles images
-        console.log(files); // Pour debug
+        newImagesContainer.innerHTML = '<h6>Nouvelles images :</h6>';
+        newImagesContainer.style.display = 'block';
+        
+        Array.from(files).forEach(file => {
+            if (!file.type.match('image.*')) return;
+            
+            const reader = new FileReader();
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.title = theFile.name;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.onclick = function() {
+                        div.remove();
+                        if (newImagesContainer.children.length <= 1) {
+                            newImagesContainer.style.display = 'none';
+                        }
+                    };
+                    
+                    div.appendChild(img);
+                    div.appendChild(removeBtn);
+                    newImagesContainer.appendChild(div);
+                };
+            })(file);
+            
+            reader.readAsDataURL(file);
+        });
     }
 });
+
+// Fonction pour basculer la conservation d'une image existante
+function toggleImageKeep(button, imageId) {
+    const previewItem = button.parentElement;
+    const input = previewItem.querySelector('.keep-image-input');
+    
+    if (input) {
+        // Si l'input existe, on le supprime (image non conservée)
+        input.remove();
+        previewItem.style.opacity = '0.5';
+        previewItem.style.border = '1px dashed #e53e3e';
+        button.textContent = '+';
+        button.style.background = '#38a169';
+    } else {
+        // Sinon on le recrée (image conservée)
+        const newInput = document.createElement('input');
+        newInput.type = 'hidden';
+        newInput.name = 'keep_images[]';
+        newInput.value = imageId;
+        newInput.className = 'keep-image-input';
+        
+        previewItem.appendChild(newInput);
+        previewItem.style.opacity = '1';
+        previewItem.style.border = '1px solid #e2e8f0';
+        button.textContent = '×';
+        button.style.background = '#e53e3e';
+    }
+}
 </script>
 @endsection
