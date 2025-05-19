@@ -47,9 +47,9 @@ class Reservation extends Model
      * Relation avec l'annonce
      */
     public function annonce()
-{
-    return $this->belongsTo(Annonce::class)->withDefault();
-}
+    {
+        return $this->belongsTo(Annonce::class)->withDefault();
+    }
 
     /**
      * Accessor pour le revenu de la réservation
@@ -95,20 +95,36 @@ class Reservation extends Model
     //     return $this->belongsTo(Annonce::class, 'annonce_id');
     // }
 
-  public function evaluation()
-{
-    // Spécifiez explicitement la clé étrangère
-    return $this->hasOne(Evaluation::class, 'reservation_id');
-}
+    public function evaluation()
+    {
+        // Spécifiez explicitement la clé étrangère
+        return $this->hasOne(Evaluation::class, 'reservation_id');
+    }
 
     public function reclamations()
     {
         return $this->hasMany(Reclamation::class, 'reservation_id');
     }
-//     public function client()
-// {
-//     return $this->belongsTo(User::class, 'client_id');
-// }
+    //     public function client()
+    // {
+    //     return $this->belongsTo(User::class, 'client_id');
+    // }
+
+    public function evaluations()
+    {
+        // La FK evaluation.objet_id référence reservation.id d'après votre schéma.
+        // C'est une convention de nommage inhabituelle. J'utilise le nom de la FK comme Laravel le ferait par défaut,
+        // mais la contrainte dans votre DDL pointe 'objet_id' de 'evaluation' vers 'reservation.id'.
+        // Si la FK dans `evaluation` s'appelle bien `reservation_id` (plus standard), c'est correct.
+        // Si elle s'appelle `objet_id` MAIS pointe vers `reservation.id`, vous devez spécifier la FK:
+        // return $this->hasMany(Evaluation::class, 'objet_id');
+        return $this->hasMany(Evaluation::class, 'reservation_id');
+    }
+    
+    public function evaluationsRecues() // Les évaluations pour cette réservation
+    {
+        return $this->hasMany(Evaluation::class, 'objet_id'); // FK `objet_id` dans `evaluation` table
+    }
 
     public function calculateCommission()
     {

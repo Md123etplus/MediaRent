@@ -46,6 +46,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Client\NotificationController;
 // use App\Models\Utilisateur;
 use App\Http\Controllers\AideController;
+use App\Http\Controllers\PartenaireController;
 
 // Routes publiques
 Route::get('/dashboard/client', function () {
@@ -56,7 +57,7 @@ Route::get('/dashboard/client', function () {
 //     return view('register.sign-up');
 // })->name('register');
 
-Route::get('/', function () {
+Route::get('/', function  () {
     return view('landing');
 })->name('home');
 Route::get('/premium', function () {
@@ -378,12 +379,12 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Routes client avec protection standard
-Route::prefix('client')->name('client.')->middleware('auth')->group(function () {
+Route::prefix('client')->name('client.')->middleware('auth')->group(function  () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Réservations
-    Route::prefix('reservations')->name('reservations.')->group(function () {
+    Route::prefix('reservations')->name('reservations.')->group(function  () {
         Route::get('/', [CReservationController::class, 'index'])->name('index');
         Route::get('/livraisons', [CReservationController::class, 'livraisons'])->name('livraisons');
         Route::get('/{reservation}', [CReservationController::class, 'show'])->name('show');
@@ -394,7 +395,7 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function () 
     });
 
     // Évaluations
-    Route::prefix('evaluations')->name('evaluations.')->group(function () {
+    Route::prefix('evaluations')->name('evaluations.')->group(function  () {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
         Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
         Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
@@ -404,7 +405,7 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function () 
     });
 
     // Notifications
-    Route::prefix('notifications')->name('notifications.')->group(function () {
+    Route::prefix('notifications')->name('notifications.')->group(function  () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
@@ -413,11 +414,11 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function () 
 
 
     // Ajoutez cette route dans votre fichier routes/web.php
-    Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+        Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
     // Route de test (uniquement en développement)
     if (app()->environment('local')) {
-        Route::get('/switch-to-default', function () {
+        Route::get('/switch-to-default', function  () {
             $defaultUser = User::firstOrCreate(
                 ['id' => 2],
                 [
@@ -524,3 +525,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
         ->name('client.reservations.response');
 });
+
+
+// Fiche Objet
+Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.objet.show');
+// Fiche Partenaire
+// {partenaire} sera l'ID de l'utilisateur. Le contrôleur vérifiera le rôle.
+//Route::get('/partenaires/{partenaire}', [PartenaireController::class, 'show'])->name('fiches.partenaire.show');
+
+// Fiche Client
+// {client} sera l'ID de l'utilisateur. Le contrôleur vérifiera le rôle.
+Route::get('/clients/{client}', [ClientController::class, 'show'])->name('fiches.client.show');
+
+Route::get('/partenaires/{user}', [App\Http\Controllers\PartenaireController::class, 'show'])->name('partenaire.show');

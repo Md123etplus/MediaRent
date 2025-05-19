@@ -147,6 +147,8 @@ public function isPremiumActive(): bool
     {
         return $this->hasMany(Reservation::class);
     }
+    
+    
 
     public function evaluations()
     {
