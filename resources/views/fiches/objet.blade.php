@@ -265,11 +265,11 @@
                         <!-- Bouton de réservation futuriste -->
                         @if ($disponible)
                             <div class="mt-12">
-                                <button
+                                <a href="{{ route('annonces.index') }}"
                                     class="w-full group relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 
                                         text-white px-8 py-6 rounded-2xl font-black text-xl tracking-wide 
                                         hover:shadow-[0_15px_35px_rgba(99,102,241,0.5)] transition-all duration-700 
-                                        transform hover:-translate-y-1.5">
+                                        transform hover:-translate-y-1.5 flex items-center justify-center">
                                     <span class="relative z-10 flex items-center justify-center">
                                         <span class="mr-3 text-2xl">🚀</span>
                                         <span class="drop-shadow-[0_2px_5px_rgba(255,255,255,0.4)]">Réserver
@@ -277,17 +277,17 @@
                                     </span>
                                     <span
                                         class="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 
-                                           opacity-0 group-hover:opacity-100 transition-opacity duration-700"></span>
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-700"></span>
                                     <span
                                         class="absolute -inset-2 bg-white/10 rounded-2xl transform rotate-3 scale-110 
-                                           group-hover:rotate-0 group-hover:scale-105 transition-all duration-1000"></span>
+                                        group-hover:rotate-0 group-hover:scale-105 transition-all duration-1000"></span>
                                     <span
                                         class="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
                                         <span
                                             class="absolute top-0 right-0 w-16 h-16 -mt-5 -mr-5 bg-white rounded-full 
-                                               opacity-20 animate-ping-slow"></span>
+                                            opacity-20 animate-ping-slow"></span>
                                     </span>
-                                </button>
+                                </a>
                             </div>
                         @endif
                     </div>
