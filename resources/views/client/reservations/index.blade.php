@@ -291,7 +291,7 @@
         <span class="total-amount">{{ number_format($days * $reservation->annonce->objet->prix_journalier, 2) }} MAD</span>
     </div>
     <div class="text-xs text-gray-500">
-        *Commission de 5% incluse
+        *Commission de 30% incluse
     </div>
 </div>
 

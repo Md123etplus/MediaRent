@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Session;
 use App\Mail\NouvelleReservation;
 use App\Mail\ReservationAccepted;
 use App\Mail\ReservationRejected;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 
 

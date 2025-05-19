@@ -11,7 +11,7 @@ class Reservation extends Model
 {
     use HasFactory;
     const DELIVERY_FEE = 20.00; // Frais de livraison fixes en MAD
-    const COMMISSION_RATE = 0.05; // 5% de commission
+    const COMMISSION_RATE = 0.3; // 30% de commission
 
     protected $table = 'reservation';
 
