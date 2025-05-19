@@ -13,7 +13,7 @@ class Reservation extends Model
     const DELIVERY_FEE = 20.00; // Frais de livraison fixes en MAD
     const COMMISSION_RATE = 0.3; // 30% de commission
 
-    protected $table = 'reservation';
+    protected $table = 'reservation'; 
 
     protected $fillable = [
         'client_id',
