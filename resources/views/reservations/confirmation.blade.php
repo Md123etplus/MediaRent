@@ -29,7 +29,7 @@
                 @if(isset($reservation))
                 <div class="detail-item">
                     <span>Montant :</span>
-                    <span>{{ number_format($reservation['prix_total'], 2) }} €</span>
+                    <span>{{ number_format($reservation['prix_total'], 2) }} Dhs</span>
                 </div>
                 @endif
             </div>

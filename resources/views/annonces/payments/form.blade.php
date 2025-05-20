@@ -80,7 +80,7 @@
                         </div>
                         <div class="summary-item">
                             <span>Prix journalier :</span>
-                            <span>{{ number_format($annonce->objet->prix_journalier, 2) }} €</span>
+                            <span>{{ number_format($annonce->objet->prix_journalier, 2) }} DHs</span>
                         </div>
                         <div class="summary-item">
                             <span>Durée :</span>
@@ -88,7 +88,7 @@
                         </div>
                         <div class="summary-item total">
                             <span>Total :</span>
-                            <span>{{ number_format($reservation['prix_total'], 2) }} €</span>
+                            <span>{{ number_format($reservation['prix_total'], 2) }} DHs</span>
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                 </div>
                 <div class="detail-item">
                     <span>Montant :</span>
-                    <span id="confirmation-amount">{{ number_format($reservation['prix_total'], 2) }} €</span>
+                    <span id="confirmation-amount">{{ number_format($reservation['prix_total'], 2) }} Dhs</span>
                 </div>
                 <div class="detail-item">
                     <span>Dates :</span>

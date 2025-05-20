@@ -21,7 +21,7 @@ class Image extends Model
      */
     public function objet()
     {
-        return $this->belongsTo(Objet::class);
+        return $this->belongsTo(Objet::class, 'objet_id');
     }
     public function images()
     {

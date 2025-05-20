@@ -17,35 +17,37 @@ class Evaluation extends Model
     // public $timestamps = false;
 
     // Définissez les champs remplissables
+    // protected $fillable = [
+    // 'reservation_id',
+    // 'objet_id',
+    // 'evaluateur_id', 
+    // 'evalue_id',
+    // 'note_objet',
+    // 'is_visible',
+    // 'note_proprietaire',there was two different versions, so i had to keep the recent one since it has migrations related to it
+    // 'commentaire_objet',
+    // 'commentaire_proprietaire',
+    // 'date'// 'objet' ou 'utilisateur'
+    // ];
     protected $fillable = [
-    'reservation_id',
-    'objet_id',
-    'evaluateur_id', 
-    'evalue_id',
-    'note_objet',
-    'is_visible',
-    'note_proprietaire',//there was two different versions, so i had to keep the recent one since it has migrations related to it
-    'commentaire_objet',
-    'commentaire_proprietaire',
-    'date',
-    'type'// 'objet' ou 'utilisateur'
+        'objet_id',
+        'evaluateur_id',
+        'evalue_id',
+        'reservation_id',
+        'note',
+        'commentaire',
+        'note_objet',
+        'is_visible',
+        'note_proprietaire', //there was two different versions, so i had to keep the recent one since it has migrations related to it
+        'commentaire_objet',
+        'commentaire_proprietaire',
+        'date',
+        'type', // 'objet' ou 'utilisateur'
     ];
-    // protected $fillable = [ 
-    //     'objet_id',
-    //     'evaluateur_id',
-    //     'evalue_id',
-    //     'reservation_id',
-    //     'note',
-    //     'commentaire',
-    //     'is_visible',
-    //     'date',
-    //     'type', // 'objet' ou 'utilisateur'
-    // ];
-
-    // protected $casts = [
-    //     'note_objet' => 'integer',
-    //     'created_at' => 'datetime',
-    // ];
+    protected $casts = [
+        'note' => 'integer',
+        'created_at' => 'datetime',
+    ];
 
     /**
      * Relation avec l'objet évalué
@@ -58,33 +60,22 @@ class Evaluation extends Model
     /**
      * Relation avec l'utilisateur qui a fait l'évaluation
      */
-    public function evaluateur(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evaluateur_id');
-    }
 
-    /**
-     * Relation avec l'utilisateur évalué (si c'est une évaluation d'utilisateur)
-     */
-    public function evalue(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evalue_id');
-    }
 
     /**
      * Relation avec la réservation associée
      */
     // Dans app/Models/Evaluation.php
-//protected $with = ['reservation']; // Chargement automatique
+    //protected $with = ['reservation']; // Chargement automatique
 
-public function reservation()
-{
-    return $this->belongsTo(Reservation::class, 'reservation_id')->withDefault([
-        'date_debut' => now(),
-        'date_fin' => now()->addDays(1),
-        // autres valeurs par défaut
-    ]);
-}
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id')->withDefault([
+            'date_debut' => now(),
+            'date_fin' => now()->addDays(1),
+            // autres valeurs par défaut
+        ]);
+    }
     /**
      * Scope pour les évaluations d'objets
      */
@@ -106,6 +97,22 @@ public function reservation()
      */
     public function getNoteTextAttribute(): string
     {
-        return $this->note_objet.'/5';
+        return $this->note_objet . '/5';
     }
+
+// La FK dans `evaluation` nommée `objet_id` pointe vers `reservation.id`
+public function reservationAssociee()
+{
+    return $this->belongsTo(Reservation::class, 'objet_id');
+}
+
+public function evaluateur()
+{
+    return $this->belongsTo(User::class, 'evaluateur_id');
+}
+
+public function evalue()
+{
+    return $this->belongsTo(User::class, 'evalue_id');
+}
 }
