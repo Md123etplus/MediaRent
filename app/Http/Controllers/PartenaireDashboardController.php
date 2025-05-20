@@ -209,7 +209,7 @@ class PartenaireDashboardController extends Controller
     public function livraisons()
     {
         // Récupérer l'ID du partenaire connecté
-        $partenaireId = auth()->id();
+        $partenaireId = Auth::id();
 
         // Récupérer toutes les réservations avec livraison pour les annonces du partenaire
         $livraisons = Reservation::with(['annonce.objet', 'client'])
@@ -228,7 +228,7 @@ class PartenaireDashboardController extends Controller
         $reservation = Reservation::findOrFail($id);
 
         // Vérifier que le partenaire est bien le propriétaire de l'annonce
-        if ($reservation->annonce->proprietaire_id !== auth()->id()) {
+        if ($reservation->annonce->proprietaire_id !== Auth::id()) {
             return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
         }
 
@@ -263,7 +263,7 @@ class PartenaireDashboardController extends Controller
         $reservation = Reservation::with(['annonce.objet', 'client'])
             ->where('id', $id)
             ->whereHas('annonce', function ($query) {
-                $query->where('proprietaire_id', auth()->id());
+                $query->where('proprietaire_id', Auth::id());
             })
             ->firstOrFail();
 

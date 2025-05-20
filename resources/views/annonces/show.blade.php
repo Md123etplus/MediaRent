@@ -472,7 +472,7 @@
             <!-- Propriétaire -->
             <div class="partner-card">
                 <h4>👤 {{ $annonce->proprietaire->full_name ?? 'Propriétaire inconnu' }}</h4>
-                <a href="/commentaires/{{ $annonce->proprietaire->id ?? 'Propriétaire inconnu' }}" style="color:#2980b9;">Voir commentaires sur le proprietaire</a>
+                <a href="{{ route('partenaire.show', $annonce->proprietaire->id) }}" style="color:#2980b9;">Voir commentaires sur le proprietaire</a>
             {{-- <p>Membre depuis {{ $annonce->proprietaire->created_at->diffForHumans() ?? 'date inconnue' }}</p> --}}
                 @if ($annonce->proprietaire->moyenne_notes)
                     <p>⭐ Note moyenne : {{ number_format($annonce->proprietaire->moyenne_notes, 1) }}/5</p>

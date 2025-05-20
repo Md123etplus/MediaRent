@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('reservation', function (Blueprint $table) {
-            $table->dropColumn(['livraison', 'frais_livraison', 'adresse_livraison', 'statut_livraison', 'commission_entreprise']);
-        });
+        // Schema::table('reservation', function (Blueprint $table) {
+        //     $table->dropColumn(['livraison', 'frais_livraison', 'adresse_livraison', 'statut_livraison', 'commission_entreprise']);
+        // });
     }
 };
