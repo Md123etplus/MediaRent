@@ -51,7 +51,7 @@ class ClientController extends Controller
         //'img_cin_front' => $imgCinFrontPath,
         //'img_cin_back' => $imgCinBackPath,
     ]);
-
+//wont be use anymore
     return redirect()->route('reservations.confirmation')->with('success', 'Compte créé avec succès !');
 }
 

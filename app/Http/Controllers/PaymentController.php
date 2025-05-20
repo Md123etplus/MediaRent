@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ReservationController;
+use App\Models\Reservation;
 // use App\Models\Plan;
 
 class PaymentController extends Controller
@@ -64,6 +66,7 @@ class PaymentController extends Controller
             'reference' => 'PAY-'.time() // Génère une référence unique
         ]);
     }
+    
     protected function validatePaymentRequest(Request $request)
     {
         return $request->validate([
@@ -121,4 +124,73 @@ class PaymentController extends Controller
             'joursRestants' => $joursRestants
         ]);
     }
+    public function showPaymentForm(Annonce $annonce)
+    {//for normal reservation
+        // dd($annonce);
+        $reservation = session('reservation_data');
+    
+        if (!$reservation || $reservation['annonce_id'] != $annonce->id) {
+            return redirect()->back()->with('error', 'Données de réservation invalides');
+        }
+        // dd($reservation);
+        $reservation['date_debut'] = \Carbon\Carbon::parse($reservation['date_debut']);
+        $reservation['date_fin'] = \Carbon\Carbon::parse($reservation['date_fin']);
+// dd($reservationData);
+        return view('annonces.payments.form', [
+            'annonce' => $annonce,
+            'reservation' => $reservation
+        ]);
+    }
+   public function validateReservationPaymentRequest(Request $request)
+{
+    return $request->validate([
+        'card_number' => 'required|string|regex:/^\d{4}\s\d{4}\s\d{4}\s\d{4}$/',
+        'expiry_date' => 'required|string|regex:/^\d{2}\/\d{2}$/',
+        'cvv' => 'required|string|digits:3',
+        'card_holder' => 'required|string|max:255'
+    ]);
+}
+    public function processReservationPaymentTransaction( $paymentData, Annonce $annonce)
+    {
+        try {
+
+            return [
+                'success' => true,
+                'reference' => 'RES-'.time()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du traitement du paiement', ['error' => $e->getMessage()]);
+            return ['success' => false, 'message' => 'Erreur technique'];
+        }
+    }
+    public function processReservationPayment(Request $request, Annonce $annonce)
+{
+    // dd($request->all());
+    // Validation des données de paiement
+    $this->validateReservationPaymentRequest($request);
+// dd($request->all());
+    // Traditement de la transaction
+    $paymentResult = $this->processReservationPaymentTransaction($request->all(), $annonce);
+    $reservation = Reservation::create([
+                    'annonce_id' => $annonce->id,
+                    'client_id' => Auth::id(),
+                    'date_debut' => $request->input('date_debut'),
+                    'date_fin' => $request->input('date_fin'),
+                    'statut' => 'en_attente'
+            ]);
+   if ($paymentResult['success']) {
+        ReservationController::sendReservationEmail($reservation, $annonce);
+
+        $reservationData = session('reservation_data', []);
+        
+        return redirect()->route('reservations.confirmation', [
+            'reference' => $paymentResult['reference'],
+            'annonce' => $annonce // Pass the full object instead of just ID
+        ])->with([
+            'reservation' => $reservationData,
+            'reference' => $paymentResult['reference']
+        ]);
+    }
+    return back()->with('error', $paymentResult['message']);
+}
 }

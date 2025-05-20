@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Models\Utilisateur;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Annonce;
 use App\Http\Controllers\PaymentController;
 // Routes publiques
 use App\Http\Controllers\SearchController;
@@ -330,8 +331,12 @@ Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showF
 Route::post('/reservations', [ReservationController::class, 'store'])
 ->name('reservations.store');
 
-Route::get('/reservations/confirmation', function () {
-    return view('reservations.confirmation');
+Route::get('/reservations/confirmation/{reference}/{annonce}', function ($reference, Annonce $annonce) {
+    return view('reservations.confirmation', [
+        'reference' => $reference,
+        'annonce' => $annonce,
+        'reservation' => session('reservation')
+    ]);
 })->name('reservations.confirmation');
 
 //formClient
@@ -359,6 +364,9 @@ Route::middleware(['auth'])->group(function () {
    Route::get('/annonces/{annonce}/payment-success/{reference}', 
     [PaymentController::class, 'showSuccess'])
     ->name('annonces.payment-success');
+    Route::get('/annonces/{annonce}/pay', [PaymentController::class, 'showPaymentForm'])->name('reservations.payment');
+    Route::post('/annonces/{annonce}/process-pay', [PaymentController::class, 'processReservationPayment'])
+    ->name('reservations.process-payment');
 });
 
 
