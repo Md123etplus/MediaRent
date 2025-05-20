@@ -35,10 +35,10 @@
             </div>
 
             <div class="confirmation-actions">
-                <a href="{{ route('annonces.show', $annonce) }}" class="view-ad-btn">
+                <a href="{{ route('annonces.show', $annonce) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-eye mr-2"></i>Voir mon annonce
                 </a>
-                <a href="{{ route('home') }}" class="back-to-search-btn">
+                <a href="{{ route('home') }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-search mr-2"></i>Retour à la recherche
                 </a>
             </div>
