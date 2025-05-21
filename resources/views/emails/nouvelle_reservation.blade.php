@@ -11,8 +11,8 @@
         .button { display: inline-block; padding: 10px 20px; margin: 0 10px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
         .accept { background-color: #48bb78; }
         .reject { background-color: #e53e3e; }
+        .view-profile { background-color: #4299e1; }
         .image-container { display: flex; gap: 20px; margin-top: 15px; }
-        .cin-image { max-width: 300px; border: 1px solid #ddd; border-radius: 4px; }
         .image-placeholder { 
             width: 300px; 
             height: 200px; 
@@ -48,56 +48,17 @@
     
     @if($client)
         <div class="card">
-            <h3>Informations Client</h3>
-            <p><strong>Nom complet :</strong> {{ $client->prenom }} {{ $client->nom }}</p>
-            <p><strong>Email :</strong> {{ $client->email }}</p>
-            <p><strong>CIN :</strong> {{ $client->CIN }}</p>
-            
-            <h4 style="margin-top: 15px;">Pièces d'identité :</h4>
-            <div class="image-container">
-                <div>
-                    <p>Recto CIN</p>
-                    @php
-                        $frontFilename = basename($client->img_cin_front);
-                        $frontPath = 'cin_front/' . $frontFilename;
-                        $fullFrontPath = storage_path('app/public/' . $frontPath);
-                    @endphp
-                    @if(file_exists($fullFrontPath))
-                        <img src="{{ $message->embed($fullFrontPath) }}" class="cin-image" alt="Recto CIN">
-                    @else
-                        <div class="image-placeholder">
-                            <div>
-                                <p>Image recto introuvable</p>
-                                <p style="font-size: 0.8em;">Fichier: {{ $frontFilename }}</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-                <div>
-                    <p>Verso CIN</p>
-                    @php
-                        $backFilename = basename($client->img_cin_back);
-                        $backPath = 'cin_back/' . $backFilename;
-                        $fullBackPath = storage_path('app/public/' . $backPath);
-                    @endphp
-                    @if(file_exists($fullBackPath))
-                        <img src="{{ $message->embed($fullBackPath) }}" class="cin-image" alt="Verso CIN">
-                    @else
-                        <div class="image-placeholder">
-                            <div>
-                                <p>Image verso introuvable</p>
-                                <p style="font-size: 0.8em;">Fichier: {{ $backFilename }}</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <h3>Client</h3>
+            <p>Un nouveau client a effectué une réservation.</p>
         </div>
     @endif
 
     <div class="button-container">
-        <a href="{{ route('client.reservations.response', ['id' => $reservation->id, 'response' => 'accept']) }}" class="button accept">Accepter la réservation</a>
-        <a href="{{ route('client.reservations.response', ['id' => $reservation->id, 'response' => 'reject']) }}" class="button reject">Refuser la réservation</a>
+    <a href="{{ route('fiches.client.show', ['client' => $client->id]) }}" class="button view-profile">
+    Voir fiche client
+</a>    
+        <a href="{{ route('client.reservations.response', ['id' => $reservation->id, 'response' => 'accept']) }}" class="button accept">Accepter</a>
+        <a href="{{ route('client.reservations.response', ['id' => $reservation->id, 'response' => 'reject']) }}" class="button reject">Refuser</a>
     </div>
 
     <p style="margin-top: 30px; font-size: 0.9em; color: #718096;">

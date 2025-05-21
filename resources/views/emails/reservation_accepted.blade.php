@@ -19,6 +19,10 @@
         .button-partenaire {
             background-color: #9f7aea;
         }
+        .button-container {
+            margin: 20px 0;
+            text-align: center;
+        }
         ul { margin: 10px 0; padding-left: 20px; }
         li { margin-bottom: 5px; }
     </style>
@@ -40,7 +44,11 @@
                 <li>Propriétaire: {{ $annonce->proprietaire->name }}</li>
             </ul>
             
-           
+            <div class="button-container">
+                <a href="{{ route('partenaire.show', ['user' => $annonce->proprietaire->id]) }}" class="button button-partenaire">
+                    Voir fiche partenaire
+                </a>
+            </div>
             
             <p style="margin-top: 30px;">Vous pouvez contacter le propriétaire directement à cette adresse : <a href="mailto:{{ $annonce->proprietaire->email }}">{{ $annonce->proprietaire->email }}</a></p>
         </div>
