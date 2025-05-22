@@ -48,6 +48,9 @@
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
                         {{ $user->prenom }} {{ $user->nom }}
                     </h1>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ $user->username }}
+                    </h2>
                     <p class="text-gray-600 dark:text-gray-400">{{ $user->email }}</p>
                     <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full 
                                 {{ $user->role === 'partenaire' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' }}">
@@ -89,6 +92,10 @@
                         <div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Prénom</p>
                             <p class="text-gray-900 dark:text-white">{{ $user->prenom }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Username</p>
+                            <p class="text-gray-900 dark:text-white">{{ $user->username }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
