@@ -10,12 +10,22 @@
     <link rel="shortcut icon" href="/images/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="MediaRent" />
+    <link href="{{ asset('build/assets/app-DJuBfD3b.js') }}" rel="preload" as="script">
 
     <link rel="manifest" href="/images/favicon/site.webmanifest" />
-    
+    @production
+        <link rel="stylesheet" href="{{ asset('build/assets/app-B7HzkoSG.css') }}">
+        <script src="{{ asset('build/assets/app-DJuBfD3b.js') }}" defer></script>
+    @endproduction
     @livewireStyles
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @env('production')
+        <script>
+            window.__vite_public_path = "{{ config('app.url') }}";
+        </script>
+    @endenv
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-gray-900">
     @include('components.navbar')

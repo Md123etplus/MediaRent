@@ -58,6 +58,7 @@ WORKDIR /var/www/html
 
 # 4. Setup application dependencies 
 RUN composer install --optimize-autoloader --no-dev \
+    && npm install && npm run build \
     && mkdir -p storage/logs \
     && php artisan optimize:clear \
     && chown -R www-data:www-data /var/www/html \
@@ -108,15 +109,37 @@ RUN if [ -f "vite.config.js" ]; then \
 # assets that we generated above
 FROM base
 
-# Packages like Laravel Nova may have added assets to the public directory
-# or maybe some custom assets were added manually! Either way, we merge
-# in the assets we generated above rather than overwrite them
+# ▼▼▼ Use this updated Node installation instead ▼▼▼
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@9    # ← Downgrade npm to v9 (compatible with Node 18) \
+    && rm -rf /var/lib/apt/lists/*
+
+# Keep everything else exactly the same
 COPY --from=node_modules_go_brrr /app/public /var/www/html/public-npm
 RUN rsync -ar /var/www/html/public-npm/ /var/www/html/public/ \
     && rm -rf /var/www/html/public-npm \
     && chown -R www-data:www-data /var/www/html/public
+RUN mkdir -p /run/php && \
+    chown -R www-data:www-data /run/php && \
+    chmod 775 /run/php
+RUN /usr/sbin/php-fpm8.2 --test && \
+    nginx -t
+# Ensure proper socket configuration
+RUN echo '[www]' > /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'user = www-data' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'group = www-data' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'listen = /run/php/php8.2-fpm.sock' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'listen.owner = www-data' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'listen.group = www-data' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'listen.mode = 0660' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'pm = dynamic' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'pm.max_children = 10' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'pm.start_servers = 3' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'pm.min_spare_servers = 2' >> /etc/php/8.2/fpm/pool.d/www.conf && \
+    echo 'pm.max_spare_servers = 4' >> /etc/php/8.2/fpm/pool.d/www.conf
 
-# 5. Setup Entrypoint
+# Verify configurations
+RUN php-fpm8.2 --test && nginx -t
 EXPOSE 8080
-
 ENTRYPOINT ["/entrypoint"]
