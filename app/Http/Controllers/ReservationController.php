@@ -20,26 +20,32 @@ use Carbon\Carbon;
 class ReservationController extends Controller
 {
     public function create(Annonce $annonce)
-    {
-        // Récupère toutes les dates réservées (confirmées ou en attente)
-        $reservedPeriods = Reservation::where('annonce_id', $annonce->id)
-            ->whereIn('statut', ['confirmée', 'en_attente'])
-            ->get()
-            ->map(function($reservation) {
-                return [
-                    'from' => Carbon::parse($reservation->date_debut)->format('Y-m-d'),
-                    'to' => Carbon::parse($reservation->date_fin)->format('Y-m-d')
-                ];
-            })
-            ->toArray();
+{
+    // Récupère toutes les dates réservées avec statut confirmé ou en attente
+    $reservedPeriods = Reservation::where('annonce_id', $annonce->id)
+        ->whereIn('statut', ['confirmée', 'en_attente'])
+        ->get()
+        ->map(function($reservation) {
+            return [
+                'from' => Carbon::parse($reservation->date_debut)->format('Y-m-d'),
+                'to' => Carbon::parse($reservation->date_fin)->format('Y-m-d'),
+                // Ajoutez ces champs pour le débogage
+                'original_from' => $reservation->date_debut,
+                'original_to' => $reservation->date_fin
+            ];
+        })
+        ->toArray();
+
+    // Ajoutez ce log pour vérification
+    \Log::info('Reserved periods for annonce '.$annonce->id, $reservedPeriods);
+
+    return view('reservations.create', [
+        'annonce' => $annonce,
+        'reservedPeriods' => $reservedPeriods
+    ]);
+}
     
-        return view('reservations.create', [
-            'annonce' => $annonce,
-            'reservedPeriods' => $reservedPeriods
-        ]);
-    }
-    
-    public function store(Request $request)
+  public function store(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'date_debut' => 'required|date',
@@ -54,29 +60,43 @@ class ReservationController extends Controller
     try {
         $annonce = Annonce::with(['proprietaire', 'objet'])->findOrFail($request->input('annonce_id'));
         
-        // Conversion précise des dates
+        // Conversion des dates
         $dateDebut = Carbon::parse($request->date_debut)->startOfDay();
         $dateFin = Carbon::parse($request->date_fin)->startOfDay();
         
-        // Calcul EXACT du nombre de jours (inclusif)
+        // Calcul du nombre de jours et prix total
         $jours = $dateDebut->diffInDays($dateFin) + 1;
-        
         $prixTotal = $annonce->objet->prix_journalier * $jours;
+
+        // Création de la réservation
+        $reservation = Reservation::create([
+            'annonce_id' => $annonce->id,
+            'client_id' => Auth::id(),
+            'date_debut' => $dateDebut,
+            'date_fin' => $dateFin,
+            'prix_total' => $prixTotal,
+            'statut' => 'en_attente'
+        ]);
+
+        // Envoi des emails
+        self::sendReservationEmail($reservation, $annonce);
+
+        // Préparation des données pour la confirmation
+        $reference = 'RES-'.time();
         
-        session([
-            'reservation_data' => [
-                'annonce_id' => $annonce->id,
+        return redirect()->route('reservations.confirmation', [
+            'reference' => $reference,
+            'annonce' => $annonce->id
+        ])->with([
+            'reservation' => [
                 'date_debut' => $dateDebut->format('Y-m-d'),
                 'date_fin' => $dateFin->format('Y-m-d'),
-                'prix_total' => $prixTotal,
-                'jours' => $jours
+                'prix_total' => $prixTotal
             ]
         ]);
-     
-        return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
 
     } catch (\Exception $e) {
-        return back()->with('error', 'Erreur lors de la création de la réservation');
+        return back()->with('error', 'Erreur lors de la création de la réservation: '.$e->getMessage());
     }
 }
     public function storeDates(Request $request, Annonce $annonce)

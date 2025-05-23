@@ -334,14 +334,18 @@ Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showF
 
 
 // OU version alternative (sans paramètre de route)
-Route::post('/reservations', [ReservationController::class, 'store'])
-    ->name('reservations.store');
-
 Route::get('/reservations/confirmation/{reference}/{annonce}', function ($reference, Annonce $annonce) {
+    $reservation = session('reservation');
+    
+    if (!$reservation) {
+        return redirect()->route('annonces.show', $annonce)
+               ->with('error', 'Session de réservation expirée');
+    }
+
     return view('reservations.confirmation', [
         'reference' => $reference,
         'annonce' => $annonce,
-        'reservation' => session('reservation')
+        'reservation' => $reservation
     ]);
 })->name('reservations.confirmation');
 
@@ -533,7 +537,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
         ->name('client.reservations.response');
 });
-
 
 // Fiche Objet
 Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.objet.show');

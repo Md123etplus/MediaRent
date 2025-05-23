@@ -30,7 +30,7 @@
             <div class="mt-3 space-y-1">
                 <p class="text-sm">
                     <span class="font-semibold">Ville:</span> 
-                    {{ $annonce->adress ?? 'Non spécifiée' }}
+                    {{ $annonce->objet->ville ?? 'Non spécifiée' }}
                 </p>
                 
                 @if($annonce->objet->categorie)

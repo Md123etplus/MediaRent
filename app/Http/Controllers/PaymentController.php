@@ -124,7 +124,31 @@ class PaymentController extends Controller
             'joursRestants' => $joursRestants
         ]);
     }
+
+
     public function showPaymentForm(Annonce $annonce)
+{
+    // Vérifiez si l'utilisateur a une réservation en attente pour cette annonce
+    $reservation = Reservation::where('annonce_id', $annonce->id)
+                             ->where('client_id', auth()->id())
+                             ->where('statut', 'en_attente')
+                             ->first();
+
+    if (!$reservation) {
+        return redirect()->route('dashboard.client')
+                       ->with('error', 'Aucune réservation en attente de paiement');
+    }
+
+    return view('annonces.payments.form', [
+        'annonce' => $annonce,
+        'reservation' => [
+            'date_debut' => $reservation->date_debut,
+            'date_fin' => $reservation->date_fin,
+            'prix_total' => $reservation->date_debut->diffInDays($reservation->date_fin) * $annonce->objet->prix_journalier
+        ]
+    ]);
+}
+    public function showPaymentFor11m(Annonce $annonce)
     {//for normal reservation
         // dd($annonce);
         $reservation = session('reservation_data');
@@ -165,32 +189,37 @@ class PaymentController extends Controller
     }
     public function processReservationPayment(Request $request, Annonce $annonce)
 {
-    // dd($request->all());
-    // Validation des données de paiement
-    $this->validateReservationPaymentRequest($request);
-// dd($request->all());
-    // Traditement de la transaction
+    // Convert input dates to Carbon instances
+    $dateDebut = \Carbon\Carbon::parse($request->input('date_debut'));
+    $dateFin = \Carbon\Carbon::parse($request->input('date_fin'));
+
+    // Validation and payment processing...
     $paymentResult = $this->processReservationPaymentTransaction($request->all(), $annonce);
+
+    // Create reservation with proper date handling
     $reservation = Reservation::create([
-                    'annonce_id' => $annonce->id,
-                    'client_id' => Auth::id(),
-                    'date_debut' => $request->input('date_debut'),
-                    'date_fin' => $request->input('date_fin'),
-                    'statut' => 'en_attente'
-            ]);
-   if ($paymentResult['success']) {
+        'annonce_id' => $annonce->id,
+        'client_id' => Auth::id(),
+        'date_debut' => $dateDebut,
+        'date_fin' => $dateFin,
+        'statut' => 'en_attente',
+        'prix_total' => $dateDebut->diffInDays($dateFin) * $annonce->objet->prix_journalier
+    ]);
+
+    if ($paymentResult['success']) {
         ReservationController::sendReservationEmail($reservation, $annonce);
 
-        $reservationData = session('reservation_data', []);
-        
         return redirect()->route('reservations.confirmation', [
             'reference' => $paymentResult['reference'],
-            'annonce' => $annonce // Pass the full object instead of just ID
-        ])->with([
-            'reservation' => $reservationData,
-            'reference' => $paymentResult['reference']
+            'annonce' => $annonce,
+            'reservation' => [
+                'date_debut' => $reservation->date_debut,
+                'date_fin' => $reservation->date_fin,
+                'prix_total' => $reservation->prix_total
+            ]
         ]);
     }
+
     return back()->with('error', $paymentResult['message']);
 }
 }

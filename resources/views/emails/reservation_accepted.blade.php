@@ -19,6 +19,9 @@
         .button-partenaire {
             background-color: #9f7aea;
         }
+        .button-paiement {
+            background-color: #38a169;
+        }
         .button-container {
             margin: 20px 0;
             text-align: center;
@@ -47,6 +50,9 @@
             <div class="button-container">
                 <a href="{{ route('partenaire.show', ['user' => $annonce->proprietaire->id]) }}" class="button button-partenaire">
                     Voir fiche partenaire
+                </a>
+                <a href="{{ route('reservations.payment', ['annonce' => $annonce->id]) }}" class="button button-paiement">
+                    Procéder au paiement
                 </a>
             </div>
             

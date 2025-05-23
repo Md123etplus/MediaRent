@@ -14,26 +14,7 @@
                     <span>Référence :</span>
                     <span id="confirmation-reference">{{ $reference ?? 'MR-' . date('YmdHis') }}</span>
                 </div>
-                <div class="detail-item">
-                    <span>Annonce :</span>
-                    <span>{{ $annonce->titre }}</span>
-                </div>
-                <div class="detail-item">
-                    <span>Dates :</span>
-                    <span>
-                       {{ isset($reservation['date_debut']) && $reservation['date_debut'] instanceof \Carbon\Carbon 
-                            ? $reservation['date_debut']->format('d/m/Y') . ' - ' . $reservation['date_fin']->format('d/m/Y') 
-                            : 'Dates non spécifiées' }}
-                    </span>
-                </div>
-                @if(isset($reservation))
-                <div class="detail-item">
-                    <span>Montant :</span>
-                    <span>{{ number_format($reservation['prix_total'], 2) }} Dhs</span>
-                </div>
-                @endif
-            </div>
-
+                
             <div class="confirmation-actions">
                 <a href="{{ route('annonces.show', $annonce) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-eye mr-2"></i>Voir mon annonce
