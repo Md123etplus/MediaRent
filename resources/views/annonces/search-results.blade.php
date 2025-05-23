@@ -24,9 +24,30 @@
             
             <!-- Filtre par ville -->
             <div>
-                <input type="text" name="ville" value="{{ request('ville') }}" 
-                    class="w-full px-4 py-2 border rounded" 
-                    placeholder="Ville">
+                <select name="ville" class="w-full px-4 py-2 border rounded">
+                    <option value="">-- Sélectionner une ville --</option>
+                    <option value="Casablanca" {{ request('ville') == 'Casablanca' ? 'selected' : '' }}>Casablanca</option>
+                    <option value="Rabat" {{ request('ville') == 'Rabat' ? 'selected' : '' }}>Rabat</option>
+                    <option value="Marrakech" {{ request('ville') == 'Marrakech' ? 'selected' : '' }}>Marrakech</option>
+                    <option value="Fès" {{ request('ville') == 'Fès' ? 'selected' : '' }}>Fès</option>
+                    <option value="Tanger" {{ request('ville') == 'Tanger' ? 'selected' : '' }}>Tanger</option>
+                    <option value="Agadir" {{ request('ville') == 'Agadir' ? 'selected' : '' }}>Agadir</option>
+                    <option value="Meknès" {{ request('ville') == 'Meknès' ? 'selected' : '' }}>Meknès</option>
+                    <option value="Oujda" {{ request('ville') == 'Oujda' ? 'selected' : '' }}>Oujda</option>
+                    <option value="Kenitra" {{ request('ville') == 'Kenitra' ? 'selected' : '' }}>Kenitra</option>
+                    <option value="Tétouan" {{ request('ville') == 'Tétouan' ? 'selected' : '' }}>Tétouan</option>
+                    <option value="Safi" {{ request('ville') == 'Safi' ? 'selected' : '' }}>Safi</option>
+                    <option value="El Jadida" {{ request('ville') == 'El Jadida' ? 'selected' : '' }}>El Jadida</option>
+                    <option value="Khouribga" {{ request('ville') == 'Khouribga' ? 'selected' : '' }}>Khouribga</option>
+                    <option value="Béni Mellal" {{ request('ville') == 'Béni Mellal' ? 'selected' : '' }}>Béni Mellal</option>
+                    <option value="Nador" {{ request('ville') == 'Nador' ? 'selected' : '' }}>Nador</option>
+                    <option value="Taza" {{ request('ville') == 'Taza' ? 'selected' : '' }}>Taza</option>
+                    <option value="Khémisset" {{ request('ville') == 'Khémisset' ? 'selected' : '' }}>Khémisset</option>
+                    <option value="Settat" {{ request('ville') == 'Settat' ? 'selected' : '' }}>Settat</option>
+                    <option value="Larache" {{ request('ville') == 'Larache' ? 'selected' : '' }}>Larache</option>
+                    <option value="Ksar El Kebir" {{ request('ville') == 'Ksar El Kebir' ? 'selected' : '' }}>Ksar El Kebir</option>
+                    <!-- Ajoute d'autres villes si besoin -->
+                </select>
             </div>
             
             <!-- Filtre par catégorie -->

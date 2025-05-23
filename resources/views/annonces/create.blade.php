@@ -153,10 +153,6 @@
             <input type="date" id="date_fin" name="date_fin" required>
         </div>
 
-        <div class="form-group">
-            <label for="adress">Adresse :</label>
-            <input type="text" id="adress" name="adress" required>
-        </div>
 
                     <div class="form-group">
                 <label for="objet_id">Objet :</label>

@@ -27,7 +27,6 @@ class AnnonceController extends Controller{
         $validated = $request->validate([
             'date_debut' => 'required|date',
             'date_fin' => 'required|date|after:date_debut',
-            'adress' => 'required|string|max:255',
             'objet_id' => 'required|exists:objet,id',
             'statut' => 'required|in:active,inactive',
             'premium' => 'sometimes|boolean'
@@ -150,12 +149,13 @@ public function archiver($id)
                     $q->whereHas('objet', function($q) use ($request) {
                         $q->where('nom', 'like', "%{$request->q}%")
                           ->orWhere('description', 'like', "%{$request->q}%");
-                    })
-                    ->orWhere('adress', 'like', "%{$request->q}%");
+                    });
                 });
             })
             ->when($request->filled('ville'), function($query) use ($request) {
-                $query->where('adress', 'like', "%{$request->ville}%");
+                $query->whereHas('objet', function($q) use ($request) {
+                    $q->where('ville', 'like', "%{$request->ville}%");
+                });
             })
             ->when($request->filled('categorie'), function($query) use ($request) {
                 $query->whereHas('objet.categorie', function($q) use ($request) {
@@ -251,7 +251,6 @@ public function paymentSuccess(Annonce $annonce)
     $validatedData = $request->validate([
         'date_debut' => 'required|date',
         'date_fin' => 'required|date|after:date_debut',
-        'adress' => 'required|string|max:255',
         'objet_id' => 'required|exists:objet,id', // Notez 'objet' au singulier
         'statut' => 'required|in:active,inactive', // Correction du nom du champ
         'premium' => 'sometimes|boolean'

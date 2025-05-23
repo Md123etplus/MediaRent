@@ -183,7 +183,30 @@
 
         <div class="form-group">
             <label for="ville" class="form-label">Ville</label>
-            <input type="text" name="ville" class="form-input" required placeholder="Ex: Paris">
+            <select name="ville" class="form-input form-select" required>
+                <option value="">-- Sélectionner une ville --</option>
+                <option value="Casablanca">Casablanca</option>
+                <option value="Rabat">Rabat</option>
+                <option value="Marrakech">Marrakech</option>
+                <option value="Fès">Fès</option>
+                <option value="Tanger">Tanger</option>
+                <option value="Agadir">Agadir</option>
+                <option value="Meknès">Meknès</option>
+                <option value="Oujda">Oujda</option>
+                <option value="Kenitra">Kenitra</option>
+                <option value="Tétouan">Tétouan</option>
+                <option value="Safi">Safi</option>
+                <option value="El Jadida">El Jadida</option>
+                <option value="Khouribga">Khouribga</option>
+                <option value="Béni Mellal">Béni Mellal</option>
+                <option value="Nador">Nador</option>
+                <option value="Taza">Taza</option>
+                <option value="Khémisset">Khémisset</option>
+                <option value="Settat">Settat</option>
+                <option value="Larache">Larache</option>
+                <option value="Ksar El Kebir">Ksar El Kebir</option>
+                <!-- Ajoute d'autres villes si besoin -->
+            </select>
         </div>
 
         <div class="form-group">
