@@ -39,7 +39,7 @@ class DashboardController extends Controller
         // 3. Note moyenne et nombre d'évaluations
         $evaluations = $user->evaluations()
             ->where('evaluateur_id', $user->id)
-            ->selectRaw('AVG(note_objet) as average, COUNT(*) as count')
+            ->selectRaw('AVG(note) as average, COUNT(*) as count')
             ->first();
         
         $averageRating = $evaluations->average ?? 0;

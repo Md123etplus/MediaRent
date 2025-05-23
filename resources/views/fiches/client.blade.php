@@ -142,14 +142,14 @@
                                                 <div class="flex">
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         <span
-                                                            class="{{ $i <= $evaluation->note_objet ? 'text-yellow-400' : 'text-gray-600' }} text-lg">★</span>
+                                                            class="{{ $i <= $evaluation->note ? 'text-yellow-400' : 'text-gray-600' }} text-lg">★</span>
                                                     @endfor
                                                 </div>
                                             </div>
 
                                             <!-- Commentaire -->
                                             <p class="mt-2 text-gray-300">
-                                                "{{ $evaluation->commentaire_objet }}"
+                                                "{{ $evaluation->commentaire }}"
                                             </p>
 
                                             <!-- Date et détails -->

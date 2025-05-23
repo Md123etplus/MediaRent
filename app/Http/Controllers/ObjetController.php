@@ -220,7 +220,7 @@ class ObjetController extends Controller
             ->join('reservation', 'evaluation.reservation_id', '=', 'reservation.id')
             ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')
             ->where('annonce.objet_id', $id)
-            ->avg('evaluation.note_objet') ?? 0;
+            ->avg('evaluation.note') ?? 0;
 
         // Vérifier disponibilité
         $disponible = DB::table('annonce')
