@@ -28,7 +28,7 @@ class EvaluationRequestMail extends Mailable
             'type' => $this->evaluationType,
         ]);
 
-        return $this->markdown('emails.evaluation.request')
+        return $this->markdown('emails.evaluation_request')
             ->subject('Évaluation de votre location')
             ->with([
                 'url' => $url,

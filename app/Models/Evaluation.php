@@ -17,35 +17,35 @@ class Evaluation extends Model
     // public $timestamps = false;
 
     // Définissez les champs remplissables
-    protected $fillable = [
-    'reservation_id',
-    'objet_id',
-    'evaluateur_id', 
-    'evalue_id',
-    'note_objet',
-    'is_visible',
-    'note_proprietaire',//there was two different versions, so i had to keep the recent one since it has migrations related to it
-    'commentaire_objet',
-    'commentaire_proprietaire',
-    'date',
-    'type'// 'objet' ou 'utilisateur'
+    // protected $fillable = [
+    // 'reservation_id',
+    // 'objet_id',
+    // 'evaluateur_id', 
+    // 'evalue_id',
+    // 'note_objet',
+    // 'is_visible',
+    // 'note_proprietaire',//there was two different versions, so i had to keep the recent one since it has migrations related to it
+    // 'commentaire_objet',
+    // 'commentaire_proprietaire',
+    // 'date',
+    // 'type'// 'objet' ou 'utilisateur'
+    // ];
+    protected $fillable = [ 
+        'objet_id',
+        'evaluateur_id',
+        'evalue_id',
+        'reservation_id',
+        'note',
+        'commentaire',
+        'is_visible',
+        'date',
+        'type', // 'objet' ou 'utilisateur'
     ];
-    // protected $fillable = [ 
-    //     'objet_id',
-    //     'evaluateur_id',
-    //     'evalue_id',
-    //     'reservation_id',
-    //     'note',
-    //     'commentaire',
-    //     'is_visible',
-    //     'date',
-    //     'type', // 'objet' ou 'utilisateur'
-    // ];
 
-    // protected $casts = [
-    //     'note_objet' => 'integer',
-    //     'created_at' => 'datetime',
-    // ];
+    protected $casts = [
+        'note' => 'integer',
+        'created_at' => 'datetime',
+    ];
 
     /**
      * Relation avec l'objet évalué
@@ -106,6 +106,6 @@ public function reservation()
      */
     public function getNoteTextAttribute(): string
     {
-        return $this->note_objet.'/5';
+        return $this->note.'/5';
     }
 }

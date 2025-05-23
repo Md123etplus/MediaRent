@@ -28,7 +28,7 @@ class EvaluationReminderMail extends Mailable
             'type' => $this->evaluationType,
         ]);
 
-        return $this->markdown('emails.evaluation.reminder')
+        return $this->markdown('emails.evaluation_reminder')
             ->subject('Rappel : Évaluation de votre location')
             ->with([
                 'url' => $url,

@@ -388,12 +388,6 @@ Route::prefix('client')->name('client.')->group(function() {
         Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
         Route::put('/{evaluation}', [EvaluationController::class, 'update'])->name('update');
-        Route::get('/thank-you', function () {
-            return view('evaluations.thank-you');
-        })->name('evaluations.thank-you');
-        Route::get('/{evaluation}', [EvaluationController::class, 'show'])
-            ->middleware('can:view,evaluation')
-            ->name('evaluations.show');
     });
 
     // Notifications
@@ -516,3 +510,21 @@ Route::get('/client/reservations/{id}/respond/{response}', [ReservationControlle
     ->name('client.reservations.response');
 
 });
+
+Route::middleware(['signed'])->group(function () {
+    Route::get('/reservations/{reservation}/evaluations/{type}', 
+        [EvaluationController::class, 'create'])
+        ->name('evaluations.create');
+});
+
+Route::post('/reservations/{reservation}/evaluations/{type}', 
+    [EvaluationController::class, 'store'])
+    ->name('evaluations.store');
+
+Route::get('/evaluations/thank-you', function () {
+    return view('evaluations.thank-you');
+})->name('evaluations.thank-you');
+
+Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])
+    ->middleware(['auth', 'evaluation.visibility'])
+    ->name('evaluations.show');

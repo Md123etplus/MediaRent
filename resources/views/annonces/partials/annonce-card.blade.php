@@ -51,7 +51,7 @@
                 </p>
                 
                 @php
-                    $avgRating = $annonce->objet->evaluations->avg('note_objet') ?? 0;
+                    $avgRating = $annonce->objet->evaluations->avg('note') ?? 0;
                 @endphp
                 
                 @if($avgRating > 0)

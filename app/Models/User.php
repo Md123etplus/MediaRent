@@ -149,7 +149,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Note moyenne reçue (pour les partenaires)
         public function noteMoyenne()
         {
-            return $this->evaluationsRecues()->avg('note_proprietaire');
+            return $this->evaluationsRecues()->avg('note');
         }
         public function notifications()
     {
