@@ -161,7 +161,6 @@ class ReservationController extends Controller
         }
     }
 
-
 // public function storeDates(Request $request, Annonce $annonce)
 // {
 //     $validated = $request->validate([
@@ -185,9 +184,6 @@ class ReservationController extends Controller
 
 //     return redirect()->route('reservations.formClient');
 // }
-
-
-
 
 
 public function createStep2() // Afficher le formulaire de l'étape 2

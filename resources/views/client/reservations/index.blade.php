@@ -571,8 +571,8 @@ function openEvaluationHistoryModal(evaluation) {
     document.getElementById('historyProprietaireRatingStars').innerHTML = proprietaireStars;
     
     // Commentaires
-    document.getElementById('historyObjetComment').textContent = evaluation.commentaire_objet || 'Aucun commentaire';
-    document.getElementById('historyProprietaireComment').textContent = evaluation.commentaire_proprietaire || 'Aucun commentaire';
+    document.getElementById('historyObjetComment').textContent = evaluation.commentaire || 'Aucun commentaire';
+    document.getElementById('historyProprietaireComment').textContent = evaluation.commentaire || 'Aucun commentaire';
     
     // Date
     const date = new Date(evaluation.created_at);

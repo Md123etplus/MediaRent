@@ -89,10 +89,8 @@ $evaluations = $testUser
     
     // Validation
     $validated = $request->validate([
-        'note_objet' => 'required|integer|min:1|max:5',
-        'note_proprietaire' => 'required|integer|min:1|max:5',
-        'commentaire_objet' => 'required|string|max:500',
-        'commentaire_proprietaire' => 'required|string|max:500',
+        'note' => 'required|integer|min:1|max:5',
+        'commentaire' => 'required|string|max:500',
     ]);
     
     // Créer l'évaluation
@@ -101,10 +99,8 @@ $evaluations = $testUser
         'objet_id' => $reservation->annonce->objet_id,
         'evaluateur_id' => Auth::id(),
         'evalue_id' => $reservation->annonce->proprietaire_id,
-        'note_objet' => $request->note_objet,
-        'note_proprietaire' => $request->note_proprietaire,
-        'commentaire_objet' => $request->commentaire_objet,
-        'commentaire_proprietaire' => $request->commentaire_proprietaire,
+        'note' => $request->note,
+        'commentaire' => $request->commentaire,
         'date' => Carbon::now(),
         ...$validated
     ]);
@@ -119,20 +115,20 @@ $evaluations = $testUser
         'redirect' => route('client.reservations.index')
     ]);
 }
-    public function edit(Evaluation $evaluation)
-    {
-        // Vérifier que l'évaluation appartient bien à l'utilisateur connecté
-        if ($evaluation->evaluateur_id !== Auth::id()) {
-            abort(403);
-        }
+    // public function edit(Evaluation $evaluation)
+    // {
+    //     // Vérifier que l'évaluation appartient bien à l'utilisateur connecté
+    //     if ($evaluation->evaluateur_id !== Auth::id()) {
+    //         abort(403);
+    //     }
         
-        // Vérifier que l'évaluation peut être modifiée (par exemple, dans un délai de 7 jours)
-        if ($evaluation->date->diffInDays(Carbon::now()) > 7) {
-            return back()->with('error', 'Vous ne pouvez plus modifier cette évaluation.');
-        }
+    //     // Vérifier que l'évaluation peut être modifiée (par exemple, dans un délai de 7 jours)
+    //     if ($evaluation->date->diffInDays(Carbon::now()) > 7) {
+    //         return back()->with('error', 'Vous ne pouvez plus modifier cette évaluation.');
+    //     }
         
-        return view('client.evaluations.edit', compact('evaluation'));
-    }
+    //     return view('client.evaluations.edit', compact('evaluation'));
+    // }
 
     public function update(Request $request, Evaluation $evaluation)
     {
@@ -143,18 +139,14 @@ $evaluations = $testUser
         
         // Validation
         $request->validate([
-            'note_objet' => 'required|integer|min:1|max:5',
-            'note_proprietaire' => 'required|integer|min:1|max:5',
-            'commentaire_objet' => 'required|string|max:500',
-            'commentaire_proprietaire' => 'required|string|max:500',
+            'note' => 'required|integer|min:1|max:5',
+            'commentaire' => 'required|string|max:500',
         ]);
         
         // Mettre à jour l'évaluation
         $evaluation->update([
-            'note_objet' => $request->note_objet,
-            'note_proprietaire' => $request->note_proprietaire,
-            'commentaire_objet' => $request->commentaire_objet,
-            'commentaire_proprietaire' => $request->commentaire_proprietaire,
+            'note' => $request->note,
+            'commentaire' => $request->commentaire,
         ]);
         
         return redirect()->route('client.evaluations.index')

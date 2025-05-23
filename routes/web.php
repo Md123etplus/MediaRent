@@ -184,9 +184,6 @@ Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
 Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
     ->name('annonces.update');
 
-
-
-
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
@@ -473,8 +470,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');
 
-
-
     // Ajoutez cette route dans votre fichier routes/web.php
     Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
@@ -524,7 +519,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('client')->name('client.')->group(function () {
 
-
         Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
             ->name('reservations.response');
     });
@@ -546,3 +540,23 @@ Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.ob
 Route::get('/clients/{client}', [ClientController::class, 'show'])->name('fiches.client.show');
 
 Route::get('/partenaires/{user}', [App\Http\Controllers\PartenaireController::class, 'show'])->name('partenaire.show');
+
+
+//route pour evalution request et reminder
+Route::middleware(['signed'])->group(function () {
+  Route::get('/reservations/{reservation}/evaluations/{type}', 
+      [EvaluationController::class, 'create'])
+      ->name('evaluations.create');
+});
+
+Route::post('/reservations/{reservation}/evaluations/{type}', 
+    [EvaluationController::class, 'store'])
+    ->name('evaluations.store');
+
+Route::get('/evaluations/thank-you', function () {
+    return view('evaluations.thank-you');
+})->name('evaluations.thank-you');
+
+Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])
+    ->middleware(['auth', 'evaluation.visibility'])
+    ->name('evaluations.show');

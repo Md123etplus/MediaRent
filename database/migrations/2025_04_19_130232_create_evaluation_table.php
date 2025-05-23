@@ -16,16 +16,16 @@ return new class extends Migration
             $table->foreignId('objet_id')->constrained(table: 'objet'); // Possible schema error
             $table->foreignId('evaluateur_id')->constrained('users');
             $table->foreignId('evalue_id')->constrained('users');
-            $table->integer('note_objet');
-            $table->text('commentaire_objet');
+            $table->integer('note');
+            $table->text('commentaire');
             $table->boolean('is_visible')->default(true);
             $table->date('date');
-
-            // Ajouter les nouvelles colonnes
-            $table->integer('note_proprietaire');
-            $table->text('commentaire_proprietaire');
+            $table->enum('type', ['client_to_partner', 'partner_to_client', 'client_to_objet'])->default('client_to_partner');
+            $table->boolean('is_public')->default(false);
+            $table->timestamp('sent_at')->nullable();
+            $table->timestamp('reminded_at')->nullable();
+            $table->integer('reminder_count')->default(0);
             $table->unsignedBigInteger('reservation_id');
-            
             // Ajouter les contraintes de clé étrangère
             $table->foreign('reservation_id')->references('id')->on('reservation');
             $table->timestamps();

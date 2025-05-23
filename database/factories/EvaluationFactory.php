@@ -25,10 +25,8 @@ class EvaluationFactory extends Factory
             'objet_id' => $objet->id,
             'evaluateur_id' => $evaluateur->id,
             'evalue_id' => $evalue->id,
-            'note_objet' => $this->faker->numberBetween(1, 5),
-            'commentaire_objet' => $this->faker->paragraph,
-            'note_proprietaire' => $this->faker->numberBetween(1, 5),
-            'commentaire_proprietaire' => $this->faker->paragraph,
+            'note' => $this->faker->numberBetween(1, 5),
+            'commentaire' => $this->faker->paragraph,
             'date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'is_visible' => $this->faker->boolean(90), // 90% chance of being visible
         ];
@@ -39,14 +37,14 @@ class EvaluationFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'note_objet' => $this->faker->numberBetween(4, 5),
-                'commentaire_objet' => $this->faker->randomElement([
+                'note' => $this->faker->numberBetween(4, 5),
+                'commentaire' => $this->faker->randomElement([
                     'Excellent matériel, je recommande!',
                     'Très satisfait de la location',
                     'Parfait état, correspond exactement à la description'
                 ]),
-                'note_proprietaire' => $this->faker->numberBetween(4, 5),
-                'commentaire_proprietaire' => $this->faker->randomElement([
+                'note' => $this->faker->numberBetween(4, 5),
+                'commentaire' => $this->faker->randomElement([
                     'Locataire très sérieux',
                     'Excellent contact avec le propriétaire',
                     'Tout s\'est parfaitement déroulé'
@@ -59,14 +57,14 @@ class EvaluationFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'note_objet' => $this->faker->numberBetween(1, 2),
-                'commentaire_objet' => $this->faker->randomElement([
+                'note' => $this->faker->numberBetween(1, 2),
+                'commentaire' => $this->faker->randomElement([
                     'Matériel en mauvais état',
                     'Ne correspond pas à la description',
                     'Problème technique non mentionné'
                 ]),
-                'note_proprietaire' => $this->faker->numberBetween(1, 2),
-                'commentaire_proprietaire' => $this->faker->randomElement([
+                'note' => $this->faker->numberBetween(1, 2),
+                'commentaire' => $this->faker->randomElement([
                     'Problème de communication',
                     'Retard important pour la restitution',
                     'Matériel rendu dans un état dégradé'
