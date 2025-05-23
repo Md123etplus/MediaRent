@@ -331,6 +331,14 @@ Route::get('/reservations/confirmation', function () {
     return view('reservations.confirmation');
 })->name('reservations.confirmation');
 
+Route::get('/reservations/confirmation', function () {
+    return view('reservations.confirmation');
+})->name('reservations.confirmation');
+
+Route::get('/reservations/createStep2', function () {
+    return view('reservations.createStep2');
+})->name('reservations.createStep2');
+
 //formClient
 
 use App\Http\Controllers\ClientController;
@@ -340,7 +348,8 @@ Route::post('/reservations/formClient', [ClientController::class, 'store'])->nam
 
 Route::get('/reservations/reponse/{id}/{decision}', [ReservationController::class, 'reponse'])->name('reservations.reponse');
 
-
+// Route pour traiter la soumission du formulaire de l'étape 2 et créer la réservation complète
+Route::post('/reservations/store-full', [ReservationController::class, 'storeFullReservation'])->name('reservations.storeFull');
 
 
 
