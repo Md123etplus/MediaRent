@@ -205,8 +205,30 @@
 
         <div class="form-group">
             <label for="ville" class="form-label">Ville</label>
-            <input type="text" id="ville" name="ville" class="form-input" 
-                   value="{{ old('ville', $objet->ville) }}" required placeholder="Ex: Paris">
+            <select id="ville" name="ville" class="form-input form-select" required>
+                <option value="">-- Sélectionner une ville --</option>
+                <option value="Casablanca" {{ old('ville', $objet->ville) == 'Casablanca' ? 'selected' : '' }}>Casablanca</option>
+                <option value="Rabat" {{ old('ville', $objet->ville) == 'Rabat' ? 'selected' : '' }}>Rabat</option>
+                <option value="Marrakech" {{ old('ville', $objet->ville) == 'Marrakech' ? 'selected' : '' }}>Marrakech</option>
+                <option value="Fès" {{ old('ville', $objet->ville) == 'Fès' ? 'selected' : '' }}>Fès</option>
+                <option value="Tanger" {{ old('ville', $objet->ville) == 'Tanger' ? 'selected' : '' }}>Tanger</option>
+                <option value="Agadir" {{ old('ville', $objet->ville) == 'Agadir' ? 'selected' : '' }}>Agadir</option>
+                <option value="Meknès" {{ old('ville', $objet->ville) == 'Meknès' ? 'selected' : '' }}>Meknès</option>
+                <option value="Oujda" {{ old('ville', $objet->ville) == 'Oujda' ? 'selected' : '' }}>Oujda</option>
+                <option value="Kenitra" {{ old('ville', $objet->ville) == 'Kenitra' ? 'selected' : '' }}>Kenitra</option>
+                <option value="Tétouan" {{ old('ville', $objet->ville) == 'Tétouan' ? 'selected' : '' }}>Tétouan</option>
+                <option value="Safi" {{ old('ville', $objet->ville) == 'Safi' ? 'selected' : '' }}>Safi</option>
+                <option value="El Jadida" {{ old('ville', $objet->ville) == 'El Jadida' ? 'selected' : '' }}>El Jadida</option>
+                <option value="Khouribga" {{ old('ville', $objet->ville) == 'Khouribga' ? 'selected' : '' }}>Khouribga</option>
+                <option value="Béni Mellal" {{ old('ville', $objet->ville) == 'Béni Mellal' ? 'selected' : '' }}>Béni Mellal</option>
+                <option value="Nador" {{ old('ville', $objet->ville) == 'Nador' ? 'selected' : '' }}>Nador</option>
+                <option value="Taza" {{ old('ville', $objet->ville) == 'Taza' ? 'selected' : '' }}>Taza</option>
+                <option value="Khémisset" {{ old('ville', $objet->ville) == 'Khémisset' ? 'selected' : '' }}>Khémisset</option>
+                <option value="Settat" {{ old('ville', $objet->ville) == 'Settat' ? 'selected' : '' }}>Settat</option>
+                <option value="Larache" {{ old('ville', $objet->ville) == 'Larache' ? 'selected' : '' }}>Larache</option>
+                <option value="Ksar El Kebir" {{ old('ville', $objet->ville) == 'Ksar El Kebir' ? 'selected' : '' }}>Ksar El Kebir</option>
+                <!-- Ajoute d'autres villes si besoin -->
+            </select>
         </div>
 
         <div class="form-group">

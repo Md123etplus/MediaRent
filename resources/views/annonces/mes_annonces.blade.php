@@ -228,7 +228,6 @@
                 <th>Premium</th>
                 <th>Date début</th>
                 <th>Date fin</th>
-                <th>Adresse</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -251,7 +250,6 @@
                 </td>
                 <td>{{ $annonce->date_debut }}</td>
                 <td>{{ $annonce->date_fin }}</td>
-                <td>{{ $annonce->adress }}</td>
                 <td>
     <div class="action-buttons">
         <!-- Bouton Modifier (toujours visible) -->
