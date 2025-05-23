@@ -120,7 +120,7 @@ class Objet extends Model
         $avg = Evaluation::whereHas('reservationAssociee.annonce', function ($query) {
             $query->where('objet_id', $this->id); // Ici, objet_id est la FK de annonce vers objet
         })
-            ->avg('note_objet');
+            ->avg('note');
         return $avg !== null ? round($avg, 1) : null; // Gère le cas où il n'y a pas d'avis
     }
 
@@ -177,7 +177,7 @@ class Objet extends Model
             ->join('reservation', 'evaluation.reservation_id', '=', 'reservation.id')
             ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')
             ->where('annonce.objet_id', $this->id)
-            ->avg('evaluation.note_objet') ?? 0;
+            ->avg('evaluation.note') ?? 0;
     }
 
     // Nombre d'avis sur l'objet (donnés par les clients)

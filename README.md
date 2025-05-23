@@ -23,3 +23,9 @@ Plateforme de location de matériel audiovisuel professionnel avec Laravel et Ta
 ## 📂 Structure
 
 ## 👥 Équipe
+
+## Note
+Pour lancer le scheduler: php artisan schedule:work
+Pour tester les commandes laravel: 
+ - php artisan evaluations:send-requests
+ - php artisan evaluations:send-reminders

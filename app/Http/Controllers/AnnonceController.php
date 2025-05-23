@@ -172,7 +172,7 @@ public function archiver($id)
                 $query->whereHas('objet.evaluations', function($q) use ($request) {
                     $q->select('objet_id')
                       ->groupBy('objet_id')
-                      ->havingRaw('AVG(note_objet) >= ?', [$request->min_rating]);
+                      ->havingRaw('AVG(note) >= ?', [$request->min_rating]);
                 });
             })
             ->when($request->filled('prix_min'), function($query) use ($request) {

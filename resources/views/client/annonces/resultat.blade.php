@@ -4,7 +4,7 @@
         <p>{{ $annonce->description }}</p>
         <p>Prix : {{ $annonce->prix }}€</p>
         <p>Ville : {{ $annonce->ville }}</p>
-        <p>Note : {{ $annonce->note_objet }}</p>
+        <p>Note : {{ $annonce->note }}</p>
         <a href="{{ route('annonces.show', $annonce) }}" class="text-blue-600 hover:underline">Réserver</a>
     </div>
 @endforeach
