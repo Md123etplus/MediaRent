@@ -148,7 +148,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->evaluationsRecues()
                     ->whereHas('evaluateur', fn($q) => $q->where('role', 'client'))
-                    ->avg('note_proprietaire');
+                    ->avg('note');
     }
 
     public function getNombreAvisPartenaireAttribute()
@@ -184,7 +184,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->evaluationsRecues()
                     ->whereHas('evaluateur', fn($q) => $q->where('role', 'partenaire'))
-                    ->avg('note_proprietaire');
+                    ->avg('note');
     }
 
     public function getNombreAvisClientAttribute()

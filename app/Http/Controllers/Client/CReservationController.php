@@ -57,7 +57,7 @@ class CReservationController extends Controller
         }
         
         $ownerAverageRating = $reservation->annonce->proprietaire->evaluations()
-            ->avg('note_proprietaire');
+            ->avg('note');
             
         $ownerRatingsCount = $reservation->annonce->proprietaire->evaluations()
             ->count();

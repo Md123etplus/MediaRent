@@ -184,9 +184,6 @@ Route::get('/annonces/{annonce}/edit', [AnnonceController::class, 'edit'])
 Route::put('/annonces/{annonce}', [AnnonceController::class, 'update'])
     ->name('annonces.update');
 
-
-
-
 Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
@@ -405,7 +402,7 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function  ()
     // Évaluations
     Route::prefix('evaluations')->name('evaluations.')->group(function  () {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
-        Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
+        // Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
         Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
         Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
@@ -473,8 +470,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/update-images', [UtilisateurController::class, 'updateImagesProfile'])
         ->name('profile.update-images');
 
-
-
     // Ajoutez cette route dans votre fichier routes/web.php
     Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
@@ -524,7 +519,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('client')->name('client.')->group(function () {
 
-
         Route::post('/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
             ->name('reservations.response');
     });
@@ -532,6 +526,23 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
         ->name('client.reservations.response');
+
+    //route pour evalution request et reminder
+    Route::get('/reservations/{reservation}/evaluations/{type}', 
+        [EvaluationController::class, 'create'])
+        ->name('evaluations.create');
+
+    Route::post('/reservations/{reservation}/evaluations/{type}', 
+        [EvaluationController::class, 'store'])
+        ->name('evaluations.store');
+
+    Route::get('/evaluations/thank-you', function () {
+        return view('evaluations.thank-you');
+    })->name('evaluations.thank-you');
+
+    Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])
+        ->middleware(['auth', 'evaluation.visibility'])
+        ->name('evaluations.show');
 });
 
 
