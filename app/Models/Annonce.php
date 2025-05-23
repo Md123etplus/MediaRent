@@ -189,7 +189,7 @@ public function isPremiumActive(): bool
     public function scopeWithRating($query, $minRating)
     {
         return $query->whereHas('objet.evaluations', function($q) use ($minRating) {
-            $q->selectRaw('objet_id, avg(note) as average_rating')
+            $q->selectRaw('objet_id, avg(note_objet) as average_rating')
               ->groupBy('objet_id')
               ->having('average_rating', '>=', $minRating);
         });

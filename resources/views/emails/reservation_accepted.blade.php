@@ -7,7 +7,20 @@
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background-color: #48bb78; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { padding: 20px; background-color: #f7fafc; border-radius: 0 0 8px 8px; }
-        .button { display: inline-block; padding: 10px 20px; background-color: #4299e1; color: white; text-decoration: none; border-radius: 5px; }
+        .button { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            margin: 5px;
+            background-color: #4299e1; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+        }
+        .button-partenaire {
+            background-color: #9f7aea;
+        }
+        ul { margin: 10px 0; padding-left: 20px; }
+        li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -24,13 +37,12 @@
                 <li>Du: {{ $reservation->date_debut->format('d/m/Y') }}</li>
                 <li>Au: {{ $reservation->date_fin->format('d/m/Y') }}</li>
                 <li>Prix total: {{ $reservation->date_debut->diffInDays($reservation->date_fin) * $annonce->objet->prix_journalier }} €</li>
+                <li>Propriétaire: {{ $annonce->proprietaire->name }}</li>
             </ul>
             
-            <p>Vous pouvez maintenant contacter le propriétaire à cette adresse : {{ $annonce->proprietaire->email }}</p>
+           
             
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="{{ route('annonces.show', $annonce->id) }}" class="button">Voir l'annonce</a>
-            </div>
+            <p style="margin-top: 30px;">Vous pouvez contacter le propriétaire directement à cette adresse : <a href="mailto:{{ $annonce->proprietaire->email }}">{{ $annonce->proprietaire->email }}</a></p>
         </div>
     </div>
 </body>
