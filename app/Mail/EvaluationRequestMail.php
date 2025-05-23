@@ -23,15 +23,9 @@ class EvaluationRequestMail extends Mailable
 
     public function build()
     {
-        $url = URL::signedRoute('evaluations.create', [
-            'reservation' => $this->reservation->id,
-            'type' => $this->evaluationType,
-        ]);
-
         return $this->markdown('emails.evaluation_request')
             ->subject('Évaluation de votre location')
             ->with([
-                'url' => $url,
                 'isClient' => $this->evaluationType === 'client',
                 'reservation' => $this->reservation,
             ]);

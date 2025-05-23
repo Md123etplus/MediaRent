@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignId('objet_id')->constrained(table: 'objet'); // Possible schema error
             $table->foreignId('evaluateur_id')->constrained('users');
             $table->foreignId('evalue_id')->constrained('users');
-            $table->integer('note');
-            $table->text('commentaire');
+            $table->integer('note')->default(0);
+            $table->text('commentaire')->nullable();
             $table->boolean('is_visible')->default(true);
-            $table->date('date');
-            $table->enum('type', ['client_to_partner', 'partner_to_client', 'client_to_objet'])->default('client_to_partner');
+            $table->date('date')->nullable();
+            $table->enum('type', ['client_to_partner', 'partner_to_client', 'objet_evaluation'])->default('client_to_partner');
             $table->boolean('is_public')->default(false);
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('reminded_at')->nullable();

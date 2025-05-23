@@ -23,18 +23,13 @@ class EvaluationReminderMail extends Mailable
 
     public function build()
     {
-        $url = URL::signedRoute('evaluations.create', [
-            'reservation' => $this->reservation->id,
-            'type' => $this->evaluationType,
-        ]);
-
         return $this->markdown('emails.evaluation_reminder')
             ->subject('Rappel : Évaluation de votre location')
             ->with([
-                'url' => $url,
                 'isClient' => $this->evaluationType === 'client_to_partner',
                 'reservation' => $this->reservation,
                 'daysLeft' => 7 - $this->reservation->date_fin->diffInDays(now()),
+                'evaluationType' => $this->evaluationType,
             ]);
     }
 }

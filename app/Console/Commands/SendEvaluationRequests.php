@@ -40,6 +40,9 @@ class SendEvaluationRequests extends Command
                     'evaluateur_id' => $reservation->client_id,
                     'evalue_id' => $reservation->annonce->proprietaire_id,
                     'sent_at' => now(),
+                    'note' => 0,
+                    'commentaire' => null,
+                    'date'=> now(),
                 ],
                 [
                     'type' => 'partner_to_client',
@@ -47,6 +50,9 @@ class SendEvaluationRequests extends Command
                     'evaluateur_id' => $reservation->annonce->proprietaire_id,
                     'evalue_id' => $reservation->client_id,
                     'sent_at' => now(),
+                    'note' => 0,
+                    'commentaire' => null,
+                    'date'=> now(),
                 ]
             ]);
 

@@ -20,10 +20,10 @@
                     </h1>
                     <p class="text-lg font-semibold text-gray-600 mt-1">Partenaire Premium</p>
                     <div class="flex mt-2">
-                        @for($i = 0; $i < floor($user->evaluations()->avg('note_proprietaire')); $i++)
+                        @for($i = 0; $i < floor($user->evaluations()->avg('note')); $i++)
                             <span class="text-yellow-400 text-xl">★</span>
                         @endfor
-                        @for($i = 0; $i < 5 - floor($user->evaluations()->avg('note_proprietaire')); $i++)
+                        @for($i = 0; $i < 5 - floor($user->evaluations()->avg('note')); $i++)
                             <span class="text-gray-300 text-xl">★</span>
                         @endfor
                     </div>
@@ -79,7 +79,7 @@
                             </span>
                             <span class="font-medium text-gray-700">Note moyenne:</span>
                             <span class="ml-2 px-3 py-1 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-full text-yellow-800 font-bold hover:from-yellow-200 hover:to-amber-200 transition-all">
-                                {{ number_format($user->evaluations()->avg('note_proprietaire'), 1) }}/5
+                                {{ number_format($user->evaluations()->avg('note'), 1) }}/5
                             </span>
                         </p>
                     </div>

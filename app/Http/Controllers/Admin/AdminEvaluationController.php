@@ -13,7 +13,7 @@ class AdminEvaluationController extends Controller
     {
         // Top 5 annonces les mieux notées
         $topAnnonces = Annonce::with(['objet', 'proprietaire'])
-            ->withAvg('evaluations as moyenne_notes', 'notet')
+            ->withAvg('evaluations as moyenne_notes', 'note')
             ->withCount('evaluations')
             ->whereHas('evaluations')
             ->orderByDesc('moyenne_notes')

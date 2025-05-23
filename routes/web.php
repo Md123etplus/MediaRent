@@ -402,7 +402,7 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function  ()
     // Évaluations
     Route::prefix('evaluations')->name('evaluations.')->group(function  () {
         Route::get('/', [EvaluationController::class, 'index'])->name('index');
-        Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
+        // Route::get('/create/{reservation}', [EvaluationController::class, 'create'])->name('create');
         Route::post('/store/{reservation}', [EvaluationController::class, 'store'])->name('store');
         Route::get('/{evaluation}', [EvaluationController::class, 'show'])->name('show');
         Route::get('/{evaluation}/edit', [EvaluationController::class, 'edit'])->name('edit');
@@ -526,6 +526,23 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/client/reservations/{id}/respond/{response}', [ReservationController::class, 'respond'])
         ->name('client.reservations.response');
+
+    //route pour evalution request et reminder
+    Route::get('/reservations/{reservation}/evaluations/{type}', 
+        [EvaluationController::class, 'create'])
+        ->name('evaluations.create');
+
+    Route::post('/reservations/{reservation}/evaluations/{type}', 
+        [EvaluationController::class, 'store'])
+        ->name('evaluations.store');
+
+    Route::get('/evaluations/thank-you', function () {
+        return view('evaluations.thank-you');
+    })->name('evaluations.thank-you');
+
+    Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])
+        ->middleware(['auth', 'evaluation.visibility'])
+        ->name('evaluations.show');
 });
 
 
@@ -540,23 +557,3 @@ Route::get('/objets/{objet}', [ObjetController::class, 'show'])->name('fiches.ob
 Route::get('/clients/{client}', [ClientController::class, 'show'])->name('fiches.client.show');
 
 Route::get('/partenaires/{user}', [App\Http\Controllers\PartenaireController::class, 'show'])->name('partenaire.show');
-
-
-//route pour evalution request et reminder
-Route::middleware(['signed'])->group(function () {
-  Route::get('/reservations/{reservation}/evaluations/{type}', 
-      [EvaluationController::class, 'create'])
-      ->name('evaluations.create');
-});
-
-Route::post('/reservations/{reservation}/evaluations/{type}', 
-    [EvaluationController::class, 'store'])
-    ->name('evaluations.store');
-
-Route::get('/evaluations/thank-you', function () {
-    return view('evaluations.thank-you');
-})->name('evaluations.thank-you');
-
-Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])
-    ->middleware(['auth', 'evaluation.visibility'])
-    ->name('evaluations.show');
