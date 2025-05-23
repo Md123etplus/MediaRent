@@ -67,7 +67,16 @@ class Objet extends Model
     // 🔁 Relation avec les évaluations
     public function evaluations()
     {
-        return $this->hasMany(\App\Models\Evaluation::class, 'objet_id');
+        return $this->hasManyThrough(
+            Evaluation::class,
+            Annonce::class,
+            'objet_id', // Clé étrangère sur annonce
+            'objet_id', // Clé étrangère sur evaluation vers reservation
+            'id', // Clé locale sur objet
+            'id' // Clé locale sur annonce
+        )->join('reservation', 'evaluation.objet_id', '=', 'reservation.id')
+            ->where('reservation.statut', 'terminée')
+            ->select('evaluation.*');
     }
 
     // ✅ Vérifie si les coordonnées sont valides

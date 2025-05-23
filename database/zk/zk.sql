@@ -24,22 +24,20 @@ CREATE TABLE `annonce` (
   `proprietaire_id` bigint(20) UNSIGNED NOT NULL,
   `date_debut` date NOT NULL,
   `date_fin` date NOT NULL,
-  `adress` text NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE bookings (
-    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
-    nom VARCHAR(255) DEFAULT NULL,
-    prenom VARCHAR(255) DEFAULT NULL,
-    email VARCHAR(255) DEFAULT NULL,
-    CIN VARCHAR(50) DEFAULT NULL,
-    PRIMARY KEY (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `bookings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `nom` varchar(255) DEFAULT NULL,
+  `prenom` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `CIN` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE `cache` (
@@ -47,6 +45,7 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 CREATE TABLE `cache_locks` (
   `key` varchar(191) NOT NULL,
@@ -60,6 +59,7 @@ CREATE TABLE `categorie` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 CREATE TABLE `evaluation` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -84,6 +84,7 @@ CREATE TABLE `image` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
 CREATE TABLE `jobs` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `queue` varchar(191) NOT NULL,
@@ -105,6 +106,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(191) NOT NULL,
   `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 CREATE TABLE `notification` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -135,6 +137,20 @@ CREATE TABLE `objet` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tokenable_type` varchar(191) NOT NULL,
+  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `reclamation` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `contenu` text NOT NULL,
@@ -154,7 +170,12 @@ CREATE TABLE `reservation` (
   `date_fin` date NOT NULL,
   `statut` varchar(50) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `livraison` tinyint(1) NOT NULL DEFAULT 0,
+  `frais_livraison` decimal(10,2) DEFAULT NULL,
+  `adresse_livraison` text DEFAULT NULL,
+  `statut_livraison` varchar(191) DEFAULT NULL,
+  `commission_entreprise` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `sessions` (
@@ -165,6 +186,7 @@ CREATE TABLE `sessions` (
   `payload` longtext NOT NULL,
   `last_activity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 CREATE TABLE `subscribers` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -181,6 +203,7 @@ CREATE TABLE `users` (
   `nom` varchar(191) NOT NULL,
   `prenom` varchar(191) NOT NULL,
   `email` varchar(191) NOT NULL,
+  `username` varchar(191) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `mot_de_passe` varchar(191) NOT NULL,
   `role` enum('partenaire','client') NOT NULL DEFAULT 'client',
@@ -191,6 +214,7 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`);
@@ -246,6 +270,11 @@ ALTER TABLE `objet`
   ADD KEY `objet_categorie_id_foreign` (`categorie_id`),
   ADD KEY `objet_latitude_longitude_index` (`latitude`,`longitude`);
 
+ALTER TABLE `personal_access_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
+
 ALTER TABLE `reclamation`
   ADD PRIMARY KEY (`id`),
   ADD KEY `reclamation_utilisateur_id_foreign` (`utilisateur_id`),
@@ -267,29 +296,30 @@ ALTER TABLE `subscribers`
 
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_email_unique` (`email`);
+  ADD UNIQUE KEY `users_email_unique` (`email`),
+  ADD UNIQUE KEY `users_username_unique` (`username`);
 
 
 ALTER TABLE `admin`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `ads`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `annonce`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 ALTER TABLE `bookings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 ALTER TABLE `categorie`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 ALTER TABLE `evaluation`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 ALTER TABLE `image`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 ALTER TABLE `jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
@@ -298,25 +328,28 @@ ALTER TABLE `locations`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 ALTER TABLE `notification`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `objet`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+ALTER TABLE `personal_access_tokens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `reclamation`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `reservation`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 ALTER TABLE `subscribers`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 
 ALTER TABLE `annonce`
@@ -346,13 +379,4 @@ ALTER TABLE `reclamation`
 ALTER TABLE `reservation`
   ADD CONSTRAINT `reservation_annonce_id_foreign` FOREIGN KEY (`annonce_id`) REFERENCES `annonce` (`id`),
   ADD CONSTRAINT `reservation_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`);
-COMMIT;
 
-
-ALTER TABLE `reservation`
-ADD COLUMN `delivery_option` ENUM('pickup', 'delivery') NOT NULL DEFAULT 'pickup' COMMENT 'Option de livraison choisie par le client',
-ADD COLUMN `delivery_address` TEXT NULL COMMENT 'Adresse de livraison si choisie et convenue',
-ADD COLUMN `delivery_fee` DECIMAL(8,2) NULL COMMENT 'Frais de livraison convenus',
-ADD COLUMN `delivery_notes_client` TEXT NULL COMMENT 'Instructions/demandes du client pour la livraison',
-ADD COLUMN `delivery_notes_partner` TEXT NULL COMMENT 'Instructions/réponses du partenaire pour la livraison',
-ADD COLUMN `delivery_agreed_at` TIMESTAMP NULL COMMENT 'Date et heure de laccord sur les détails de livraison';

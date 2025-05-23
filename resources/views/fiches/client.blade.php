@@ -189,6 +189,70 @@
                                 </div>
                             @endforelse
                         </div>
+
+                        <!-- Section des commentaires des partenaires -->
+                        <div class="mt-12 pt-8 border-t border-white/10">
+                            <h3 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-200 to-purple-200 
+                               mb-6 flex items-center">
+                                <span class="mr-2">💬</span> Avis des partenaires
+                            </h3>
+
+                            @forelse($client->evaluationsRecues()->with('reservation.annonce.objet')->get() as $evaluation)
+                                <div class="bg-gradient-to-br from-gray-800/50 to-purple-900/30 rounded-xl p-6 mb-6
+                                    border border-purple-400/20 hover:shadow-[0_5px_20px_rgba(139,92,246,0.4)] 
+                                    transition-all duration-300">
+                                    
+                                    <div class="flex justify-between items-start mb-4">
+                                        <!-- Info partenaire -->
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 
+                                                flex items-center justify-center text-xl font-bold text-white
+                                                border-2 border-white/20">
+                                                {{ substr($evaluation->evalue->prenom, 0, 1) }}
+                                            </div>
+                                            <div class="ml-4">
+                                                <p class="font-semibold text-white">
+                                                    {{ $evaluation->evalue->prenom }} {{ substr($evaluation->evalue->nom, 0, 1) }}.
+                                                </p>
+                                                <p class="text-sm text-gray-400">
+                                                    {{ \Carbon\Carbon::parse($evaluation->date)->format('d M Y') }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Note -->
+                                        <div class="flex items-center bg-gray-800/50 px-3 py-1 rounded-full">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <span class="{{ $i <= $evaluation->note_proprietaire ? 'text-yellow-400' : 'text-gray-600' }}">★</span>
+                                            @endfor
+                                        </div>
+                                    </div>
+
+                                    <!-- Commentaire -->
+                                    <p class="text-gray-300 ml-16">
+                                        "{{ $evaluation->commentaire_proprietaire }}"
+                                    </p>
+
+                                    <!-- Détails de la location -->
+                                    <div class="mt-4 ml-16 flex items-center text-sm text-purple-300">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                        </svg>
+                                        <a href="{{ route('fiches.objet.show', $evaluation->reservation->annonce->objet->id) }}" 
+                                           class="hover:text-purple-200 transition-colors">
+                                            Location de : {{ $evaluation->reservation->annonce->objet->nom }}
+                                        </a>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-8 bg-gray-800/50 rounded-xl border border-gray-700">
+                                    <span class="text-4xl mb-4 block">💭</span>
+                                    <p class="text-gray-400">Aucun avis reçu des partenaires pour le moment.</p>
+                                </div>
+                            @endforelse
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -262,6 +262,63 @@
                             </a>
                         </div>
 
+                        <!-- Section des commentaires -->
+                        <div class="mt-12 pt-8 border-t border-white/10">
+                            <h2
+                                class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-pink-200 
+                                   mb-6 flex items-center drop-shadow-[0_2px_5px_rgba(236,72,153,0.3)]">
+                                <span class="mr-3">💬</span> Commentaires des clients
+                            </h2>
+
+                            @if ($evaluations->count() > 0)
+                                <div class="space-y-6">
+                                    @foreach ($evaluations as $evaluation)
+                                        <div
+                                            class="bg-gradient-to-br from-gray-800/60 to-purple-900/30 p-6 rounded-xl 
+                                            border border-purple-400/20 hover:shadow-[0_8px_25px_rgba(147,51,234,0.3)] 
+                                            transition-all duration-500">
+                                            <div class="flex justify-between items-start mb-4">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 
+                                                        flex items-center justify-center text-lg shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+                                                        👤
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <p class="font-semibold text-white">
+                                                            {{ $evaluation->evaluateur_nom }}
+                                                            {{ $evaluation->evaluateur_prenom }}
+                                                        </p>
+                                                        <p class="text-sm text-purple-200/60">
+                                                            {{ \Carbon\Carbon::parse($evaluation->date)->format('d M Y') }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center bg-purple-900/40 px-3 py-1 rounded-full">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $evaluation->note_objet)
+                                                            <span class="text-yellow-400">★</span>
+                                                        @else
+                                                            <span class="text-gray-600">★</span>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                            </div>
+                                            <div class="text-gray-300 ml-14">
+                                                {{ $evaluation->commentaire_objet }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div
+                                    class="text-center py-8 bg-gradient-to-br from-gray-800/60 to-purple-900/30 
+                                    rounded-xl border border-purple-400/20">
+                                    <p class="text-gray-400">Aucun commentaire pour le moment</p>
+                                </div>
+                            @endif
+                        </div>
+
                         <!-- Bouton de réservation futuriste -->
                         @if ($disponible)
                             <div class="mt-12">
