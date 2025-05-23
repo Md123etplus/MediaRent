@@ -141,11 +141,6 @@
                    value="{{ old('date_fin', $annonce->date_fin) }}" required>
         </div>
 
-        <div class="form-group">
-            <label for="adress">Adresse :</label>
-            <input type="text" id="adress" name="adress" 
-                   value="{{ old('adress', $annonce->adress) }}" required>
-        </div>
 
         <div class="form-group">
             <label for="objet_id">Objet :</label>

@@ -168,11 +168,13 @@ class UtilisateurController extends Controller
     $validated = $request->validate([
         'nom' => 'required|string|max:255',
         'prenom' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:users,username,'.$user->id, // Changed to 'users'
         'email' => 'required|string|email|max:255|unique:users,email,'.$user->id, // Changed to 'users'
         'CIN' => 'required|string|max:255|unique:users,CIN,'.$user->id, // Changed to 'users'
     ]);
 
     // Alternative update syntax if update() still fails
+    $user->username = $validated['username'];
     $user->nom = $validated['nom'];
     $user->prenom = $validated['prenom'];
     $user->email = $validated['email'];

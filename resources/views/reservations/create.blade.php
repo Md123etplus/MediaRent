@@ -5,7 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
-<!-- Ajout du modal pour la connexion -->
+<!-- Modal pour la connexion -->
 <div id="loginModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-lg p-6 max-w-sm w-full">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Connexion requise</h3>
@@ -29,6 +29,16 @@
             <div class="p-8">
                 <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Choisissez vos dates</h2>
                 
+                @if($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
                 <div class="mb-6">
                     <input type="text" id="datePicker" 
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
@@ -50,29 +60,24 @@
         </div>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Vérification si l'utilisateur est connecté
     @if(auth()->guest())
-        // Affiche le modal au lieu de rediriger
+        // Gestion des utilisateurs non connectés
         document.getElementById('loginModal').classList.remove('hidden');
-        
-        // Désactive le formulaire
         document.getElementById('datePicker').disabled = true;
         document.getElementById('submitBtn').disabled = true;
         
-        // Empêche la soumission du formulaire
         document.getElementById('reservationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             document.getElementById('loginModal').classList.remove('hidden');
         });
     @else
-        // Le reste de votre code actuel pour les utilisateurs connectés
+        // Conversion des dates réservées pour Flatpickr
         const reservedDates = @json($reservedPeriods).map(period => {
             return {
-                from: period.date_debut,
-                to: period.date_fin
+                from: new Date(period.from + 'T00:00:00'), 
+                to: new Date(period.to + 'T23:59:59')    
             };
         });
 
@@ -101,9 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
     @endif
 });
 </script>
-
 <style>
-/* Votre CSS existant */
 .flatpickr-calendar {
     width: 100% !important;
     max-width: 320px !important;
@@ -114,11 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 12px !important;
 }
 
-/* Style pour le modal */
 #loginModal {
     transition: opacity 0.3s ease;
 }
 
-/* Le reste de votre CSS existant */
+/* Styles pour le bouton désactivé */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 </style>
 @endsection

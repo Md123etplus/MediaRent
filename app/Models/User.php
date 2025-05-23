@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'nom',
         'prenom',
+        'username',
         'email',
         'mot_de_passe', // Laravel s'attend à 'password' pour le hashage.
         'role',
@@ -73,6 +74,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getSurnomAttribute(): string
     {
         return $this->prenom . ' ' . $this->nom;
+    }
+       public function getUsername(): string
+    {
+        return $this->username;
     }
 
     /**
@@ -215,6 +220,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
     }
-    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->username)) {
+                $user->username = self::generateUsername();
+            }
+        });
+    }
+    protected static function generateUsername()
+    {
+        $lastUser = self::orderBy('id', 'desc')->first();
+        $lastId = $lastUser ? $lastUser->id : 0;
+        
+        return 'user_' . ($lastId + 1);
+    }
     
 }
