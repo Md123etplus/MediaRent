@@ -58,33 +58,22 @@ class Evaluation extends Model
     /**
      * Relation avec l'utilisateur qui a fait l'évaluation
      */
-    public function evaluateur(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evaluateur_id');
-    }
 
-    /**
-     * Relation avec l'utilisateur évalué (si c'est une évaluation d'utilisateur)
-     */
-    public function evalue(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evalue_id');
-    }
 
     /**
      * Relation avec la réservation associée
      */
     // Dans app/Models/Evaluation.php
-//protected $with = ['reservation']; // Chargement automatique
+    //protected $with = ['reservation']; // Chargement automatique
 
-public function reservation()
-{
-    return $this->belongsTo(Reservation::class, 'reservation_id')->withDefault([
-        'date_debut' => now(),
-        'date_fin' => now()->addDays(1),
-        // autres valeurs par défaut
-    ]);
-}
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id')->withDefault([
+            'date_debut' => now(),
+            'date_fin' => now()->addDays(1),
+            // autres valeurs par défaut
+        ]);
+    }
     /**
      * Scope pour les évaluations d'objets
      */
@@ -108,4 +97,20 @@ public function reservation()
     {
         return $this->note.'/5';
     }
+
+// La FK dans `evaluation` nommée `objet_id` pointe vers `reservation.id`
+public function reservationAssociee()
+{
+    return $this->belongsTo(Reservation::class, 'objet_id');
+}
+
+public function evaluateur()
+{
+    return $this->belongsTo(User::class, 'evaluateur_id');
+}
+
+public function evalue()
+{
+    return $this->belongsTo(User::class, 'evalue_id');
+}
 }

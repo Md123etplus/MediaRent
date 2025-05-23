@@ -27,16 +27,6 @@ class Categorie extends Model
     ];
 
     /**
-     * Les champs qui doivent être cachés pour les tableaux.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
-
-    /**
      * Relation avec les objets de cette catégorie.
      */
     public function objets(): HasMany

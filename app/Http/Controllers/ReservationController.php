@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Annonce;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Session;
 use App\Mail\NouvelleReservation;
 use App\Mail\ReservationAccepted;
 use App\Mail\ReservationRejected;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
@@ -47,17 +50,25 @@ class ReservationController extends Controller
         try {
             $annonce = Annonce::with(['proprietaire', 'objet'])->findOrFail($request->input('annonce_id'));
             
-            $reservation = Reservation::create([
-                'annonce_id' => $annonce->id,
-                'client_id' => Auth::id(),
-                'date_debut' => $request->input('date_debut'),
-                'date_fin' => $request->input('date_fin'),
-                'statut' => 'en_attente'
+            
+           $dateDebut = \Carbon\Carbon::parse($request->date_debut);
+            $dateFin = \Carbon\Carbon::parse($request->date_fin);
+            
+            $jours = $dateDebut->diffInDays($dateFin);
+            $prixTotal = $annonce->objet->prix_journalier * $jours;
+            session([
+                'reservation_data' => [
+                    'annonce_id' => $annonce->id,
+                    'date_debut' => $request->date_debut,
+                    'date_fin' => $request->date_fin,
+                    'prix_total' => $prixTotal
+                ]
             ]);
+            // $this->sendReservationEmail($reservation, $annonce);
+// dd( $reservation->annonce->proprietaire->email);
+            // return redirect()->route('reservations.formClient');
+            return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
 
-            $this->sendReservationEmail($reservation, $annonce);
-
-            return redirect()->route('reservations.formClient');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Erreur lors de la création de la réservation');
@@ -76,19 +87,26 @@ class ReservationController extends Controller
         }
 
         try {
-            $jours = $request->date_debut->diffInDays($request->date_fin);
+            $dateDebut = \Carbon\Carbon::parse($request->date_debut);
+            $dateFin = \Carbon\Carbon::parse($request->date_fin);
+            $jours = $dateDebut->diffInDays($dateFin);
             $prixTotal = $annonce->objet->prix_journalier * $jours;
 
+            // Store as ISO strings for session serialization
             session([
                 'reservation_data' => [
                     'annonce_id' => $annonce->id,
-                    'date_debut' => $request->date_debut,
-                    'date_fin' => $request->date_fin,
-                    'prix_total' => $prixTotal
+                    'date_debut' => $dateDebut->toIso8601String(),
+                    'date_fin' => $dateFin->toIso8601String(),
+                    'prix_total' => $prixTotal,
+                    // 'jours' => $jours // Store calculated days to avoid recomputing
                 ]
             ]);
+// dd($request->all());
+            // return redirect()->route('reservations.formClient');//remove this and redirect to payement page
+    // return redirect()->route('reservations.confirmation')->with('success', 'Compte créé avec succès !');
+            return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
 
-            return redirect()->route('reservations.formClient');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Erreur lors du traitement des dates');
@@ -127,7 +145,7 @@ class ReservationController extends Controller
         }
     }
 
-    private function sendReservationEmail(Reservation $reservation, Annonce $annonce)
+    public static function sendReservationEmail(Reservation $reservation, Annonce $annonce)
     {
         $proprietaire = $annonce->proprietaire; 
         $client = Auth::user(); 
@@ -143,60 +161,29 @@ class ReservationController extends Controller
         }
     }
 
+// public function storeDates(Request $request, Annonce $annonce)
+// {
+//     $validated = $request->validate([
+//         'date_debut' => 'required|date|after_or_equal:today',
+//         'date_fin' => 'required|date|after:date_debut'
+//     ]);
 
-public function storeDates(Request $request, Annonce $annonce)
-{
-    $validated = $request->validate([
-        'date_debut' => 'required|date|after_or_equal:today',
-        'date_fin' => 'required|date|after:date_debut'
-    ]);
+//     // Calcul du prix total
+//     $jours = $validated['date_debut']->diffInDays($validated['date_fin']);
+//     $prixTotal = $annonce->objet->prix_journalier * $jours;
 
-    // Calcul du prix total
-    $jours = $validated['date_debut']->diffInDays($validated['date_fin']);
-    $prixTotal = $annonce->objet->prix_journalier * $jours;
+//     // Stockage en session
+//     session([
+//         'reservation_data' => [
+//             'annonce_id' => $annonce->id,
+//             'date_debut' => $validated['date_debut'],
+//             'date_fin' => $validated['date_fin'],
+//             'prix_total' => $prixTotal
+//         ]
+//     ]);
 
-    // Stockage en session
-    session([
-        'reservation_data' => [
-            'annonce_id' => $annonce->id,
-            'date_debut' => $validated['date_debut'],
-            'date_fin' => $validated['date_fin'],
-            'prix_total' => $prixTotal
-        ]
-    ]);
-
-    return redirect()->route('reservations.formClient');
-}
-
-
-
-public function respond(Request $request, $id, $response)
-{
-    $reservation = Reservation::with(['annonce.objet', 'annonce.proprietaire', 'client'])
-                     ->findOrFail($id);
-
-    if (!in_array($response, ['accept', 'reject'])) {
-        return back()->with('error', 'Action invalide');
-    }
-
-    // Mise à jour du statut
-    $reservation->statut = ($response === 'accept') ? 'confirmée' : 'annulée';
-    $reservation->save();
-
-    // Envoi de l'email approprié
-    $mailClass = ($response === 'accept') 
-        ? ReservationAccepted::class 
-        : ReservationRejected::class;
-
-    Mail::to($reservation->client->email)
-        ->send(new $mailClass($reservation, $reservation->annonce));
-
-    return back()->with('success', 
-        ($response === 'accept')
-            ? 'Réservation acceptée et client notifié'
-            : 'Réservation refusée et client notifié'
-    );
-}
+//     return redirect()->route('reservations.formClient');
+// }
 
 
 public function createStep2() // Afficher le formulaire de l'étape 2

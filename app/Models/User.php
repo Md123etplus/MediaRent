@@ -3,28 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-// class User extends Authenticatable implements MustVerifyEmail
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $table = 'users';
  
 
     /**
      * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    
     protected $fillable = [
         'nom',
         'prenom',
         'email',
-        // 'password',
-        'mot_de_passe',
+        'mot_de_passe', // Laravel s'attend à 'password' pour le hashage.
         'role',
         'CIN',
         'img_profil',
@@ -32,12 +32,24 @@ class User extends Authenticatable implements MustVerifyEmail
         'img_cin_back',
         'is_suspended'
     ];
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class, 'client_id');
-    }
 
-   
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'mot_de_passe',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
     /**
      * Override getAuthPassword pour utiliser mot_de_passe
@@ -54,156 +66,155 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->email;
     }
-    public function getFullNameAttribute(): string
+
+    /**
+     * Accessor pour le "surnom"
+     */
+    public function getSurnomAttribute(): string
     {
-        return "{$this->prenom} {$this->nom}";
-    }
-    
-        public function annonces()
-        {
-            return $this->hasMany(Annonce::class, 'proprietaire_id');
-        }
-    
-        public function objets()
-        {
-            return $this->hasMany(Objet::class, 'proprietaire_id');
-        }
-    
-        public function images()
-        {
-            return $this->hasMany(Image::class);
-        }
-    
-        // Nouvelles méthodes pour le UserController
-        
-        public function evaluations()
-        {
-            return $this->hasMany(Evaluation::class, 'evaluateur_id');
-        }
-    
-        public function scopeWithReservationsCount($query)
-        {
-            return $query->withCount(['reservations as total_reservations']);
-        }
-    
-        public function getRegistrationDateAttribute()
-        {
-            return $this->created_at->format('d/m/Y');
-        }
-    
-        public function getRoleLabelAttribute()
-        {
-            return $this->role === 'propriétaire' ? 'Propriétaire' : 'Client';
-        }
-    
-        public function getRoleColorAttribute()
-        {
-            return $this->role === 'propriétaire' ? 'blue' : 'green';
-        }
-    
-        public function getProfileImageUrlAttribute()
-        {
-            return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
-        }
-    
-        public function toggleSuspension()
-        {
-            $this->update(['is_suspended' => !$this->is_suspended]);
-            return $this->is_suspended;
-        }
-    
-        // Évaluations reçues (quand l'utilisateur est évalué)
-        public function evaluationsRecues()
-        {
-            return $this->hasMany(Evaluation::class, 'evalue_id');
-        }
-    
-        // Notifications non lues
-        public function unreadNotifications()
-        {
-            return $this->notifications()->where('lue', false);
-        }
-    
-        /**
-         * Méthodes utilitaires
-         */
-        
-        // Vérifie si l'utilisateur est un client
-        public function isClient()
-        {
-            return $this->role === 'client';
-        }
-    
-        // Vérifie si l'utilisateur est un partenaire
-        public function isPartenaire()
-        {
-            return $this->role === 'partenaire';
-        }
-    
-        // Vérifie si l'utilisateur est un admin
-        public function isAdmin()
-        {
-            return $this->role === 'admin';
-        }
-    
-        // Note moyenne reçue (pour les partenaires)
-        public function noteMoyenne()
-        {
-            return $this->evaluationsRecues()->avg('note');
-        }
-        public function notifications()
-    {
-        return $this->hasMany(Notification::class, 'utilisateur_id');
+        return $this->prenom . ' ' . $this->nom;
     }
 
     /**
      * Relations
      */
     
-    // Réservations où l'utilisateur est client
-    // public function reservations()
-    // {
-    //     return $this->hasMany(Reservation::class, 'client_id');
-    // }
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'client_id');
+    }
 
-    // Évaluations faites par l'utilisateur
-    // public function evaluations()
-    // {
-    //     return $this->hasMany(Evaluation::class, 'evaluateur_id');
-    // }
+    public function annonces()
+    {
+        return $this->hasMany(Annonce::class, 'proprietaire_id');
+    }
 
-    // Notifications reçues par l'utilisateur
+    public function objets()
+    {
+        return $this->hasMany(Objet::class, 'proprietaire_id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Image::class);
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'evaluateur_id');
+    }
+
+    // Nouvelles relations
+    public function evaluationsRecues()
+    {
+        return $this->hasMany(Evaluation::class, 'evalue_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'utilisateur_id');
+    }
+
+    // Méthodes utilitaires
+    public function toggleSuspension()
+    {
+        $this->update(['is_suspended' => !$this->is_suspended]);
+        return $this->is_suspended;
+    }
+
+    // --- Rôles ---
+    public function isClient()
+    {
+        return $this->role === 'client';
+    }
+
+    public function isPartenaire()
+    {
+        return $this->role === 'partenaire';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // --- Calculs pour la fiche Partenaire ---
+    public function getNoteMoyennePartenaireAttribute()
+    {
+        return $this->evaluationsRecues()
+                    ->whereHas('evaluateur', fn($q) => $q->where('role', 'client'))
+                    ->avg('note_proprietaire');
+    }
+
+    public function getNombreAvisPartenaireAttribute()
+    {
+        return $this->evaluationsRecues()
+                    ->whereHas('evaluateur', fn($q) => $q->where('role', 'client'))
+                    ->count();
+    }
+
+    public function getNombreAnnoncesPublieesAttribute()
+    {
+        return $this->annonces()->count();
+    }
+
+    public function getNombreLocationsRealiseesPartenaireAttribute()
+    {
+        return Reservation::whereHas('annonce', fn($q) => $q->where('proprietaire_id', $this->id))->count();
+    }
+
+    public function getObjetsEnLigneAttribute()
+    {
+        return $this->objets()
+                    ->whereHas('annonces', function ($query) {
+                        $query->where('statut', 'active')
+                              ->where('date_debut', '<=', now())
+                              ->where('date_fin', '>=', now());
+                    })
+                    ->get();
+    }
+
+    // --- Calculs pour la fiche Client ---
+    public function getNoteMoyenneClientAttribute()
+    {
+        return $this->evaluationsRecues()
+                    ->whereHas('evaluateur', fn($q) => $q->where('role', 'partenaire'))
+                    ->avg('note_proprietaire');
+    }
+
+    public function getNombreAvisClientAttribute()
+    {
+        return $this->evaluationsRecues()
+                    ->whereHas('evaluateur', fn($q) => $q->where('role', 'partenaire'))
+                    ->count();
+    }
+
+    public function getNombreLocationsEffectueesClientAttribute()
+    {
+        return $this->reservations()
+                    ->count();
+    }
+
+    // --- Méthodes supplémentaires ---
+    public function getRegistrationDateAttribute()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getRoleLabelAttribute()
+    {
+        return $this->role === 'propriétaire' ? 'Propriétaire' : 'Client';
+    }
+
+    public function getRoleColorAttribute()
+    {
+        return $this->role === 'propriétaire' ? 'blue' : 'green';
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        return $this->img_profil ? asset('storage/'.$this->img_profil) : 'https://via.placeholder.com/150';
+    }
     
-
-    // Annonces où l'utilisateur est propriétaire
-    // public function annonces()
-    // {
-    //     return $this->hasMany(Annonce::class, 'proprietaire_id');
-    // }
-
-    // Objets possédés par l'utilisateur
-    // public function objets()
-    // {
-    //     return $this->hasMany(Objet::class, 'proprietaire_id');
-    // }
-
- /**
-     * The attributes that should be hidden for serialization.
-     */
-    // protected $hidden = [
-    //     'mot_de_passe',
-    //     'remember_token',
-    // ];
-
-    /**
-     * Get the attributes that should be cast.
-     */
-    // protected function casts(): array
-    // {
-    //     return [
-    //         'is_suspended' => 'boolean',
-    //         'email_verified_at' => 'datetime',
-    //         'mot_de_passe' => 'hashed',
-    //     ];
-    // }
+    
 }
