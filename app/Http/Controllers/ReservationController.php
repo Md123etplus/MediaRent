@@ -52,28 +52,22 @@ class ReservationController extends Controller
     }
 
     try {
-        $annonce = Annonce::with(['proprietaire', 'objet'])->findOrFail($request->input('annonce_id'));
-        
-        // Conversion précise des dates
-        $dateDebut = Carbon::parse($request->date_debut)->startOfDay();
-        $dateFin = Carbon::parse($request->date_fin)->startOfDay();
-        
-        // Calcul EXACT du nombre de jours (inclusif)
-        $jours = $dateDebut->diffInDays($dateFin) + 1;
-        
-        $prixTotal = $annonce->objet->prix_journalier * $jours;
-        
-        session([
-            'reservation_data' => [
+        $annonce = Annonce::where('id', $request->input('annonce_id'))->with(['proprietaire', 'objet'])->firstOrFail();
+
+        $reservation = Reservation::create([
                 'annonce_id' => $annonce->id,
-                'date_debut' => $dateDebut->format('Y-m-d'),
-                'date_fin' => $dateFin->format('Y-m-d'),
-                'prix_total' => $prixTotal,
-                'jours' => $jours
-            ]
+                'client_id' => Auth::id(),
+                'date_debut' => $request->input('date_debut'),
+                'date_fin' => $request->input('date_fin'),
+                'statut' => 'en_attente'
         ]);
      
-        return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
+        // return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
+        $this->sendReservationEmail($reservation, $annonce);
+
+        return view('reservations.confirmation')->with('success', 'Compte créé avec succès !');
+
+        // return redirect()->route('reservations.formClient');
 
     } catch (\Exception $e) {
         return back()->with('error', 'Erreur lors de la création de la réservation');
@@ -91,22 +85,31 @@ class ReservationController extends Controller
         }
     
         try {
-            $dateDebut = $request->date_debut; 
-            $dateFin = $request->date_fin;     
+            $jours = $request->date_debut->diffInDays($request->date_fin);
+            // $dateDebut = $request->date_debut; 
+            // $dateFin = $request->date_fin;     
             
-            $jours = Carbon::parse($dateDebut)->diffInDays(Carbon::parse($dateFin));
+            // $jours = Carbon::parse($dateDebut)->diffInDays(Carbon::parse($dateFin));
             $prixTotal = $annonce->objet->prix_journalier * $jours;
     
             session([
                 'reservation_data' => [
                     'annonce_id' => $annonce->id,
-                    'date_debut' => $dateDebut,
-                    'date_fin' => $dateFin,
-                    'prix_total' => $prixTotal,
+                    'date_debut' => $request->date_debut,
+                    'date_fin' => $request->date_fin,
+                    'prix_total' => $prixTotal
+                    // 'date_debut' => $dateDebut,
+                    // 'date_fin' => $dateFin,
+                    // 'prix_total' => $prixTotal,
                 ]
             ]);
+            // dd($request->all());
+
+            return view('reservations.confirmation')->with('success', 'Compte créé avec succès !');
+
+            // return redirect()->route('reservations.formClient');
     
-            return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
+            // return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
     
         } catch (\Exception $e) {
             return back()->with('error', 'Erreur lors du traitement des dates');

@@ -333,7 +333,10 @@ Route::get('/annonces/{annonce}/reserver', [ReservationController::class, 'showF
 // OU version alternative (sans paramètre de route)
 Route::post('/reservations', [ReservationController::class, 'store'])
     ->name('reservations.store');
-
+    
+// Route::get('/reservations/confirmation', function () {
+//     return view('reservations.confirmation');
+//     })->name('reservations.confirmation');
 Route::get('/reservations/confirmation/{reference}/{annonce}', function ($reference, Annonce $annonce) {
     return view('reservations.confirmation', [
         'reference' => $reference,
