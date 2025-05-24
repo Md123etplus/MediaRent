@@ -108,8 +108,8 @@ class ObjetController extends Controller
             'images' => 'sometimes|array|max:3',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'keep_images' => 'sometimes|array',
-        'keep_images.*' => 'exists:image,id',
-    ]);
+            'keep_images.*' => 'exists:image,id',
+        ]);
 
         // Mise à jour des champs de base
         $objet->update($request->except(['images', 'keep_images']));
@@ -117,17 +117,17 @@ class ObjetController extends Controller
         // Gestion des images existantes
         if ($request->has('keep_images')) {
             // Supprimer les images qui ne sont pas dans keep_images
-        $imagesToDelete = $objet->images()->whereNotIn('id', $request->keep_images)->get();
-        
-        foreach ($imagesToDelete as $image) {
-            $imagePath = public_path($image->url);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+            $imagesToDelete = $objet->images()->whereNotIn('id', $request->keep_images)->get();
+
+            foreach ($imagesToDelete as $image) {
+                $imagePath = public_path($image->url);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+                $image->delete();
             }
-            $image->delete();
-        }
-    } else {
-        // Si aucune image n'est marquée à conserver, supprimer toutes les images existantes
+        } else {
+            // Si aucune image n'est marquée à conserver, supprimer toutes les images existantes
             foreach ($objet->images as $image) {
                 $imagePath = public_path($image->url);
                 if (file_exists($imagePath)) {
@@ -135,10 +135,10 @@ class ObjetController extends Controller
                 }
                 $image->delete();
             }
-    }
+        }
 
         // Gestion des nouvelles images
-    if ($request->hasFile('images')) {
+        if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = 'objet_' . $objet->id . '_' . time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('images'), $filename);
@@ -213,22 +213,31 @@ class ObjetController extends Controller
     }
     public function show($id)
     {
-        $objet = Objet::with(['images', 'evaluations'])->findOrFail($id);
+        $objet = Objet::with(['images', 'proprietaire'])->findOrFail($id);
 
-        // Calcul note moyenne
-        $note = DB::table('evaluation')
+        // Récupérer les évaluations avec leurs données associées
+        $evaluations = DB::table('evaluation')
             ->join('reservation', 'evaluation.reservation_id', '=', 'reservation.id')
             ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')
+            ->join('users', 'evaluation.evaluateur_id', '=', 'users.id')
+            ->select(
+                'evaluation.*',
+                'users.nom as evaluateur_nom',
+                'users.prenom as evaluateur_prenom'
+            )
             ->where('annonce.objet_id', $id)
-            ->avg('evaluation.note') ?? 0;
+            ->get();
 
-        // Vérifier disponibilité
+        // Calcul note moyenne
+        $note = $evaluations->avg('note_objet') ?? 0;
+
+        // Vérifier disponibilité 
         $disponible = DB::table('annonce')
             ->where('objet_id', $id)
             ->where('statut', 'active')
             ->where('date_fin', '>=', now())
             ->exists();
 
-        return view('fiches.objet', compact('objet', 'note', 'disponible'));
+        return view('fiches.objet', compact('objet', 'note', 'disponible', 'evaluations'));
     }
 }
