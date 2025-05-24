@@ -125,22 +125,27 @@ class PaymentController extends Controller
         ]);
     }
     public function showPaymentForm(Annonce $annonce)
-    {//for normal reservation
-        // dd($annonce);
-        $reservation = session('reservation_data');
-    
-        if (!$reservation || $reservation['annonce_id'] != $annonce->id) {
-            return redirect()->back()->with('error', 'Données de réservation invalides');
-        }
-        // dd($reservation);
-        $reservation['date_debut'] = \Carbon\Carbon::parse($reservation['date_debut']);
-        $reservation['date_fin'] = \Carbon\Carbon::parse($reservation['date_fin']);
-// dd($reservationData);
-        return view('annonces.payments.form', [
-            'annonce' => $annonce,
-            'reservation' => $reservation
-        ]);
+{
+    // Vérifiez si l'utilisateur a une réservation en attente pour cette annonce
+    $reservation = Reservation::where('annonce_id', $annonce->id)
+                             ->where('client_id', Auth::id())
+                             ->where('statut', 'en_attente')
+                             ->first();
+
+    if (!$reservation) {
+        return redirect()->route('dashboard.client')
+                       ->with('error', 'Aucune réservation en attente de paiement');
     }
+
+    return view('annonces.payments.form', [
+        'annonce' => $annonce,
+        'reservation' => [
+            'date_debut' => $reservation->date_debut,
+            'date_fin' => $reservation->date_fin,
+            'prix_total' => $reservation->date_debut->diffInDays($reservation->date_fin) * $annonce->objet->prix_journalier
+        ]
+    ]);
+}
    public function validateReservationPaymentRequest(Request $request)
 {
     return $request->validate([

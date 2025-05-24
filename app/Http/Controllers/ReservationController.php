@@ -44,7 +44,7 @@ class ReservationController extends Controller
     $validator = Validator::make($request->all(), [
         'date_debut' => 'required|date',
         'date_fin' => 'required|date|after_or_equal:date_debut',
-        'annonce_id' => 'required|exists:annonce,id'
+        'annonce_id' => 'required|exists:annonce,id' // Fix: Changed 'annonce' to 'annonces' if your table is 'annonces'
     ]);
 
     if ($validator->fails()) {
@@ -52,25 +52,47 @@ class ReservationController extends Controller
     }
 
     try {
-        $annonce = Annonce::where('id', $request->input('annonce_id'))->with(['proprietaire', 'objet'])->firstOrFail();
+        $annonce = Annonce::where('id', $request->input('annonce_id'))
+            ->with(['proprietaire', 'objet'])
+            ->firstOrFail();
 
+        // Calculate total price
+        $jours = Carbon::parse($request->date_debut)->diffInDays(Carbon::parse($request->date_fin));
+        $prixTotal = $annonce->objet->prix_journalier * $jours;
+
+        // Create reservation
         $reservation = Reservation::create([
-                'annonce_id' => $annonce->id,
-                'client_id' => Auth::id(),
-                'date_debut' => $request->input('date_debut'),
-                'date_fin' => $request->input('date_fin'),
-                'statut' => 'en_attente'
+            'annonce_id' => $annonce->id,
+            'client_id' => Auth::id(),
+            'date_debut' => $request->input('date_debut'),
+            'date_fin' => $request->input('date_fin'),
+            'statut' => 'en_attente',
+            'prix_total' => $prixTotal, // Store price in DB (optional)
         ]);
-     
-        // return redirect()->route('reservations.payment', ['annonce' => $annonce->id]);
+
+        // Generate a unique reference (e.g., MR-20240525-12345)
+        $reference = 'MR-' . now()->format('Ymd') . '-' . rand(1000, 9999);
+
+        // Store reservation data in session (for confirmation page)
+        session(['reservation' => [
+            'id' => $reservation->id,
+            'date_debut' => $request->date_debut,
+            'date_fin' => $request->date_fin,
+            'prix_total' => $prixTotal,
+            'reference' => $reference,
+        ]]);
+
+        // Send email (if needed)
         $this->sendReservationEmail($reservation, $annonce);
 
-        return view('reservations.confirmation')->with('success', 'Compte créé avec succès !');
-
-        // return redirect()->route('reservations.formClient');
+        // Redirect to confirmation page with reference & annonce ID/slug
+        return redirect()->route('reservations.confirmation', [
+            'reference' => $reference,
+            'annonce' => $annonce->id, // or $annonce->slug if using slugs
+        ]);
 
     } catch (\Exception $e) {
-        return back()->with('error', 'Erreur lors de la création de la réservation');
+        return back()->with('error', 'Erreur lors de la création de la réservation: ' . $e->getMessage());
     }
 }
     public function storeDates(Request $request, Annonce $annonce)

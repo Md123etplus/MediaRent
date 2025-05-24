@@ -338,12 +338,19 @@ Route::post('/reservations', [ReservationController::class, 'store'])
 //     return view('reservations.confirmation');
 //     })->name('reservations.confirmation');
 Route::get('/reservations/confirmation/{reference}/{annonce}', function ($reference, Annonce $annonce) {
+    $reservation = session('reservation');
+    
+    if (!$reservation) {
+        return redirect()->route('annonces.show', $annonce)
+               ->with('error', 'Session de réservation expirée');
+    }
     return view('reservations.confirmation', [
         'reference' => $reference,
         'annonce' => $annonce,
-        'reservation' => session('reservation')
+        'reservation' => $reservation
     ]);
 })->name('reservations.confirmation');
+
 
 // Route::get('/reservations/confirmation', function () {
 //     return view('reservations.confirmation');
@@ -369,6 +376,8 @@ Route::post('/reservations/store-full', [ReservationController::class, 'storeFul
 
 Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 //premium
+Route::get('/annonces/{annonce}/pay', [PaymentController::class, 'showPaymentForm'])->name('reservations.payment');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/annonces/{annonce}/premium', [AnnonceController::class, 'showPremiumForm'])
         ->name('annonces.premium');
@@ -381,10 +390,10 @@ Route::middleware(['auth'])->group(function () {
         [PaymentController::class, 'showSuccess']
     )
         ->name('annonces.payment-success');
-    Route::get('/annonces/{annonce}/pay', [PaymentController::class, 'showPaymentForm'])->name('reservations.payment');
     Route::post('/annonces/{annonce}/process-pay', [PaymentController::class, 'processReservationPayment'])
     ->name('reservations.process-payment');
 });
+Route::get('/client/recherche', [AnnonceController::class, 'search'])->name('client.annonces.search');
 
 // Routes client avec protection standard
 Route::prefix('client')->name('client.')->middleware('auth')->group(function  () {
@@ -422,7 +431,7 @@ Route::prefix('client')->name('client.')->middleware('auth')->group(function  ()
 
 
     // Ajoutez cette route dans votre fichier routes/web.php
-        Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
+        // Route::get('/recherche', [AnnonceController::class, 'search'])->name('annonces.search');
 
     // Route de test (uniquement en développement)
     if (app()->environment('local')) {

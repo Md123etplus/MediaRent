@@ -1,12 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-xl mx-auto py-8">
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-6 rounded">
-        <h2 class="text-xl font-bold mb-4">Merci pour votre réservation !</h2>
-        <p>Votre demande a été enregistrée avec succès. Vous recevrez un email dès que le propriétaire l’aura confirmée.</p>
-        <a href="{{ route('home') }}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Retour à la recherche</a>
-{{-- <div class="premium-upgrade-flow">
+<div class="premium-upgrade-flow">
     <!-- Étape 3 : Confirmation (visible directement après paiement) -->
     <div class="confirmation-container" id="confirmationStep">
         <div class="confirmation-content">
@@ -19,26 +14,7 @@
                     <span>Référence :</span>
                     <span id="confirmation-reference">{{ $reference ?? 'MR-' . date('YmdHis') }}</span>
                 </div>
-                <div class="detail-item">
-                    <span>Annonce :</span>
-                    <span>{{ $annonce->titre }}</span>
-                </div>
-                <div class="detail-item">
-                    <span>Dates :</span>
-                    <span>
-                       {{ isset($reservation['date_debut']) && $reservation['date_debut'] instanceof \Carbon\Carbon 
-                            ? $reservation['date_debut']->format('d/m/Y') . ' - ' . $reservation['date_fin']->format('d/m/Y') 
-                            : 'Dates non spécifiées' }}
-                    </span>
-                </div>
-                @if(isset($reservation))
-                <div class="detail-item">
-                    <span>Montant :</span>
-                    <span>{{ number_format($reservation['prix_total'], 2) }} Dhs</span>
-                </div>
-                @endif
-            </div>
-
+                
             <div class="confirmation-actions">
                 <a href="{{ route('annonces.show', $annonce) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-eye mr-2"></i>Voir mon annonce
@@ -52,7 +28,7 @@
                 <i class="fas fa-envelope text-blue-500 mr-2"></i>
                 <span>Vous recevrez un email dès que le propriétaire aura confirmé votre réservation.</span>
             </div>
-        </div> --}}
+        </div>
     </div>
 </div>
 
