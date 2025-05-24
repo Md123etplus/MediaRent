@@ -10,7 +10,7 @@ class PartenaireController extends Controller
 {
     public function show($id)
     {
-        // Récupérer l'utilisateur sans vérifier son rôle
+        // Récupérer l'utilisateur sans vérifier son rôl
         $partenaire = User::findOrFail($id);
 
         // Récupérer les statistiques du partenaire
