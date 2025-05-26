@@ -147,7 +147,7 @@ class ReservationController extends Controller
             $reservation = Reservation::with(['annonce.objet', 'annonce.proprietaire', 'client'])
                              ->findOrFail($id);
     
-            $reservation->statut = ($response === 'accept') ? 'confirmée' : 'annulée';
+            $reservation->statut = ($response === 'accept') ? 'en_attente' : 'annulée';
             $reservation->save();
     
             $mailClass = ($response === 'accept') 

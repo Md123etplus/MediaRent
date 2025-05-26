@@ -129,11 +129,11 @@ class PaymentController extends Controller
     // Vérifiez si l'utilisateur a une réservation en attente pour cette annonce
     $reservation = Reservation::where('annonce_id', $annonce->id)
                              ->where('client_id', Auth::id())
-                             //->where('statut', 'en_attente')
+                             ->where('statut', 'en_attente')
                              ->first();
 
     if (!$reservation) {
-        return redirect()->route('client.dashboard')
+        return redirect()->route('dashboard.index')
                        ->with('error', 'Aucune réservation en attente de paiement');
     }
 
@@ -168,34 +168,43 @@ class PaymentController extends Controller
             return ['success' => false, 'message' => 'Erreur technique'];
         }
     }
-    public function processReservationPayment(Request $request, Annonce $annonce)
+public function processReservationPayment(Request $request, Annonce $annonce)
 {
-    // dd($request->all());
-    // Validation des données de paiement
+    // 1. Validation des données de paiement
     $this->validateReservationPaymentRequest($request);
-// dd($request->all());
-    // Traditement de la transaction
+
+    // 2. Récupération de la réservation existante
+    $reservation = Reservation::where('annonce_id', $annonce->id)
+                              ->where('client_id', Auth::id())
+                              ->where('statut', 'en_attente')
+                              ->first();
+
+    if (!$reservation) {
+        return back()->with('error', 'Aucune réservation en attente trouvée');
+    }
+
+    // 3. Traitement de la transaction
     $paymentResult = $this->processReservationPaymentTransaction($request->all(), $annonce);
-    $reservation = Reservation::create([
-                    'annonce_id' => $annonce->id,
-                    'client_id' => Auth::id(),
-                    'date_debut' => $request->input('date_debut'),
-                    'date_fin' => $request->input('date_fin'),
-                    'statut' => 'en_attente'
-            ]);
-   if ($paymentResult['success']) {
+
+    // 4. Si le paiement est réussi, mettre à jour le statut de la réservation
+    if ($paymentResult['success']) {
+        $reservation->update([
+            'statut' => 'confirmee'
+        ]);
+
+        // 5. Envoyer l'email de confirmation
         ReservationController::sendReservationEmail($reservation, $annonce);
 
-        $reservationData = session('reservation_data', []);
-        
         return redirect()->route('reservations.confirmation', [
             'reference' => $paymentResult['reference'],
-            'annonce' => $annonce // Pass the full object instead of just ID
+            'annonce' => $annonce
         ])->with([
-            'reservation' => $reservationData,
+            'reservation' => $reservation,
             'reference' => $paymentResult['reference']
         ]);
     }
+
     return back()->with('error', $paymentResult['message']);
 }
+
 }
