@@ -24,7 +24,7 @@ class PartenaireController extends Controller
                 ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')
                 ->join('objet', 'annonce.objet_id', '=', 'objet.id')
                 ->where('objet.proprietaire_id', $id)
-                ->avg('evaluation.note_objet') ?? 0,
+                ->avg('evaluation.note') ?? 0,
 
             'nombre_locations' => DB::table('reservation')
                 ->join('annonce', 'reservation.annonce_id', '=', 'annonce.id')

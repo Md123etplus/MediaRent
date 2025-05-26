@@ -129,11 +129,11 @@ class PaymentController extends Controller
     // Vérifiez si l'utilisateur a une réservation en attente pour cette annonce
     $reservation = Reservation::where('annonce_id', $annonce->id)
                              ->where('client_id', Auth::id())
-                             ->where('statut', 'en_attente')
+                             //->where('statut', 'en_attente')
                              ->first();
 
     if (!$reservation) {
-        return redirect()->route('dashboard.client')
+        return redirect()->route('client.dashboard')
                        ->with('error', 'Aucune réservation en attente de paiement');
     }
 
