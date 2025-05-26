@@ -26,8 +26,10 @@ class EvaluationRequestMail extends Mailable
         return $this->markdown('emails.evaluation_request')
             ->subject('Évaluation de votre location')
             ->with([
-                'isClient' => $this->evaluationType === 'client',
+                'isClient' => $this->evaluationType === 'client_to_partner',
                 'reservation' => $this->reservation,
+                'daysLeft' => 7 - $this->reservation->date_fin->diffInDays(now()),
+                'evaluationType' => $this->evaluationType,
             ]);
     }
 }
